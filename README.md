@@ -12,8 +12,8 @@ Bank Sampah adalah sistem manajemen sampah yang bertujuan untuk meningkatkan pen
 6. **Dashboard Admin**: Dashboard untuk admin bank sampah untuk memantau aktivitas dan mengelola sistem.
 
 ## Teknologi yang Digunakan
-- **Backend**: Laravel (PHP)
-- **Frontend**: Filament untuk Laravel (PHP)
-- **Database**: MySQL
-- **Mobile Application**: Android Native (Kotlin)
-- **API Integrations**: Google Maps API untuk tracking lokasi.
+- **Backend**: ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+- **Frontend**: ![Filament](https://img.shields.io/badge/Filament-4A4A55?style=for-the-badge&logo=laravel&logoColor=white)
+- **Database**: ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+- **Mobile Application**: ![Kotlin](https://img.shields.io/badge/Kotlin-0095D5?style=for-the-badge&logo=kotlin&logoColor=white)
+- **API Integrations**: ![Google Maps](https://img.shields.io/badge/Google_Maps-4285F4?style=for-the-badge&logo=google-maps&logoColor=white)
