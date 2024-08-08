@@ -12,8 +12,10 @@
     <string name="tv_title_form_password">Password</string>
     <string name="tv_homepage_order">Password</string>
     <string name="tv_homepage_waste_order_guide">Panduan Penjualan Sampah</string>
-    <string name="tv_homepage_title_guide1">Panduan Penjualan Sampah</string>
-    <string name="tv_homepage_title_guide2">Panduan Penjualan Sampah</string>
+    <string name="tv_homepage_title1">Pesan Pengambilan</string>
+    <string name="tv_homepage_title2">Panduan Penjualan Sampah</string>
+    <string name="tv_homepage_title1_desc">Cara Menggunakan Aplikasi</string>
+    <string name="tv_homepage_title2_desc">Kategori Sampah Yang Dapat Diubah</string>
     <string name="tv_detail_order_title">Pesan Pengambilan</string>
     <string name="tv_detail_order_waste_category">Jenis Sampah</string>
     <string name="tv_detail_order_weight_estimation">Estimasi Berat</string>
@@ -29,7 +31,7 @@
     <string name="tv_order_time">Waktu Pemesanan</string>
     <string name="tv_officer">Petugas</string>
     <string name="tv_title_order_track">Waktu Pemesanan</string>
-    <string name="tv_mutation_title">Pesan Pengambilan</string>
+    <string name="tv_mutation_title">Mutasi</string>
     <string name="tv_mutation_balance">Pesan Pengambilan</string>
     <string name="tv_transaction_history">Pesan Pengambilan</string>
     <string name="tv_enter_nominal">Masukkan Nominal Penarikan</string>
@@ -48,6 +50,7 @@
     <string name="tv_change_profile_address">Alamat</string>
     <string name="tv_change_password_old">Masukkan Sandi Lama</string>
     <string name="tv_change_password_New">Masukkan Sandi Baru</string>
+    <string name="tv_homepage_total_balance">Total Saldo</string>
 
     <!-- Button  -->
     <string name="btn_next">Selanjutnya</string>
@@ -56,6 +59,7 @@
     <string name="btn_dont_have_account">Belum Memiliki Akun</string>
     <string name="btn_have_account">Sudah Memiliki Akun</string>
     <string name="btn_home">Beranda</string>
+    <string name="btn_order">Pesanan</string>
     <string name="btn_mutation">Mutasi</string>
     <string name="btn_settings">Pengaturan</string>
     <string name="btn_confirmation">Konfirmasi</string>
