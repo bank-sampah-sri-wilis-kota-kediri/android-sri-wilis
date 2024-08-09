@@ -32,8 +32,10 @@
     <string name="tv_officer">Petugas</string>
     <string name="tv_title_order_track">Waktu Pemesanan</string>
     <string name="tv_mutation_title">Mutasi</string>
-    <string name="tv_mutation_balance">Pesan Pengambilan</string>
-    <string name="tv_transaction_history">Pesan Pengambilan</string>
+    <string name="tv_mutation_balance">Saldo Bank Sampah</string>
+    <string name="tv_available_balance">Saldo Tersedia</string>
+    <string name="tv_transfer_limit">Limit Transfer</string>
+    <string name="tv_transaction_history">Riwayat Transaksi</string>
     <string name="tv_enter_nominal">Masukkan Nominal Penarikan</string>
     <string name="tv_settings_title">Pengaturan</string>
     <string name="tv_settings_subtitle1">Ubah Profil</string>
@@ -65,4 +67,14 @@
     <string name="btn_confirmation">Konfirmasi</string>
     <string name="btn_change_password">Ubah Sandi</string>
     <string name="btn_join_us">Gabung Sekarang!</string>
+    <string name="btn_action_mutation"><u>Lakukan Penarikan</u></string>
+    <string name="tv_edit_profile_name">Masukkan Nama Anda</string>
+    <string name="tv_hint_name">Masukkan Nama Anda</string>
+    <string name="tv_change_profile_ewallet">Jenis Bank E-Wallet/Rekening</string>
+    <string name="tv_account_number">Nomor Rekening</string>
+    <string name="edt_account_number">Masukkan Nomor Rekening</string>
+    <string name="edt_mobile_number">Masukkan Nomor HP Anda</string>
+    <string name="edt_address_hint">Masukkan Alamat Anda</string>
+    <string name="edt_password_hint">**********</string>
+    <string name="tv_static_rp">Rp</string>
 </resources>
