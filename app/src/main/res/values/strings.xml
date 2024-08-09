@@ -77,4 +77,6 @@
     <string name="edt_address_hint">Masukkan Alamat Anda</string>
     <string name="edt_password_hint">**********</string>
     <string name="tv_static_rp">Rp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

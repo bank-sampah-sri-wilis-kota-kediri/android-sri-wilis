@@ -18,16 +18,10 @@
             android:name=".ui.mutation.InputMutationActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.mutation.MutationActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.settings.ChangePasswordActivity"
             android:exported="false" />
         <activity
             android:name=".ui.settings.ChangeProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.settings.SettingsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.homepage.HomepageActivity"
