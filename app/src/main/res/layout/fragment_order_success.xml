@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.order.OrderFragment">
+    tools:context=".ui.order.OrderSuccessFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_appbar"
@@ -42,7 +42,6 @@
             android:id="@+id/cv_status_process"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/grey_primary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:cardCornerRadius="20dp">
@@ -64,6 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
+            android:backgroundTint="@color/grey_primary"
             app:layout_constraintEnd_toStartOf="@+id/cv_status_failed"
             app:layout_constraintStart_toEndOf="@id/cv_status_process"
             app:layout_constraintTop_toTopOf="parent">
@@ -117,4 +117,5 @@
             tools:layout_editor_absoluteX="12dp"
             tools:listitem="@layout/card_order" />
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

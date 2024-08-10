@@ -15,6 +15,12 @@
         android:theme="@style/Theme.BankSampahSriWilis"
         tools:targetApi="31">
         <activity
+            android:name=".ui.order.OrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.order.DetailOrderActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.mutation.InputMutationActivity"
             android:exported="false" />
         <activity
