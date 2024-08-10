@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.order.OrderActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@color/yellow_primary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/baseline_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/change_profile_title"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/change_profile_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_homepage_order_take"
+            android:textSize="18sp"
+            android:fontFamily="@font/inter_extra_bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="55dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_waste_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_detail_order_waste_category"
+        android:fontFamily="@font/inter_extra_bold"
+        android:layout_marginTop="15dp"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/cl_appbar"
+        android:layout_marginStart="15dp"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/spinner_waste_category_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="15dp"
+        android:hint="@string/tv_hint_name"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/tv_waste_category">
+
+        <Spinner
+            android:id="@+id/spinner_waste_category"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+        android:id="@+id/tv_waste_weight_estimation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_extra_bold"
+        android:text="@string/tv_detail_order_weight_estimation"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/spinner_waste_category_field"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_waste_category_field" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
