@@ -8,8 +8,19 @@
     <string name="tv_splashscreen2_desc">Mencatat dan mengelola transaksi penjualan sampah menjadi lebih sederhana dan efisien</string>
     <string name="tv_splashscreen3_desc">Dapatkan laporan pemesanan dan laporan keuangan secara real-time.</string>
     <string name="tv_title_login">Masuk Akun</string>
+    <string name="tv_title_register">Daftar Akun</string>
     <string name="tv_title_form_email">Email</string>
-    <string name="tv_title_form_password">Password</string>
+    <string name="tv_title_form_password">Sandi</string>
+    <string name="tv_register_account_name_title">Nama Nasabah</string>
+    <string name="tv_register_account_name_hint">Masukkan Nama Anda</string>
+    <string name="tv_register_account_email_title">Email</string>
+    <string name="tv_register_account_email_hint">nama@email.com</string>
+    <string name="tv_register_account_mobile_number_title">No Handphone</string>
+    <string name="tv_register_account_mobile_number_hint">Masukkan Nomor HP Anda</string>
+    <string name="tv_register_account_sandi_title">Sandi</string>
+    <string name="tv_register_account_confirmation_sandi_title">Konfirmasi Sandi</string>
+    <string name="tv_register_account_sandi_hint">Masukkan Sandi Anda</string>
+    <string name="tv_register_account_confirmation_sandi__hint">Konfirmasi Sandi Anda</string>
     <string name="tv_homepage_order">Password</string>
     <string name="tv_homepage_waste_order_guide">Panduan Penjualan Sampah</string>
     <string name="tv_homepage_order_take">Pesan Pengambilan</string>
@@ -58,7 +69,7 @@
 
     <!-- Button  -->
     <string name="btn_next">Selanjutnya</string>
-    <string name="btn_masuk">Masuk Akun</string>
+    <string name="btn_masuk">Masuk</string>
     <string name="btn_daftar">Daftar</string>
     <string name="btn_dont_have_account">Belum Memiliki Akun</string>
     <string name="btn_have_account">Sudah Memiliki Akun</string>
@@ -75,6 +86,7 @@
     <string name="tv_change_profile_ewallet">Jenis Bank E-Wallet/Rekening</string>
     <string name="tv_account_number">Nomor Rekening</string>
     <string name="edt_account_number">Masukkan Nomor Rekening</string>
+    <string name="edt_email_hint">Masukkan Email Anda</string>
     <string name="edt_mobile_number">Masukkan Nomor HP Anda</string>
     <string name="edt_address_hint">Masukkan Alamat Anda</string>
     <string name="edt_password_hint">**********</string>
@@ -91,4 +103,6 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="tv_zero_balance">Rp0</string>
+    <string name="tv_welcome_homepage_cardview">Selamat Datang, Pengguna</string>
 </resources>

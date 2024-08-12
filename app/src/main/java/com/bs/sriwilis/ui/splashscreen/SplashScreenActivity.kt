@@ -23,7 +23,7 @@ class SplashScreenActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnAuth.setOnClickListener {
-            val intent = Intent(this, ChangeProfileActivity::class.java)
+            val intent = Intent(this, HomepageActivity::class.java)
             startActivity(intent)
             finish()
         }
