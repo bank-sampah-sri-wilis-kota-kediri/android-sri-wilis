@@ -8,18 +8,17 @@
     <item
 
         android:icon="@drawable/ic_menu2"
-        android:id="@+id/article"
+        android:id="@+id/order"
         android:title="@string/btn_order"
         />
-
     <item
-        android:id="@+id/save"
+        android:id="@+id/mutation"
         android:icon="@drawable/ic_menu3"
         android:title="@string/btn_mutation"
         />
     <item
         android:icon="@drawable/ic_menu4"
-        android:id="@+id/setting"
+        android:id="@+id/settings"
         android:title="@string/btn_settings"
         />
 </menu>

@@ -56,7 +56,7 @@
             android:src="@drawable/iv_waste_box"
             app:layout_constraintStart_toStartOf="@+id/tv_order_date"
             app:layout_constraintTop_toBottomOf="@+id/tv_order_date"
-            app:shapeAppearanceOverlay="@style/roundimageview" />
+            app:shapeAppearanceOverlay="@style/roundimageview_12" />
 
         <TextView
             android:id="@+id/tv_order_name"
