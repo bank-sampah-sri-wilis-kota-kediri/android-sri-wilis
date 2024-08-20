@@ -169,15 +169,15 @@
             android:layout_height="60dp"
             android:layout_marginHorizontal="16dp"
             android:layout_marginVertical="12dp"
-            android:backgroundTint="@color/yellow_primary"
+            android:backgroundTint="@color/blue_primary"
             android:fontFamily="@font/inter_extra_bold"
             android:text="@string/btn_daftar"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@+id/edt_register_confirmation_password" />
 
         <TextView
-            android:id="@+id/btn_belum_memiliki_akun"
+            android:id="@+id/btn_sudah_memiliki_akun"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_extra_bold"

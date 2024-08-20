@@ -11,7 +11,7 @@
         android:id="@+id/cl_appbar"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:background="@color/yellow_primary"
+        android:background="@color/blue_primary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:text="@string/tv_detail_order_title"
             android:textSize="18sp"
+            android:textColor="@color/white"
             android:fontFamily="@font/inter_extra_bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +90,6 @@
                 android:id="@+id/cv_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/yellow_primary"
                 android:layout_marginTop="7dp"
                 app:cardCornerRadius="20dp"
                 app:layout_constraintStart_toStartOf="@+id/tv_order_detail"
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 app:cardCornerRadius="20dp"
-                android:backgroundTint="@color/green_primary"
+                android:backgroundTint="@color/blue_primary"
                 app:layout_constraintBottom_toBottomOf="@+id/cv_price"
                 app:layout_constraintStart_toEndOf="@+id/cv_price"
                 app:layout_constraintTop_toTopOf="@+id/cv_price">

@@ -15,6 +15,33 @@
         android:theme="@style/Theme.BankSampahSriWilis"
         tools:targetApi="31">
         <activity
+            android:name=".ui.homepage.operation.EditUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.EditCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.EditCatalogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.AddCatalogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.ManageCatalogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.AddUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.ManageUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.AddCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.ManageCategoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.authorization.RegisterActivity"
             android:exported="false" />
         <activity
@@ -49,9 +76,6 @@
         </activity>
         <activity
             android:name=".ui.splashscreen.SplashScreenActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
             android:exported="false" />
     </application>
 

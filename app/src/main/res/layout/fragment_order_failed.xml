@@ -10,7 +10,7 @@
         android:id="@+id/cl_appbar"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:background="@color/yellow_primary"
+        android:background="@color/blue_primary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:text="@string/tv_order"
             android:textSize="25sp"
+            android:textColor="@color/white"
             android:fontFamily="@font/inter_extra_bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +84,7 @@
             android:id="@+id/cv_status_failed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/grey_primary"
+            android:backgroundTint="@color/blue_calm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:cardCornerRadius="20dp">
