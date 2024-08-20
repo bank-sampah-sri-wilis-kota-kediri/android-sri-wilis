@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityChangeProfileBinding
 import com.bs.sriwilis.databinding.ActivitySplashScreenBinding
+import com.bs.sriwilis.ui.authorization.LoginActivity
 import com.bs.sriwilis.ui.homepage.HomepageActivity
 import com.bs.sriwilis.ui.settings.ChangePasswordActivity
 import com.bs.sriwilis.ui.settings.ChangeProfileActivity
@@ -23,7 +24,7 @@ class SplashScreenActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnAuth.setOnClickListener {
-            val intent = Intent(this, HomepageActivity::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }

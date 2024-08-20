@@ -12,6 +12,10 @@
         android:title="@string/btn_order"
         />
     <item
+        android:id="@+id/placeholder"
+        android:title=""
+        />
+    <item
         android:id="@+id/mutation"
         android:icon="@drawable/ic_menu3"
         android:title="@string/btn_mutation"

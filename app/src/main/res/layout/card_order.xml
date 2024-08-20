@@ -34,7 +34,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_order_date"
             android:layout_marginEnd="12dp"
-            android:backgroundTint="@color/green_teal">
+            android:backgroundTint="@color/blue_primary">
 
             <TextView
                 android:id="@+id/tv_card_status_process"

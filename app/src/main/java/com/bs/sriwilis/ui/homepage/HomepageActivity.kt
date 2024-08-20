@@ -21,9 +21,12 @@ class HomepageActivity : AppCompatActivity() {
         binding = ActivityHomepageBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+        binding.bottomNavigationView.background = null
+        binding.bottomNavigationView.menu.getItem(2).isEnabled = false
+
         replaceFragment(HomeFragment())
 
-        binding.btnNav.setOnNavigationItemSelectedListener { item ->
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.home -> {
                     if (!isCurrentFragment(HomeFragment::class.java)) {

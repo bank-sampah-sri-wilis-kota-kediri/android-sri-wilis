@@ -13,15 +13,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/yellow_primary">
+        app:layout_constraintEnd_toEndOf="parent" >
 
     <ImageView
         android:id="@+id/ic_logo"
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_gravity="center"
-        android:background="@color/yellow_primary"
         android:src="@drawable/ic_bank_sampah_sri_wilis"/>
     </FrameLayout>
 
