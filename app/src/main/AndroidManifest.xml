@@ -42,9 +42,6 @@
             android:name=".ui.homepage.operation.ManageCategoryActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.authorization.RegisterActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.authorization.LoginActivity"
             android:exported="false" />
         <activity
@@ -77,6 +74,10 @@
         <activity
             android:name=".ui.splashscreen.SplashScreenActivity"
             android:exported="false" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 
 </manifest>
