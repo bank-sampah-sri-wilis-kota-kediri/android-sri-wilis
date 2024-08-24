@@ -13,9 +13,10 @@
         android:layout_height="130dp"
         android:src="@drawable/iv_login"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="100dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginBottom="320dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
         android:id="@+id/tv_login_title"
@@ -99,15 +100,14 @@
         android:backgroundTint="@color/blue_primary"
         android:textColor="@color/white" />
 
-    <TextView
-        android:id="@+id/btn_belum_memiliki_akun"
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_extra_bold"
-        android:text="@string/btn_dont_have_account"
-        android:layout_marginTop="18dp"
-        app:layout_constraintEnd_toEndOf="@+id/btn_login"
-        app:layout_constraintStart_toStartOf="@+id/btn_login"
-        app:layout_constraintTop_toBottomOf="@+id/btn_login" />
-
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -129,7 +129,7 @@
     <string name="tv_manage_category_title">Daftar Kategori</string>
     <string name="tv_add_category_title">Tambah Kategori</string>
     <string name="iv_category_photo">Foto Kategori</string>
-    <string name="tv_buy_price">Harga Beli / Kg</string>
+    <string name="tv_buy_price">Harga Kategori / Kg</string>
     <string name="tv_sell_price">Harga Jual / Kg</string>
     <string name="tv_weight_estimation">Berat</string>
     <string name="btn_upload_photo">Unggah Foto</string>
@@ -152,4 +152,17 @@
     <string name="tv_change_catalog_title">Ubah Katalog</string>
     <string name="tv_change_category_title">Ubah Kategori</string>
     <string name="tv_change_users_title">Ubah Data Nasabah</string>
+    <string name="tv_sandi_pengguna">Sandi Pengguna</string>
+    <string name="tv_users_balance_title">Saldo</string>
+    <string name="tv_waste_type">Jenis Sampah</string>
+
+    <string-array name="pilihan_tag">
+        <item name="plastik">Plastik</item>
+        <item name="karton">Karton</item>
+        <item name="kaleng_alumunium">Kaleng Alumunium</item>
+    </string-array>
+
+    <string name="tv_make_sure">Pastikan semua data sudah terisi</string>
+    <string name="tv_on_process">Sedang diproses</string>
+    <string name="tv_category_process_success">Kategori Berhasil Ditambahkan!</string>
 </resources>
