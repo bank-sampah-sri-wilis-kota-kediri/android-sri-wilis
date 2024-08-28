@@ -76,7 +76,7 @@
                     android:layout_marginHorizontal="12dp" >
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_add_user_phone"
+                        android:id="@+id/edt_edit_user_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
@@ -102,7 +102,7 @@
                     tools:layout_editor_absoluteX="12dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_buy_price_form"
+                        android:id="@+id/edt_full_name_form"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
@@ -128,7 +128,7 @@
                     tools:layout_editor_absoluteX="12dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_add_user_address"
+                        android:id="@+id/edt_edit_user_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
@@ -154,14 +154,14 @@
                     tools:layout_editor_absoluteX="12dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_add_user_account_balance"
+                        android:id="@+id/edt_edit_user_account_balance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
-                    android:id="@+id/btn_add_category"
+                    android:id="@+id/btn_change_users"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/blue_primary"
@@ -177,5 +177,16 @@
         </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

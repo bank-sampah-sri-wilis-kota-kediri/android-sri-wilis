@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bs.sriwilis.data.repository.MainRepository
 import com.bs.sriwilis.data.response.CategoryResponse
+import com.bs.sriwilis.data.response.UserItem
 import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
 

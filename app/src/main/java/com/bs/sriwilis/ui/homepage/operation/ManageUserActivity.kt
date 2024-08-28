@@ -35,7 +35,7 @@ class ManageUserActivity : AppCompatActivity() {
         binding = ActivityManageUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        userAdapter = UserAdapter(emptyList())
+        userAdapter = UserAdapter(emptyList(), this)
 
         binding.apply {
             fabAddUser.setOnClickListener {
