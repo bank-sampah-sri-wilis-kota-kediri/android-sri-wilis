@@ -15,7 +15,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.bs.sriwilis.R
-import com.bs.sriwilis.databinding.ActivityAddCategoryBinding
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
@@ -38,6 +37,8 @@ class AddUserActivity : AppCompatActivity() {
         setupPasswordToggle()
         observeViewModel()
         setupAction()
+
+        binding.btnBack.setOnClickListener { finish() }
     }
 
     private fun setupAction() {
@@ -92,6 +93,7 @@ class AddUserActivity : AppCompatActivity() {
                         setTitle("Berhasil!")
                         setMessage("Akun Pengguna berhasil dibuat")
                         setPositiveButton("Ok") { _, _ ->
+                            finish()
                         }
                         create()
                         show()
@@ -101,7 +103,7 @@ class AddUserActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                     AlertDialog.Builder(this).apply {
                         setTitle("Gagal!")
-                        setMessage("Akun Pengguna Gagal Dibauat")
+                        setMessage("Akun Pengguna Gagal Dibuat")
                         setPositiveButton("OK", null)
                         create()
                         show()

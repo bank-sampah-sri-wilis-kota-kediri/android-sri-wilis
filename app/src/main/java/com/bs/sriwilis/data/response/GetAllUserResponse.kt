@@ -41,7 +41,7 @@ data class UserItem(
 	val saldoNasabah: String? = null,
 
 	@field:SerializedName("id")
-	val id: Int? = null,
+	val id: String? = null,
 
 	@field:SerializedName("gambar_nasabah")
 	val gambarNasabah: String? = null
