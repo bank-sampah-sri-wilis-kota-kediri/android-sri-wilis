@@ -18,8 +18,8 @@ class AddCatalogActivity : AppCompatActivity() {
         binding = ActivityAddCatalogBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding?.apply {
-
+        binding.apply {
+            btnBack.setOnClickListener { finish() }
         }
     }
 }

@@ -3,7 +3,11 @@ package com.bs.sriwilis.data.repository
 import android.util.Log
 import com.bs.sriwilis.data.network.ApiServiceMain
 import com.bs.sriwilis.data.preference.UserPreferences
+import com.bs.sriwilis.data.response.AddCatalogRequest
 import com.bs.sriwilis.data.response.AddCategoryRequest
+import com.bs.sriwilis.data.response.CatalogData
+import com.bs.sriwilis.data.response.CatalogResponse
+import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.GetAllUserResponse
 import com.bs.sriwilis.data.response.RegisterUserResponse
@@ -26,6 +30,8 @@ class MainRepository(
     suspend fun logout() {
         userPreferences.clearUserDetails()
     }
+
+    //CRUD Users
 
     suspend fun registerUser(phone: String, password: String, name: String, address: String, balance: String): Result<RegisterUserResponse> {
         return try {
@@ -135,6 +141,8 @@ class MainRepository(
         }
     }
 
+    //CRUD Categories
+
     suspend fun addCategory(
         token: String,
         name: String,
@@ -164,6 +172,231 @@ class MainRepository(
             } catch (e: Exception) {
                 Result.Error("Exception occured: ${e.message}")
             }
+        }
+    }
+
+    suspend fun getCategory(): Result<CategoryResponse> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+            Log.d("tokenmainrepository", "$token")
+            val response = apiService.getAllCategory("Bearer $token")
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.Success(body)
+                } else {
+                    Result.Error("Response body is null")
+                }
+            } else {
+                Result.Error("Failed to fetch saved news: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
+
+    suspend fun getCategoryById(id: String): Result<CategoryData> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+            val response = apiService.getCategoryById(id, "Bearer $token")
+
+            if (response.isSuccessful) {
+                val categoryDetailResponse = response.body()
+                if (categoryDetailResponse != null) {
+                    val categoryItem = categoryDetailResponse.data
+                    if (categoryItem != null) {
+                        Result.Success(categoryItem)
+                    } else {
+                        Result.Error("User not found")
+                    }
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to fetch user details: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Log.e("GetUserDetails", "Error fetching user details", e)
+            Result.Error("Error fetching user details: ${e.message}")
+        }
+    }
+
+    suspend fun editCategory(categoryId: String, name: String, price: String, type: String, image: String): Result<CategoryResponse> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+
+            val response = apiService.editCategory(categoryId, token, name, price, type, image)
+            if (response.isSuccessful) {
+                val editResponse = response.body()
+                if (editResponse != null) {
+                    Result.Success(editResponse)
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to edit: ${response.code()} - ${response.message()}")
+            }
+        } catch (e: Exception) {
+            Result.Error("Edit error: ${e.message}")
+        }
+    }
+
+    suspend fun deleteCategory(categoryId: String): Result<Boolean> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+            val response = apiService.deleteCategory(categoryId, "Bearer $token")
+
+            if (response.isSuccessful) {
+                Result.Success(true)
+            } else {
+                Result.Error("Failed to remove bookmark: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            Log.e("MainRepository", "Exception occurred: ${e.message}")
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
+
+    //CATALOG CRUD
+
+    suspend fun addCatalog(
+        catalogId: String,
+        name: String,
+        desc: String,
+        price: String,
+        number: String,
+        link: String,
+        image: String,
+    ): Result<CatalogResponse> {
+        val catalogRequest = AddCatalogRequest(
+            judul_katalog = name,
+            deskripsi_katalog = desc,
+            harga_katalog = price,
+            no_wa = number,
+            shopee_link = link,
+            gambar_katalog = image
+        )
+
+        val token = userPreferences.token.first() ?: ""
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.editCatalog(catalogId, "Bearer $token", catalogRequest)
+                if (response.isSuccessful) {
+                    val categoryResponse = response.body()
+                    if (categoryResponse != null) {
+                        Result.Success(categoryResponse)
+                    } else {
+                        Result.Error("Empty response body")
+                    }
+                } else {
+                    Result.Error("Failed to fetch saved news: ${response.message()} (${response.code()})")
+                }
+            } catch (e: Exception) {
+                Result.Error("Exception occured: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getCatalog(): Result<CatalogResponse> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+            Log.d("tokenmainrepository", "$token")
+            val response = apiService.getAllCatalog("Bearer $token")
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.Success(body)
+                } else {
+                    Result.Error("Response body is null")
+                }
+            } else {
+                Result.Error("Failed to fetch saved news: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
+
+    suspend fun getCatalogById(id: String): Result<CatalogData> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+            val response = apiService.getCatalogById(id, "Bearer $token")
+
+            if (response.isSuccessful) {
+                val categoryDetailResponse = response.body()
+                if (categoryDetailResponse != null) {
+                    val categoryItem = categoryDetailResponse.data
+                    if (categoryItem != null) {
+                        Result.Success(categoryItem)
+                    } else {
+                        Result.Error("User not found")
+                    }
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to fetch user details: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Log.e("GetUserDetails", "Error fetching user details", e)
+            Result.Error("Error fetching user details: ${e.message}")
+        }
+    }
+
+    suspend fun editCatalog(
+        categoryId: String,
+        name: String,
+        desc: String,
+        price: String,
+        number: String,
+        link: String,
+        image: String,
+    ): Result<CatalogResponse> {
+        val catalogRequest = AddCatalogRequest(
+            judul_katalog = name,
+            deskripsi_katalog = desc,
+            harga_katalog = price,
+            no_wa = number,
+            shopee_link = link,
+            gambar_katalog = image
+        )
+        return try {
+            val token = userPreferences.token.first() ?: ""
+
+            val response = apiService.editCatalog(categoryId, token, catalogRequest)
+
+            if (response.isSuccessful) {
+                val editResponse = response.body()
+                if (editResponse != null) {
+                    Result.Success(editResponse)
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to edit: ${response.code()} - ${response.message()}")
+            }
+        } catch (e: Exception) {
+            Log.e("EditCategory", "Edit error", e)
+            Result.Error("Edit error: ${e.message}")
+        }
+    }
+
+    suspend fun deleteCatalog(categoryId: String): Result<Boolean> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+            val response = apiService.deleteCatalog(categoryId, "Bearer $token")
+
+            if (response.isSuccessful) {
+                Result.Success(true)
+            } else {
+                Result.Error("Failed to remove bookmark: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            Log.e("MainRepository", "Exception occurred: ${e.message}")
+            Result.Error("Error occurred: ${e.message}")
         }
     }
 

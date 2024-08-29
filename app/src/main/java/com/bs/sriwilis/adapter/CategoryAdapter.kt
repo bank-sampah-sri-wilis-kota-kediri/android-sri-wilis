@@ -15,10 +15,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
 import com.bs.sriwilis.data.repository.MainRepository
+import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.UserData
 import com.bs.sriwilis.data.response.UserItem
+import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardUserListBinding
+import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.EditUserActivity
+import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bumptech.glide.Glide
@@ -26,43 +30,44 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UserAdapter(
-    private var user: List<UserItem?>,
+class CategoryAdapter(
+    private var category: List<CategoryData?>,
     private val context: Context
 
-) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
-    private var userlist: List<String> = emptyList()
-    private lateinit var viewModel: ManageUserViewModel
+    private var categorylist: List<String> = emptyList()
+    private lateinit var viewModel: ManageCategoryViewModel
 
-    inner class UserViewHolder(private val binding: CardUserListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CategoryViewHolder(private val binding: CardCategoryListBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(users: UserItem?) {
+        fun bind(category: CategoryData?) {
             with(binding) {
-                users?.gambarNasabah?.let { gambarNasabah ->
-                    val imageBytes = Base64.decode(gambarNasabah, Base64.DEFAULT)
+                category?.gambarKategori?.let { gambarKategori ->
+                    val imageBytes = Base64.decode(gambarKategori, Base64.DEFAULT)
                     Glide.with(itemView.context)
                         .load(imageBytes)
                         .into(ivCategoryListPreview)
                 } ?: run {
-                    ivCategoryListPreview.setImageResource(R.drawable.ic_profile)
+                    ivCategoryListPreview.setImageResource(R.drawable.iv_panduan2)
                 }
 
-                tvUserName.text = users?.namaNasabah
-                tvUserAddress.text = users?.alamatNasabah
+                tvCategoryListName.text = category?.namaKategori
+                tvCategoryListType.text = category?.jenisKategori
+                tvCategoryItemPrice.text = category?.hargaKategori.toString()
 
                 itemView.setOnClickListener {
-                    users?.id?.let { id ->
+                    category?.id?.let { id ->
                         onItemClick?.invoke(id)
-                        val intent = Intent(itemView.context, EditUserActivity::class.java)
-                        intent.putExtra("userId", id)
+                        val intent = Intent(itemView.context, EditCategoryActivity::class.java)
+                        intent.putExtra("id", id)
                         itemView.context.startActivity(intent)
                     }
                 }
 
                 btnDelete.setOnClickListener {
-                    users?.id?.let { id ->
+                    category?.id?.let { id ->
                         showDeleteConfirmationDialog(id)
                     }
                 }
@@ -70,34 +75,34 @@ class UserAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        val binding = CardUserListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
+        val binding = CardCategoryListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         val activity = parent.context as AppCompatActivity
-        viewModel = ViewModelProvider(activity)[ManageUserViewModel::class.java]
+        viewModel = ViewModelProvider(activity)[ManageCategoryViewModel::class.java]
 
-        return UserViewHolder(binding)
+        return CategoryViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
-        return user.size
+        return category.size
     }
 
-    override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bind(user[position])
+    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
+        holder.bind(category[position])
     }
 
-    fun updateUsers(newUsers: List<UserItem?>) {
-        this.user = newUsers
+    fun updateCategory(newCategories: List<CategoryData?>) {
+        this.category = newCategories
         notifyDataSetChanged()
     }
 
-    private fun showDeleteConfirmationDialog(userId: String) {
+    private fun showDeleteConfirmationDialog(catalogId: String) {
         val dialogBuilder = AlertDialog.Builder(context)
-        dialogBuilder.setTitle("Konfirmasi Penghapusan Akun")
-        dialogBuilder.setMessage("Anda yakin ingin menghapus akun ini??")
+        dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
+        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
-            viewModel.deleteUser(userId)
+            viewModel.deleteUser(catalogId)
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()
