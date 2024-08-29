@@ -1,8 +1,12 @@
 package com.bs.sriwilis.data.network
 
+import com.bs.sriwilis.data.response.AddCatalogRequest
 import com.bs.sriwilis.data.response.AddCategoryRequest
+import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.GetAllUserResponse
+import com.bs.sriwilis.data.response.GetCatalogByIdResponse
+import com.bs.sriwilis.data.response.GetCategoryByIdResponse
 import com.bs.sriwilis.data.response.GetUserByIdResponse
 import com.bs.sriwilis.data.response.LoginResponse
 import com.bs.sriwilis.data.response.RegisterUserResponse
@@ -21,6 +25,7 @@ interface ApiServiceMain {
 
 
     // ADMIN
+
 
     // USER CRUD
     @GET("nasabah/show-all")
@@ -69,7 +74,65 @@ interface ApiServiceMain {
         @Body requestBody: AddCategoryRequest
     ): Response<CategoryResponse>
 
+    @GET("kategori/show-all")
+    suspend fun getAllCategory(
+        @Header("X-Auth-Token") token: String,
+    ): Response<CategoryResponse>
 
+    @GET("kategori/{id}")
+    suspend fun getCategoryById(
+        @Path("id") categoryId: String,
+        @Header("X-Auth-Token") token: String
+    ): Response<GetCategoryByIdResponse>
+
+    @FormUrlEncoded
+    @PUT("kategori/edit-by-id/{id}")
+    suspend fun editCategory(
+        @Path("id") categoryId: String,
+        @Header("X-Auth-Token") token: String,
+        @Field("nama_kategori") nama_kategori: String,
+        @Field("harga_kategori") harga_kategori: String,
+        @Field("jenis_kategori") jenis_kategori: String,
+        @Field("gambar_kategori") gambar_kategori: String
+    ): Response<CategoryResponse>
+
+    @DELETE("kategori/{id}")
+    suspend fun deleteCategory(
+        @Path("id") categoryId: String,
+        @Header("X-Auth-Token") token: String
+    ): Response<Unit>
+
+    // KATALOG CRUD
+    @POST("katalog/")
+    suspend fun addCatalog(
+        @Header("X-Auth-Token") token: String,
+        @Body requestBody: AddCatalogRequest
+    ): Response<CatalogResponse>
+
+    @GET("katalog/show-all")
+    suspend fun getAllCatalog(
+        @Header("X-Auth-Token") token: String,
+    ): Response<CatalogResponse>
+
+    @GET("katalog/{id}")
+    suspend fun getCatalogById(
+        @Path("id") categoryId: String,
+        @Header("X-Auth-Token") token: String
+    ): Response<GetCatalogByIdResponse>
+
+    @FormUrlEncoded
+    @PUT("katalog/edit-by-id/{id}")
+    suspend fun editCatalog(
+        @Path("id") categoryId: String,
+        @Header("X-Auth-Token") token: String,
+        @Body requestBody: AddCatalogRequest
+    ): Response<CatalogResponse>
+
+    @DELETE("katalog/{id}")
+    suspend fun deleteCatalog(
+        @Path("id") categoryId: String,
+        @Header("X-Auth-Token") token: String
+    ): Response<Unit>
 
 
 }

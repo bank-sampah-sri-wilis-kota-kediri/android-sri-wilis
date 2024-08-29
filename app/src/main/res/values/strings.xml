@@ -165,6 +165,7 @@
     <string name="tv_make_sure">Pastikan semua data sudah terisi</string>
     <string name="tv_on_process">Sedang diproses</string>
     <string name="tv_category_process_success">Kategori berhasil ditambahkan!</string>
+    <string name="tv_category_change_process_success">Kategori berhasil diubah!</string>
     <string name="tv_users_process_success">Pengguna berhasil diubah</string>
 
 </resources>
