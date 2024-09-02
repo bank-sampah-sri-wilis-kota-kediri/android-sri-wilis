@@ -282,7 +282,7 @@ class MainRepository(
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.editCatalog(catalogId, "Bearer $token", catalogRequest)
+                val response = apiService.addCatalog("Bearer $token", catalogRequest)
                 if (response.isSuccessful) {
                     val categoryResponse = response.body()
                     if (categoryResponse != null) {

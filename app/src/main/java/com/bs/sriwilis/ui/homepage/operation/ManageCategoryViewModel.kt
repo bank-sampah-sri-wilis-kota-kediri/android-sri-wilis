@@ -65,7 +65,7 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
         }
     }
 
-    fun deleteUser(categoryId: String) {
+    fun deleteCategory(categoryId: String) {
         viewModelScope.launch {
             _categoryData.value = Result.Loading
             when (val result = repository.deleteCategory(categoryId)) {
