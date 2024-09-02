@@ -102,7 +102,7 @@ class CategoryAdapter(
         dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
         dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
-            viewModel.deleteUser(catalogId)
+            viewModel.deleteCategory(catalogId)
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()

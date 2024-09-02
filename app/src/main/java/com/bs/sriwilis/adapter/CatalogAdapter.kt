@@ -22,8 +22,10 @@ import com.bs.sriwilis.data.response.UserItem
 import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardUserListBinding
 import com.bs.sriwilis.databinding.CardWasteCatalogBinding
+import com.bs.sriwilis.ui.homepage.operation.EditCatalogActivity
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.EditUserActivity
+import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
 import com.bs.sriwilis.utils.ViewModelFactory
@@ -40,7 +42,7 @@ class CatalogAdapter(
 
     var onItemClick: ((String) -> Unit)? = null
     private var categorylist: List<String> = emptyList()
-    private lateinit var viewModel: ManageCategoryViewModel
+    private lateinit var viewModel: ManageCatalogViewModel
 
     inner class CatalogViewHolder(private val binding: CardWasteCatalogBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -62,7 +64,7 @@ class CatalogAdapter(
                 itemView.setOnClickListener {
                     catalog?.id?.let { id ->
                         onItemClick?.invoke(id)
-                        val intent = Intent(itemView.context, EditCategoryActivity::class.java)
+                        val intent = Intent(itemView.context, EditCatalogActivity::class.java)
                         intent.putExtra("id", id)
                         itemView.context.startActivity(intent)
                     }
@@ -81,7 +83,7 @@ class CatalogAdapter(
         val binding = CardWasteCatalogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         val activity = parent.context as AppCompatActivity
-        viewModel = ViewModelProvider(activity)[ManageCategoryViewModel::class.java]
+        viewModel = ViewModelProvider(activity)[ManageCatalogViewModel::class.java]
 
         return CatalogViewHolder(binding)
     }
@@ -104,7 +106,7 @@ class CatalogAdapter(
         dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
         dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
-            viewModel.deleteUser(catalogId)
+            viewModel.deleteCatalog(catalogId)
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()

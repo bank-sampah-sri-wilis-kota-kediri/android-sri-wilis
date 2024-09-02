@@ -26,7 +26,6 @@ interface ApiServiceMain {
 
     // ADMIN
 
-
     // USER CRUD
     @GET("nasabah/show-all")
     suspend fun getAllUser(
@@ -103,7 +102,7 @@ interface ApiServiceMain {
     ): Response<Unit>
 
     // KATALOG CRUD
-    @POST("katalog/")
+    @POST("katalog/add")
     suspend fun addCatalog(
         @Header("X-Auth-Token") token: String,
         @Body requestBody: AddCatalogRequest
@@ -116,14 +115,13 @@ interface ApiServiceMain {
 
     @GET("katalog/{id}")
     suspend fun getCatalogById(
-        @Path("id") categoryId: String,
+        @Path("id") catalogId: String,
         @Header("X-Auth-Token") token: String
     ): Response<GetCatalogByIdResponse>
 
-    @FormUrlEncoded
     @PUT("katalog/edit-by-id/{id}")
     suspend fun editCatalog(
-        @Path("id") categoryId: String,
+        @Path("id") catalogId: String,
         @Header("X-Auth-Token") token: String,
         @Body requestBody: AddCatalogRequest
     ): Response<CatalogResponse>

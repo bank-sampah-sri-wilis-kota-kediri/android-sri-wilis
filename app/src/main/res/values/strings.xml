@@ -97,6 +97,7 @@
     <string name="btn_change_password">Ubah Sandi</string>
     <string name="btn_join_us">Gabung Sekarang!</string>
     <string name="btn_action_mutation"><u>Lakukan Penarikan</u></string>
+    <string name="btn_save">Simpan</string>
     <string name="tv_edit_profile_name">Masukkan Nama Anda</string>
     <string name="tv_hint_name">Masukkan Nama Anda</string>
     <string name="tv_change_profile_ewallet">Jenis Bank E-Wallet/Rekening</string>
@@ -142,7 +143,7 @@
     <string name="tv_add_user_email">Alamat</string>
     <string name="tv_account_balance">Saldo</string>
     <string name="tv_catalog_list_title">Daftar Katalog</string>
-    <string name="tv_add_catalog_title">Tambah Catalog</string>
+    <string name="tv_add_catalog_title">Tambah Katalog</string>
     <string name="tv_catalog_name">Nama Katalog</string>
     <string name="tv_catalog_price">Harga Katalog</string>
     <string name="tv_catalog_stock">Stok Katalog</string>
@@ -167,5 +168,8 @@
     <string name="tv_category_process_success">Kategori berhasil ditambahkan!</string>
     <string name="tv_category_change_process_success">Kategori berhasil diubah!</string>
     <string name="tv_users_process_success">Pengguna berhasil diubah</string>
+    <string name="nomor_handphone">Nomor Handphone (tanpa 0)</string>
+    <string name="tv_link_shopee">Link Shopee</string>
+    <string name="tv_change_catalog">Ubah Katalog</string>
 
 </resources>

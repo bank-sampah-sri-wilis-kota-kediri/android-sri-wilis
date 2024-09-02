@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel() {
 
     private val _addCatalogResult = MutableLiveData<Result<CatalogResponse>>()
-    val addCategoryResult: LiveData<Result<CatalogResponse>> = _addCatalogResult
+    val addCatalogResult: LiveData<Result<CatalogResponse>> = _addCatalogResult
 
     private val _catalog = MutableLiveData<Result<CatalogResponse>>()
     val catalog: LiveData<Result<CatalogResponse>> get() = _catalog
@@ -32,10 +32,10 @@ class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel
         }
     }
 
-    fun editCatalog(userId: String, name: String, desc: String, price: String, number: String, link: String, image: String) {
+    fun editCatalog(catalogId: String, name: String, desc: String, price: String, number: String, link: String, image: String) {
         viewModelScope.launch {
             _addCatalogResult.value = Result.Loading
-            val result = repository.editCatalog(userId, name, desc, price, number, link, image)
+            val result = repository.editCatalog(catalogId, name, desc, price, number, link, image)
             _addCatalogResult.value = result
         }
     }
@@ -63,7 +63,7 @@ class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel
         }
     }
 
-    fun deleteUser(categoryId: String) {
+    fun deleteCatalog(categoryId: String) {
         viewModelScope.launch {
             _catalogData.value = Result.Loading
             when (val result = repository.deleteCatalog(categoryId)) {
