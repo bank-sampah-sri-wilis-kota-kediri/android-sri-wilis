@@ -17,6 +17,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -89,8 +90,9 @@ class EditCatalogActivity : AppCompatActivity() {
             viewModel.fetchCatalogDetails(it)
         }
 
+        observeCatalog()
+        observeViewModel()
         setupAction()
-        observeUser()
 
         binding.apply {
             btnUploadPhoto.setOnClickListener { startGallery() }
@@ -98,7 +100,7 @@ class EditCatalogActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeUser() {
+    private fun observeCatalog() {
         viewModel.catalogData.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
@@ -149,9 +151,19 @@ class EditCatalogActivity : AppCompatActivity() {
 
             val imageBase64 = currentImageUri?.let { uriToBase64(it) } ?: ""
 
+            if (name.isEmpty() || price.isEmpty() || link.isEmpty() || number.isEmpty() || desc.isEmpty()){
+                showToast(getString(R.string.tv_make_sure))
+                return@setOnClickListener
+            }
+
+            if (currentImageUri == null) {
+                showToast(getString(R.string.tv_make_sure_image))
+                return@setOnClickListener
+            }
+
             editCatalog(catalogId, name, desc, price, number, link, imageBase64)
 
-            viewModel.addCatalogResult.observe(this, Observer { result ->
+            viewModel.catalog.observe(this, Observer { result ->
                 when (result) {
                     is Result.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
@@ -171,6 +183,7 @@ class EditCatalogActivity : AppCompatActivity() {
     }
 
     private fun editCatalog(catalogId: String, name: String, desc: String, price: String, number: String, link: String, image: String) {
+        Log.d("EditCatalog", "Image Base64: $image")
         viewModel.editCatalog(catalogId, name, desc, price, number, link, image)
     }
 
@@ -195,7 +208,7 @@ class EditCatalogActivity : AppCompatActivity() {
             val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
             val byteArray = byteArrayOutputStream.toByteArray()
-            Base64.encodeToString(byteArray, Base64.DEFAULT)
+            Base64.encodeToString(byteArray, Base64.DEFAULT).trim()
         } catch (e: IOException) {
             e.printStackTrace()
             ""
@@ -204,5 +217,37 @@ class EditCatalogActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun observeViewModel() {
+        viewModel.addCatalogResult.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Berhasil!")
+                        setMessage("Katalog Berhasil Diubah")
+                        setPositiveButton("Ok") { _, _ ->
+                            finish()
+                        }
+                        create()
+                        show()
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Gagal!")
+                        setMessage("Katalog Gagal Diubah")
+                        setPositiveButton("OK", null)
+                        create()
+                        show()
+                    }
+                }
+            }
+        })
     }
 }

@@ -54,6 +54,7 @@ class AddUserActivity : AppCompatActivity() {
     }
 
     private fun registerUser(name: String, phone: String, address: String, password: String, balance: String) {
+        binding.progressBar.visibility = View.VISIBLE
         viewModel.register(name, phone, address, password, balance)
     }
 

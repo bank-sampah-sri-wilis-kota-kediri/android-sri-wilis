@@ -17,6 +17,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -87,48 +88,34 @@ class AddCategoryActivity : AppCompatActivity() {
         binding = ActivityAddCategoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         setupSpinner()
-        binding?.apply {
+        observeViewModel()
+        setupAction()
+
+        binding.apply {
             btnUploadPhoto.setOnClickListener { startGallery() }
-            btnAddCategory.setOnClickListener { submitCategory() }
             btnBack.setOnClickListener { finish() }
         }
     }
 
-    private fun submitCategory() {
-        val imageBase64 = currentImageUri?.let { uriToBase64(it) } ?: ""
-        val name = binding.edtCategoryNameForm.text.toString()
-        val price = binding.edtCategoryPrice.text.toString()
-        val type = binding.spinnerTag.selectedItem.toString()
-        val userPreferences = UserPreferences.getInstance(this.dataStore)
-        val token = runBlocking { userPreferences.token.first() }
+    private fun setupAction() {
+        binding.btnAddCategory.setOnClickListener {
+            val imageBase64 = currentImageUri?.let { uriToBase64(it) } ?: ""
+            val name = binding.edtCategoryNameForm.text.toString()
+            val price = binding.edtCategoryPrice.text.toString()
+            val type = binding.spinnerTag.selectedItem.toString()
+            val userPreferences = UserPreferences.getInstance(this.dataStore)
+            val token = runBlocking { userPreferences.token.first() }
 
-        if (name.isEmpty() || price.isEmpty() || currentImageUri == null || type.isEmpty()) {
-            showToast(getString(R.string.tv_make_sure))
-            return
-        }
-
-        if (token != null) {
-            viewModel.addCategory(token, name, price, type, imageBase64)
-        }
-
-        viewModel.addCategoryResult.observe(this, Observer { result ->
-            when (result) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    showToast(getString(R.string.tv_on_process))
-                }
-                is Result.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    showToast(getString(R.string.tv_category_process_success))
-                    finish()
-                }
-                is Result.Error -> {
-                    showToast(" ${result.error}")
-                }
+            if (token != null) {
+                addCategory(token, name, price, type, imageBase64)
             }
-        })
+        }
+    }
+
+    private fun addCategory(token: String, name: String, price: String, type: String, imageBase64: String) {
+        binding.progressBar.visibility = View.VISIBLE
+        viewModel.addCategory(token, name, price, type, imageBase64)
     }
 
     private fun setupSpinner() {
@@ -173,5 +160,37 @@ class AddCategoryActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun observeViewModel() {
+        viewModel.addCategoryResult.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Berhasil!")
+                        setMessage("Kategori berhasil ditambahkan")
+                        setPositiveButton("Ok") { _, _ ->
+                            finish()
+                        }
+                        create()
+                        show()
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Gagal!")
+                        setMessage("Kategori gagal ditambahkan")
+                        setPositiveButton("OK", null)
+                        create()
+                        show()
+                    }
+                }
+            }
+        })
     }
 }

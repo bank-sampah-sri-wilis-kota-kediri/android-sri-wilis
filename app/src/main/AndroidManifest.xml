@@ -45,10 +45,10 @@
             android:name=".ui.authorization.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.order.OrderActivity"
+            android:name=".ui.history.OrderActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.order.DetailOrderActivity"
+            android:name=".ui.history.DetailHistoryActivity"
             android:exported="false" />
         <activity
             android:name=".ui.mutation.InputMutationActivity"

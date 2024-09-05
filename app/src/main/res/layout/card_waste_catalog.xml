@@ -49,7 +49,7 @@
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="@+id/tv_catalog_name"
             app:layout_constraintTop_toBottomOf="@+id/tv_catalog_name"
-            android:text="Jenis Catalog"
+            android:text="@string/tv_catalog_price_card"
             android:background="@color/blue_calm"/>
 
         <TextView

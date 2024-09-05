@@ -19,8 +19,8 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
     private val _editCategoryResult = MutableLiveData<Result<CategoryResponse>>()
     val editCategoryResult: LiveData<Result<CategoryResponse>> = _editCategoryResult
 
-    private val _categories = MutableLiveData<Result<CategoryResponse>>()
-    val categories: LiveData<Result<CategoryResponse>> get() = _categories
+    private val _categories = MutableLiveData<Result<List<CategoryData?>>>()
+    val categories: LiveData<Result<List<CategoryData?>>> get() = _categories
 
     private val _categoryData = MutableLiveData<Result<CategoryData>>()
     val categoryData: LiveData<Result<CategoryData>> get() = _categoryData
@@ -42,9 +42,21 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
     }
 
     fun getCategory() {
+        _categories.value = Result.Loading
         viewModelScope.launch {
             val result = repository.getCategory()
-            _categories.postValue(result)
+            when (result) {
+                is Result.Success -> {
+                    _categories.postValue(Result.Success(result.data.data ?: emptyList()))
+                }
+
+                is Result.Error -> {
+                    _categories.postValue(Result.Error(result.error))
+                    Log.e("ManageCatalogViewModel", "Failed to fetch catalog: ${result.error}")
+                }
+
+                Result.Loading -> {}
+            }
         }
     }
 

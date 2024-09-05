@@ -1,16 +1,12 @@
 package com.bs.sriwilis.ui.homepage
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityHomepageBinding
+import com.bs.sriwilis.ui.history.HistoryOrderFragment
 import com.bs.sriwilis.ui.mutation.MutationFragment
-import com.bs.sriwilis.ui.order.OrderFragment
 import com.bs.sriwilis.ui.settings.SettingsFragment
 
 class HomepageActivity : AppCompatActivity() {
@@ -36,8 +32,8 @@ class HomepageActivity : AppCompatActivity() {
                     true
                 }
                 R.id.order -> {
-                    if (!isCurrentFragment(OrderFragment::class.java)) {
-                        replaceFragment(OrderFragment())
+                    if (!isCurrentFragment(HistoryOrderFragment::class.java)) {
+                        replaceFragment(HistoryOrderFragment())
                     }
                     true
                 }

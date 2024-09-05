@@ -18,8 +18,8 @@ class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel
     private val _addCatalogResult = MutableLiveData<Result<CatalogResponse>>()
     val addCatalogResult: LiveData<Result<CatalogResponse>> = _addCatalogResult
 
-    private val _catalog = MutableLiveData<Result<CatalogResponse>>()
-    val catalog: LiveData<Result<CatalogResponse>> get() = _catalog
+    private val _catalog = MutableLiveData<Result<List<CatalogData>>>()
+    val catalog: LiveData<Result<List<CatalogData>>> get() = _catalog
 
     private val _catalogData = MutableLiveData<Result<CatalogData>>()
     val catalogData: LiveData<Result<CatalogData>> get() = _catalogData
@@ -42,8 +42,18 @@ class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel
 
     fun getCatalog() {
         viewModelScope.launch {
+            _catalog.value = Result.Loading
             val result = repository.getCatalog()
-            _catalog.postValue(result)
+            when (result) {
+                is Result.Success -> {
+                    _catalog.postValue(Result.Success(result.data.data ?: emptyList()))
+                }
+                is Result.Error -> {
+                    _catalog.postValue(Result.Error(result.error))
+                    Log.e("ManageCatalogViewModel", "Failed to fetch catalog: ${result.error}")
+                }
+                Result.Loading -> {}
+            }
         }
     }
 
