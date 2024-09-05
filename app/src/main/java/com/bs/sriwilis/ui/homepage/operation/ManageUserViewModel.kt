@@ -16,8 +16,8 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
     private val _registerResult = MutableLiveData<Result<RegisterUserResponse>>()
     val registerResult: LiveData<Result<RegisterUserResponse>> = _registerResult
 
-    private val _users = MutableLiveData<Result<GetAllUserResponse>>()
-    val users: LiveData<Result<GetAllUserResponse>> get() = _users
+    private val _users = MutableLiveData<Result<List<UserItem?>>>()
+    val users: LiveData<Result<List<UserItem?>>> get() = _users
 
     private val _usersData = MutableLiveData<Result<UserItem>>()
     val usersData: LiveData<Result<UserItem>> get() = _usersData
@@ -41,7 +41,18 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
     fun getUsers() {
         viewModelScope.launch {
             val result = repository.getUser()
-            _users.postValue(result)
+            when (result) {
+                is Result.Success -> {
+                    _users.postValue(Result.Success(result.data.data ?: emptyList()))
+                }
+
+                is Result.Error -> {
+                    _users.postValue(Result.Error(result.error))
+                    Log.e("ManageCatalogViewModel", "Failed to fetch catalog: ${result.error}")
+                }
+
+                Result.Loading -> {}
+            }
         }
     }
 

@@ -16,6 +16,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -85,6 +86,7 @@ class AddCatalogActivity : AppCompatActivity() {
         binding = ActivityAddCatalogBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        observeViewModel()
         binding.apply {
             btnBack.setOnClickListener { finish() }
             btnUploadPhoto.setOnClickListener { startGallery() }
@@ -109,6 +111,7 @@ class AddCatalogActivity : AppCompatActivity() {
         }
 
         if (token != null) {
+            binding.progressBar.visibility = View.VISIBLE
             viewModel.addCatalog(token, name, desc, price, number, link, imageBase64)
         }
 
@@ -158,5 +161,37 @@ class AddCatalogActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun observeViewModel() {
+        viewModel.addCatalogResult.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Berhasil!")
+                        setMessage("Katalog Berhasil Ditambahkan")
+                        setPositiveButton("Ok") { _, _ ->
+                            finish()
+                        }
+                        create()
+                        show()
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Gagal!")
+                        setMessage("Katalog Gagal Ditambahkan")
+                        setPositiveButton("OK", null)
+                        create()
+                        show()
+                    }
+                }
+            }
+        })
     }
 }

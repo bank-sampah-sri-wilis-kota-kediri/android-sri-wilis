@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -36,6 +37,7 @@ class EditUserActivity : AppCompatActivity() {
         }
 
         observeUser()
+        observeViewModel()
         setupAction()
 
         binding.apply {
@@ -81,6 +83,7 @@ class EditUserActivity : AppCompatActivity() {
     }
 
     private fun editUser(userId: String, name: String, phone: String, address: String, balance: Double) {
+        binding.progressBar.visibility = View.VISIBLE
         viewModel.editUser(userId, name, phone, address, balance)
     }
 
@@ -88,5 +91,37 @@ class EditUserActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun observeViewModel() {
+        viewModel.registerResult.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Berhasil!")
+                        setMessage("Akun Pengguna Berhasil Diubah")
+                        setPositiveButton("Ok") { _, _ ->
+                            finish()
+                        }
+                        create()
+                        show()
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Gagal!")
+                        setMessage("Akun Pengguna Gagal Diubah")
+                        setPositiveButton("OK", null)
+                        create()
+                        show()
+                    }
+                }
+            }
+        })
     }
 }

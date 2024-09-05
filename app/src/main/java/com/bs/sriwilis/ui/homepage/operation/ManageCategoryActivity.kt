@@ -70,7 +70,7 @@ class ManageCategoryActivity : AppCompatActivity() {
                 }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val categoryDetails = result.data.data ?: emptyList()
+                    val categoryDetails = result.data
                     categoryAdapter.updateCategory(categoryDetails)
                 }
                 is Result.Error -> {

@@ -59,6 +59,7 @@ class CatalogAdapter(
 
                 tvCatalogName.text = catalog?.judulKatalog
                 tvCatalogListType?.text = catalog?.shopeeLink
+                tvCatalogPrice?.text = catalog?.hargaKatalog.toString()
                 descCatalog.text = catalog?.deskripsiKatalog
 
                 itemView.setOnClickListener {
@@ -96,15 +97,15 @@ class CatalogAdapter(
         holder.bind(catalog[position])
     }
 
-    fun updateCatalog(newCategories: List<CatalogData?>) {
-        this.catalog = newCategories
+    fun updateCatalog(newCatalog: List<CatalogData?>) {
+        this.catalog = newCatalog
         notifyDataSetChanged()
     }
 
     private fun showDeleteConfirmationDialog(catalogId: String) {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
-        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
+        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini?")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
             viewModel.deleteCatalog(catalogId)
         }
@@ -114,4 +115,6 @@ class CatalogAdapter(
         val alertDialog = dialogBuilder.create()
         alertDialog.show()
     }
+
+
 }

@@ -71,7 +71,7 @@ class ManageCatalogActivity : AppCompatActivity() {
                 }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val catalogDetails = result.data.data ?: emptyList()
+                    val catalogDetails = result.data
                     catalogAdapter.updateCatalog(catalogDetails)
                 }
                 is Result.Error -> {

@@ -3,8 +3,6 @@ package com.bs.sriwilis.data.repository
 import android.util.Log
 import com.bs.sriwilis.data.network.ApiServiceMain
 import com.bs.sriwilis.data.preference.UserPreferences
-import com.bs.sriwilis.data.response.AddCatalogRequest
-import com.bs.sriwilis.data.response.AddCategoryRequest
 import com.bs.sriwilis.data.response.CatalogData
 import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CategoryData
@@ -119,7 +117,6 @@ class MainRepository(
         }
     }
 
-
     suspend fun getUser(): Result<GetAllUserResponse> {
         return try {
             val token = userPreferences.token.first() ?: ""
@@ -142,7 +139,6 @@ class MainRepository(
     }
 
     //CRUD Categories
-
     suspend fun addCategory(
         token: String,
         name: String,
@@ -150,15 +146,9 @@ class MainRepository(
         type: String,
         imageBase64: String
     ): Result<CategoryResponse> {
-        val categoryRequest = AddCategoryRequest(
-            nama_kategori = name,
-            harga_kategori = price,
-            jenis_kategori = type,
-            gambar_kategori = imageBase64
-        )
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.addCategory("Bearer $token", categoryRequest)
+                val response = apiService.addCategory(token, name, price, type, imageBase64)
                 if (response.isSuccessful) {
                     val categoryResponse = response.body()
                     if (categoryResponse != null) {
@@ -259,7 +249,6 @@ class MainRepository(
     }
 
     //CATALOG CRUD
-
     suspend fun addCatalog(
         catalogId: String,
         name: String,
@@ -269,20 +258,11 @@ class MainRepository(
         link: String,
         image: String,
     ): Result<CatalogResponse> {
-        val catalogRequest = AddCatalogRequest(
-            judul_katalog = name,
-            deskripsi_katalog = desc,
-            harga_katalog = price,
-            no_wa = number,
-            shopee_link = link,
-            gambar_katalog = image
-        )
-
         val token = userPreferences.token.first() ?: ""
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.addCatalog("Bearer $token", catalogRequest)
+                val response = apiService.addCatalog("Bearer $token", name, desc, price, number, link, image)
                 if (response.isSuccessful) {
                     val categoryResponse = response.body()
                     if (categoryResponse != null) {
@@ -355,18 +335,10 @@ class MainRepository(
         link: String,
         image: String,
     ): Result<CatalogResponse> {
-        val catalogRequest = AddCatalogRequest(
-            judul_katalog = name,
-            deskripsi_katalog = desc,
-            harga_katalog = price,
-            no_wa = number,
-            shopee_link = link,
-            gambar_katalog = image
-        )
         return try {
             val token = userPreferences.token.first() ?: ""
 
-            val response = apiService.editCatalog(categoryId, token, catalogRequest)
+            val response = apiService.editCatalog(categoryId, token, name, desc, price, number, link, image)
 
             if (response.isSuccessful) {
                 val editResponse = response.body()

@@ -69,7 +69,7 @@ class ManageUserActivity : AppCompatActivity() {
                 }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val userData = result.data.data ?: emptyList()
+                    val userData = result.data
                     userAdapter.updateUsers(userData)
                 }
                 is Result.Error -> {

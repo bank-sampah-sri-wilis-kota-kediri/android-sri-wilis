@@ -164,6 +164,7 @@
     </string-array>
 
     <string name="tv_make_sure">Pastikan semua data sudah terisi</string>
+    <string name="tv_make_sure_image">Gambar wajib diubah!</string>
     <string name="tv_on_process">Sedang diproses</string>
     <string name="tv_category_process_success">Kategori berhasil ditambahkan!</string>
     <string name="tv_category_change_process_success">Kategori berhasil diubah!</string>
@@ -171,5 +172,10 @@
     <string name="nomor_handphone">Nomor Handphone (tanpa 0)</string>
     <string name="tv_link_shopee">Link Shopee</string>
     <string name="tv_change_catalog">Ubah Katalog</string>
+    <string name="tv_history_title">Riwayat</string>
+    <string name="tv_order_card_title">Pesanan</string>
+    <string name="tv_history_mutation_card_title">Penarikan</string>
+    <string name="tv_mutation_status">Transaksi Masuk</string>
+    <string name="tv_catalog_price_card">Rp0</string>
 
 </resources>

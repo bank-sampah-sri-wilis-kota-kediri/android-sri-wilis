@@ -17,6 +17,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -89,9 +90,10 @@ class EditCategoryActivity : AppCompatActivity() {
             viewModel.fetchCategoryDetails(it)
         }
 
+        observeCategory()
+        observeViewModel()
         setupAction()
         setupSpinner()
-        observeUser()
 
         binding.apply {
             btnUploadPhoto.setOnClickListener { startGallery() }
@@ -99,7 +101,7 @@ class EditCategoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeUser() {
+    private fun observeCategory() {
         viewModel.categoryData.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
@@ -153,6 +155,16 @@ class EditCategoryActivity : AppCompatActivity() {
         val price = binding.edtCategoryPriceForm.text.toString()
         val type = binding.spinnerWasteCategory.selectedItem.toString()
         val imageBase64 = currentImageUri?.let { uriToBase64(it) } ?: ""
+
+            if (name.isEmpty() || price.isEmpty() || type.isEmpty()){
+                showToast(getString(R.string.tv_make_sure))
+                return@setOnClickListener
+            }
+
+            if (currentImageUri == null) {
+                showToast(getString(R.string.tv_make_sure_image))
+                return@setOnClickListener
+            }
 
         editCategory(userId, name, price, type, imageBase64)
 
@@ -223,5 +235,37 @@ class EditCategoryActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun observeViewModel() {
+        viewModel.editCategoryResult.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Berhasil!")
+                        setMessage("Kategori Berhasil Diubah")
+                        setPositiveButton("Ok") { _, _ ->
+                            finish()
+                        }
+                        create()
+                        show()
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Gagal!")
+                        setMessage("Kategori Gagal Diubah")
+                        setPositiveButton("OK", null)
+                        create()
+                        show()
+                    }
+                }
+            }
+        })
     }
 }

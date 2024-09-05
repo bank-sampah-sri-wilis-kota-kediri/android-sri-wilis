@@ -6,12 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.FragmentHomeBinding
 import com.bs.sriwilis.ui.homepage.operation.ManageCatalogActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageUserActivity
-import com.bs.sriwilis.ui.order.OrderActivity
 
 class HomeFragment : Fragment() {
 

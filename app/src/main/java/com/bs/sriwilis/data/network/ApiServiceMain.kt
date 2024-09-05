@@ -23,8 +23,8 @@ import retrofit2.http.Path
 
 interface ApiServiceMain {
 
-
     // ADMIN
+
 
     // USER CRUD
     @GET("nasabah/show-all")
@@ -67,10 +67,14 @@ interface ApiServiceMain {
     ): Response<Unit>
 
     // KATEGORI CRUD
-    @POST("kategori/")
+    @FormUrlEncoded
+    @POST("kategori/add")
     suspend fun addCategory(
         @Header("X-Auth-Token") token: String,
-        @Body requestBody: AddCategoryRequest
+        @Field("nama_kategori") no_hp_nasabah: String,
+        @Field("harga_kategori") harga_kategori: String,
+        @Field("jenis_kategori") jenis_kategori: String,
+        @Field("gambar_kategori") gambar_kategori: String,
     ): Response<CategoryResponse>
 
     @GET("kategori/show-all")
@@ -102,10 +106,16 @@ interface ApiServiceMain {
     ): Response<Unit>
 
     // KATALOG CRUD
+    @FormUrlEncoded
     @POST("katalog/add")
     suspend fun addCatalog(
         @Header("X-Auth-Token") token: String,
-        @Body requestBody: AddCatalogRequest
+        @Field("judul_katalog") judul_katalog: String,
+        @Field("deskripsi_katalog") deskripsi_katalog: String,
+        @Field("harga_katalog") harga_katalog: String,
+        @Field("no_wa") no_wa: String,
+        @Field("shopee_link") shopee_link: String,
+        @Field("gambar_katalog") gambar_katalog: String,
     ): Response<CatalogResponse>
 
     @GET("katalog/show-all")
@@ -119,11 +129,17 @@ interface ApiServiceMain {
         @Header("X-Auth-Token") token: String
     ): Response<GetCatalogByIdResponse>
 
+    @FormUrlEncoded
     @PUT("katalog/edit-by-id/{id}")
     suspend fun editCatalog(
         @Path("id") catalogId: String,
         @Header("X-Auth-Token") token: String,
-        @Body requestBody: AddCatalogRequest
+        @Field("judul_katalog") judul_katalog: String,
+        @Field("deskripsi_katalog") deskripsi_katalog: String,
+        @Field("harga_katalog") harga_katalog: String,
+        @Field("no_wa") no_wa: String,
+        @Field("shopee_link") shopee_link: String,
+        @Field("gambar_katalog") gambar_katalog: String,
     ): Response<CatalogResponse>
 
     @DELETE("katalog/{id}")
@@ -132,5 +148,36 @@ interface ApiServiceMain {
         @Header("X-Auth-Token") token: String
     ): Response<Unit>
 
+    // PENARIKAN CRUD
+    @POST("penarikan/add")
+    suspend fun addMutation(
+        @Header("X-Auth-Token") token: String,
+        @Body requestBody: AddCatalogRequest
+    ): Response<CatalogResponse>
 
+    @GET("penarikan/show-all")
+    suspend fun getAllMutation(
+        @Header("X-Auth-Token") token: String,
+    ): Response<CatalogResponse>
+
+    @GET("penarikan/{id}")
+    suspend fun getMutationById(
+        @Path("id") catalogId: String,
+        @Header("X-Auth-Token") token: String
+    ): Response<GetCatalogByIdResponse>
+
+    @PUT("penarikan/edit-by-id/{id}")
+    suspend fun updateMutationStatus(
+        @Path("id") catalogId: String,
+        @Header("X-Auth-Token") token: String,
+        @Body requestBody: AddCatalogRequest
+    ): Response<CatalogResponse>
+
+    @DELETE("penarikan/{id}")
+    suspend fun deleteMutation(
+        @Path("id") categoryId: String,
+        @Header("X-Auth-Token") token: String
+    ): Response<Unit>
+
+    // SETTINGS CRUD
 }

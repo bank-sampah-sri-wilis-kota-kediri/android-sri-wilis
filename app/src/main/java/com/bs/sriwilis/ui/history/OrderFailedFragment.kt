@@ -1,16 +1,15 @@
-package com.bs.sriwilis.ui.order
+package com.bs.sriwilis.ui.history
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bs.sriwilis.databinding.FragmentOrderSuccessBinding
+import com.bs.sriwilis.databinding.FragmentOrderFailedBinding
 
+class OrderFailedFragment : Fragment() {
 
-class OrderSuccessFragment : Fragment() {
-
-    private var _binding: FragmentOrderSuccessBinding? = null
+    private var _binding: FragmentOrderFailedBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +20,7 @@ class OrderSuccessFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentOrderSuccessBinding.inflate(inflater, container, false)
+        _binding = FragmentOrderFailedBinding.inflate(inflater, container, false)
         return binding.root
     }
 }

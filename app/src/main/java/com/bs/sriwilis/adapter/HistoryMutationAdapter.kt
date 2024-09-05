@@ -1,61 +1,42 @@
+/*
 package com.bs.sriwilis.adapter
 
 import android.content.Context
 import android.content.Intent
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
-import com.bs.sriwilis.data.repository.MainRepository
 import com.bs.sriwilis.data.response.CategoryData
-import com.bs.sriwilis.data.response.UserData
-import com.bs.sriwilis.data.response.UserItem
-import com.bs.sriwilis.databinding.CardCategoryListBinding
-import com.bs.sriwilis.databinding.CardUserListBinding
+import com.bs.sriwilis.databinding.CardMutationHistory2Binding
+import com.bs.sriwilis.databinding.CardOrderBinding
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
-import com.bs.sriwilis.ui.homepage.operation.EditUserActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
-import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
-import com.bs.sriwilis.utils.ViewModelFactory
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class CategoryAdapter(
+class HistoryMutationAdapter(
     private var category: List<CategoryData?>,
     private val context: Context
 
-) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
+) : RecyclerView.Adapter<HistoryMutationAdapter.HistoryMutationAdapterViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
     private var categorylist: List<String> = emptyList()
     private lateinit var viewModel: ManageCategoryViewModel
 
-    inner class CategoryViewHolder(private val binding: CardCategoryListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class HistoryMutationAdapterViewHolder(private val binding: CardMutationHistory2Binding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: CategoryData?) {
             with(binding) {
-                category?.gambarKategori?.let { gambarKategori ->
-                    val imageBytes = Base64.decode(gambarKategori, Base64.DEFAULT)
-                    Glide.with(itemView.context)
-                        .load(imageBytes)
-                        .into(ivCategoryListPreview)
-                } ?: run {
-                    ivCategoryListPreview.setImageResource(R.drawable.iv_waste_box)
-                }
 
-                tvCategoryListName.text = category?.namaKategori
-                tvCategoryListType.text = category?.jenisKategori
-                tvCategoryItemPrice.text = category?.hargaKategori.toString()
+                tvMutationStatus.text = category?.namaKategori
+                tvMutationUserTitle.text = category?.jenisKategori
+                tvMutationDate.text = category?.hargaKategori.toString()
+                tvMutationNominal.text
 
                 itemView.setOnClickListener {
                     category?.id?.let { id ->
@@ -75,20 +56,20 @@ class CategoryAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        val binding = CardCategoryListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryMutationAdapterViewHolder {
+        val binding = CardMutationHistory2Binding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         val activity = parent.context as AppCompatActivity
         viewModel = ViewModelProvider(activity)[ManageCategoryViewModel::class.java]
 
-        return CategoryViewHolder(binding)
+        return HistoryMutationAdapterViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
         return category.size
     }
 
-    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: HistoryMutationAdapterViewHolder, position: Int) {
         holder.bind(category[position])
     }
 
@@ -110,4 +91,4 @@ class CategoryAdapter(
         val alertDialog = dialogBuilder.create()
         alertDialog.show()
     }
-}
+}*/
