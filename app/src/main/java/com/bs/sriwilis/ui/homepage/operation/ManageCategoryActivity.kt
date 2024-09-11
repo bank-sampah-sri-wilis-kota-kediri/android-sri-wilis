@@ -1,9 +1,12 @@
 package com.bs.sriwilis.ui.homepage.operation
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -25,6 +28,9 @@ import kotlinx.coroutines.launch
 class ManageCategoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityManageCategoryBinding
+    private lateinit var categoryLauncher: ActivityResultLauncher<Intent>
+
+
     private val viewModel by viewModels<ManageCategoryViewModel> {
         ViewModelFactory.getInstance(this)
     }
@@ -38,10 +44,16 @@ class ManageCategoryActivity : AppCompatActivity() {
 
         categoryAdapter = CategoryAdapter(emptyList(), this)
 
+        categoryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                viewModel.getCategory()
+            }
+        }
+
         binding.apply {
             fabAddCategory.setOnClickListener {
                 val intent = Intent(this@ManageCategoryActivity, AddCategoryActivity::class.java)
-                startActivity(intent)
+                categoryLauncher.launch(intent)
             }
             btnBack.setOnClickListener { finish() }
         }
@@ -52,14 +64,6 @@ class ManageCategoryActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         binding.rvCategory.layoutManager = LinearLayoutManager(this)
         binding.rvCategory.adapter = categoryAdapter
-
-        val userPreferences = UserPreferences.getInstance(this.dataStore)
-        lifecycleScope.launch {
-            token = userPreferences.token.first()
-            token?.let {
-                viewModel.getCategory()
-            }
-        }
     }
 
     private fun observeCategory() {
@@ -71,13 +75,22 @@ class ManageCategoryActivity : AppCompatActivity() {
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
                     val categoryDetails = result.data
-                    categoryAdapter.updateCategory(categoryDetails)
+                    if (categoryDetails != null) {
+                        categoryAdapter.updateCategory(categoryDetails)
+                    }
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
                 }
+
+                else -> {}
             }
         }
+        viewModel.getCategory()
+    }
+
+    override fun onResume() {
+        super.onResume()
         viewModel.getCategory()
     }
 }

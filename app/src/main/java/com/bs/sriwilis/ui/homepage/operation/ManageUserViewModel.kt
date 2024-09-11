@@ -8,13 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.bs.sriwilis.data.repository.MainRepository
 import com.bs.sriwilis.data.response.GetAllUserResponse
 import com.bs.sriwilis.data.response.RegisterUserResponse
+import com.bs.sriwilis.data.response.SingleUserResponse
 import com.bs.sriwilis.data.response.UserItem
 import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
 
 class ManageUserViewModel(private val repository: MainRepository) : ViewModel() {
-    private val _registerResult = MutableLiveData<Result<RegisterUserResponse>>()
-    val registerResult: LiveData<Result<RegisterUserResponse>> = _registerResult
+    private val _registerResult = MutableLiveData<Result<SingleUserResponse>>()
+    val registerResult: LiveData<Result<SingleUserResponse>> = _registerResult
 
     private val _users = MutableLiveData<Result<List<UserItem?>>>()
     val users: LiveData<Result<List<UserItem?>>> get() = _users
@@ -61,10 +62,10 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
             _usersData.value = Result.Loading
             when (val result = repository.getUserById(userId)) {
                 is Result.Success -> {
-                    _usersData.postValue(Result.Success(result.data))
+                    _usersData.value = Result.Success(result.data)
                 }
                 is Result.Error -> {
-                    _usersData.postValue(Result.Error(result.error))
+                    _usersData.value = Result.Error(result.error)
                     Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
                 }
 

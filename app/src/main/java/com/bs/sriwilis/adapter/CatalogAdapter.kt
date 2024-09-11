@@ -59,7 +59,7 @@ class CatalogAdapter(
 
                 tvCatalogName.text = catalog?.judulKatalog
                 tvCatalogListType?.text = catalog?.shopeeLink
-                tvCatalogPrice?.text = catalog?.hargaKatalog.toString()
+                tvCatalogPrice?.text = "Rp" + catalog?.hargaKatalog.toString()
                 descCatalog.text = catalog?.deskripsiKatalog
 
                 itemView.setOnClickListener {
@@ -108,6 +108,7 @@ class CatalogAdapter(
         dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini?")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
             viewModel.deleteCatalog(catalogId)
+            viewModel.getCatalog()
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()

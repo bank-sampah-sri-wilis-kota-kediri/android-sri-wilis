@@ -51,7 +51,7 @@
             android:name=".ui.history.DetailHistoryActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.mutation.InputMutationActivity"
+            android:name=".ui.scheduling.InputMutationActivity"
             android:exported="false" />
         <activity
             android:name=".ui.settings.ChangePasswordActivity"

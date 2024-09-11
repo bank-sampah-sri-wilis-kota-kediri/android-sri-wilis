@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityHomepageBinding
 import com.bs.sriwilis.ui.history.HistoryOrderFragment
-import com.bs.sriwilis.ui.mutation.MutationFragment
+import com.bs.sriwilis.ui.scheduling.OrderScheduleFragment
 import com.bs.sriwilis.ui.settings.SettingsFragment
 
 class HomepageActivity : AppCompatActivity() {
@@ -38,8 +38,8 @@ class HomepageActivity : AppCompatActivity() {
                     true
                 }
                 R.id.mutation -> {
-                    if (!isCurrentFragment(MutationFragment::class.java)) {
-                        replaceFragment(MutationFragment())
+                    if (!isCurrentFragment(OrderScheduleFragment::class.java)) {
+                        replaceFragment(OrderScheduleFragment())
                     }
                     true
                 }

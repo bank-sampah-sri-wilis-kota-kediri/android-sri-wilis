@@ -81,4 +81,9 @@ class ManageCatalogActivity : AppCompatActivity() {
         }
         viewModel.getCatalog()
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getCatalog()
+    }
 }

@@ -14,6 +14,17 @@ data class GetAllUserResponse(
 	val message: String? = null
 )
 
+data class SingleUserResponse(
+	@field:SerializedName("data")
+	val data: CategoryData? = null,
+
+	@field:SerializedName("success")
+	val success: Boolean? = null,
+
+	@field:SerializedName("message")
+	val message: String? = null
+)
+
 data class UserItem(
 
 	@field:SerializedName("no_hp_nasabah")

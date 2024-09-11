@@ -55,7 +55,7 @@ class CategoryAdapter(
 
                 tvCategoryListName.text = category?.namaKategori
                 tvCategoryListType.text = category?.jenisKategori
-                tvCategoryItemPrice.text = category?.hargaKategori.toString()
+                tvCategoryItemPrice.text = "Rp" + category?.hargaKategori.toString()
 
                 itemView.setOnClickListener {
                     category?.id?.let { id ->
@@ -103,6 +103,7 @@ class CategoryAdapter(
         dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
             viewModel.deleteCategory(catalogId)
+            viewModel.getCategory()
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()

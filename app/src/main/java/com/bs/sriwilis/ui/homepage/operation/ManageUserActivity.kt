@@ -79,4 +79,9 @@ class ManageUserActivity : AppCompatActivity() {
         }
         viewModel.getUsers()
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getUsers()
+    }
 }
