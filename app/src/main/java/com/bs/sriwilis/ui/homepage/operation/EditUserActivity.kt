@@ -12,6 +12,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.bs.sriwilis.R
+import com.bs.sriwilis.adapter.CategoryAdapter
+import com.bs.sriwilis.adapter.UserAdapter
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.databinding.ActivityEditUserBinding
 import com.bs.sriwilis.utils.ViewModelFactory
@@ -20,6 +22,7 @@ import com.bs.sriwilis.helper.Result
 class EditUserActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditUserBinding
+    private lateinit var userAdapter: UserAdapter
 
     private val viewModel by viewModels<ManageUserViewModel> {
         ViewModelFactory.getInstance(this)
@@ -55,6 +58,7 @@ class EditUserActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
 
                     val userDetails = result.data
+
                     binding.edtEditUserPhone.text = userDetails.noHpNasabah.toEditable()
                     binding.edtFullNameForm.text = userDetails.namaNasabah.toEditable()
                     binding.edtEditUserAddress.text = userDetails.alamatNasabah.toEditable()
@@ -82,7 +86,7 @@ class EditUserActivity : AppCompatActivity() {
         }
     }
 
-    private fun editUser(userId: String, name: String, phone: String, address: String, balance: Double) {
+    private fun editUser(userId: String, phone: String, name: String, address: String, balance: Double) {
         binding.progressBar.visibility = View.VISIBLE
         viewModel.editUser(userId, name, phone, address, balance)
     }
@@ -105,6 +109,7 @@ class EditUserActivity : AppCompatActivity() {
                         setTitle("Berhasil!")
                         setMessage("Akun Pengguna Berhasil Diubah")
                         setPositiveButton("Ok") { _, _ ->
+                            refreshUserList()
                             finish()
                         }
                         create()
@@ -123,5 +128,11 @@ class EditUserActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun refreshUserList() {
+        viewModel.getUsers()
+
+        userAdapter.notifyDataSetChanged()
     }
 }

@@ -177,5 +177,11 @@
     <string name="tv_history_mutation_card_title">Penarikan</string>
     <string name="tv_mutation_status">Transaksi Masuk</string>
     <string name="tv_catalog_price_card">Rp0</string>
+    <string name="tv_scheduling_title">Penjadwalan</string>
+    <string name="tv_scheduled_card">Terjadwal</string>
+    <string name="tv_title_phone_form">No Handphone</string>
+    <string name="tv_user_address_title">Alamat</string>
+    <string name="tv_address_hint">Masukkan Alamat Anda</string>
+    <string name="tv_mobile_number_title">Masukkan No Hp Anda</string>
 
 </resources>

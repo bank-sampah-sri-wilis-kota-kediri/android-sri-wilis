@@ -10,13 +10,14 @@ import com.bs.sriwilis.data.response.CatalogData
 import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
+import com.bs.sriwilis.data.response.SingleCatalogResponse
 import com.bs.sriwilis.helper.Result
 import kotlinx.coroutines.launch
 
 class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel() {
 
-    private val _addCatalogResult = MutableLiveData<Result<CatalogResponse>>()
-    val addCatalogResult: LiveData<Result<CatalogResponse>> = _addCatalogResult
+    private val _addCatalogResult = MutableLiveData<Result<SingleCatalogResponse>>()
+    val addCatalogResult: LiveData<Result<SingleCatalogResponse>> = _addCatalogResult
 
     private val _catalog = MutableLiveData<Result<List<CatalogData>>>()
     val catalog: LiveData<Result<List<CatalogData>>> get() = _catalog

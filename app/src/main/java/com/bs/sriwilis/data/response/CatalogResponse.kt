@@ -14,6 +14,17 @@ data class CatalogResponse(
 	val message: String? = null
 )
 
+data class SingleCatalogResponse(
+	@field:SerializedName("data")
+	val data: CatalogData? = null,
+
+	@field:SerializedName("success")
+	val success: Boolean? = null,
+
+	@field:SerializedName("message")
+	val message: String? = null
+)
+
 data class CatalogData(
 
 	@field:SerializedName("judul_katalog")

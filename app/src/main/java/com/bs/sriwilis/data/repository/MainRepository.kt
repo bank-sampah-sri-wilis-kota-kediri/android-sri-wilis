@@ -3,12 +3,19 @@ package com.bs.sriwilis.data.repository
 import android.util.Log
 import com.bs.sriwilis.data.network.ApiServiceMain
 import com.bs.sriwilis.data.preference.UserPreferences
+import com.bs.sriwilis.data.response.AdminData
+import com.bs.sriwilis.data.response.AdminResponse
 import com.bs.sriwilis.data.response.CatalogData
 import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
+import com.bs.sriwilis.data.response.GetAdminByIdResponse
 import com.bs.sriwilis.data.response.GetAllUserResponse
 import com.bs.sriwilis.data.response.RegisterUserResponse
+import com.bs.sriwilis.data.response.SingleAdminResponse
+import com.bs.sriwilis.data.response.SingleCatalogResponse
+import com.bs.sriwilis.data.response.SingleCategoryResponse
+import com.bs.sriwilis.data.response.SingleUserResponse
 import com.bs.sriwilis.data.response.UserItem
 import kotlinx.coroutines.flow.Flow
 import com.bs.sriwilis.helper.Result
@@ -29,9 +36,79 @@ class MainRepository(
         userPreferences.clearUserDetails()
     }
 
+    //CRUD Admin
+
+    suspend fun getAdminData(): Result<AdminData> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+            val response = apiService.getAdminData("Bearer $token")
+
+            if (response.isSuccessful) {
+                val adminDetailsResponse = response.body()
+                if (adminDetailsResponse != null) {
+                    val adminItem = adminDetailsResponse.data
+                    if (adminItem != null) {
+                        Result.Success(adminItem)
+                    } else {
+                        Result.Error("User not found")
+                    }
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to fetch user details: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Log.e("GetUserDetails", "Error fetching user details", e)
+            Result.Error("Error fetching user details: ${e.message}")
+        }
+    }
+
+    suspend fun editAdmin(adminId: String, name: String, phone: String, address: String, image: String): Result<SingleAdminResponse> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+
+            val response = apiService.editAdmin(adminId, token, phone, name, address, image)
+            if (response.isSuccessful) {
+                val editResponse = response.body()
+                if (editResponse != null) {
+                    Result.Success(editResponse)
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to edit: ${response.code()} - ${response.message()}")
+            }
+        } catch (e: Exception) {
+            Log.e("EditAdmin", "Edit error", e)
+            Result.Error("Edit error: ${e.message}")
+        }
+    }
+
+    suspend fun changePasswordAdmin(adminId: String, password: String): Result<SingleAdminResponse> {
+        return try {
+            val token = userPreferences.token.first() ?: ""
+
+            val response = apiService.changePasswordAdmin(adminId, token, password)
+            if (response.isSuccessful) {
+                val editResponse = response.body()
+                if (editResponse != null) {
+                    Result.Success(editResponse)
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to edit: ${response.code()} - ${response.message()}")
+            }
+        } catch (e: Exception) {
+            Log.e("EditAdmin", "Edit error", e)
+            Result.Error("Edit error: ${e.message}")
+        }
+    }
+
     //CRUD Users
 
-    suspend fun registerUser(phone: String, password: String, name: String, address: String, balance: String): Result<RegisterUserResponse> {
+    suspend fun registerUser(phone: String, password: String, name: String, address: String, balance: String): Result<SingleUserResponse> {
         return try {
             val token = userPreferences.token.first() ?: ""
 
@@ -80,11 +157,11 @@ class MainRepository(
 
 
 
-    suspend fun editUser(userId: String, phone: String, name: String, address: String, balance: Double): Result<RegisterUserResponse> {
+    suspend fun editUser(userId: String, phone: String, name: String, address: String, balance: Double): Result<SingleUserResponse> {
         return try {
             val token = userPreferences.token.first() ?: ""
 
-            val response = apiService.editUser(userId, token, phone, name, address, balance)
+            val response = apiService.editUser(userId, token, phone, name, address, balance.toString())
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -145,7 +222,7 @@ class MainRepository(
         price: String,
         type: String,
         imageBase64: String
-    ): Result<CategoryResponse> {
+    ): Result<SingleCategoryResponse> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.addCategory(token, name, price, type, imageBase64)
@@ -212,7 +289,7 @@ class MainRepository(
         }
     }
 
-    suspend fun editCategory(categoryId: String, name: String, price: String, type: String, image: String): Result<CategoryResponse> {
+    suspend fun editCategory(categoryId: String, name: String, price: String, type: String, image: String): Result<SingleCategoryResponse> {
         return try {
             val token = userPreferences.token.first() ?: ""
 
@@ -257,7 +334,7 @@ class MainRepository(
         number: String,
         link: String,
         image: String,
-    ): Result<CatalogResponse> {
+    ): Result<SingleCatalogResponse> {
         val token = userPreferences.token.first() ?: ""
 
         return withContext(Dispatchers.IO) {
@@ -334,7 +411,7 @@ class MainRepository(
         number: String,
         link: String,
         image: String,
-    ): Result<CatalogResponse> {
+    ): Result<SingleCatalogResponse> {
         return try {
             val token = userPreferences.token.first() ?: ""
 

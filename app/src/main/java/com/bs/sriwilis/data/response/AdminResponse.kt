@@ -2,10 +2,10 @@ package com.bs.sriwilis.data.response
 
 import com.google.gson.annotations.SerializedName
 
-data class CategoryResponse(
+data class AdminResponse(
 
 	@field:SerializedName("data")
-	val data: List<CategoryData>? = null,
+	val data: List<AdminData?>? = null,
 
 	@field:SerializedName("success")
 	val success: Boolean? = null,
@@ -14,9 +14,9 @@ data class CategoryResponse(
 	val message: String? = null
 )
 
-data class SingleCategoryResponse(
+data class SingleAdminResponse(
 	@field:SerializedName("data")
-	val data: CategoryData? = null,
+	val data: AdminData? = null,
 
 	@field:SerializedName("success")
 	val success: Boolean? = null,
@@ -25,26 +25,29 @@ data class SingleCategoryResponse(
 	val message: String? = null
 )
 
-data class CategoryData(
+data class AdminData(
 
-	@field:SerializedName("jenis_kategori")
-	val jenisKategori: String? = null,
+	@field:SerializedName("jenis_admin")
+	val jenisAdmin: String? = null,
+
+	@field:SerializedName("alamat_admin")
+	val alamatAdmin: String? = null,
+
+	@field:SerializedName("gambar_admin")
+	val gambarAdmin: String? = null,
 
 	@field:SerializedName("updated_at")
 	val updatedAt: String? = null,
-
-	@field:SerializedName("harga_kategori")
-	val hargaKategori: Int? = null,
 
 	@field:SerializedName("created_at")
 	val createdAt: String? = null,
 
 	@field:SerializedName("id")
-	val id: String? = null,
+	val id: Int? = null,
 
-	@field:SerializedName("gambar_kategori")
-	val gambarKategori: String? = null,
+	@field:SerializedName("nama_admin")
+	val namaAdmin: String? = null,
 
-	@field:SerializedName("nama_kategori")
-	val namaKategori: String? = null
+	@field:SerializedName("no_hp_admin")
+	val noHpAdmin: String? = null
 )

@@ -98,6 +98,7 @@ class UserAdapter(
         dialogBuilder.setMessage("Anda yakin ingin menghapus akun ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
             viewModel.deleteUser(userId)
+            viewModel.getUsers()
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()

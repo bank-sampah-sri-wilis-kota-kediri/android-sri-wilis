@@ -3,6 +3,7 @@ package com.bs.sriwilis.ui.homepage.operation
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -24,6 +25,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.bs.sriwilis.R
+import com.bs.sriwilis.adapter.CatalogAdapter
+import com.bs.sriwilis.adapter.CategoryAdapter
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.databinding.ActivityEditCatalogBinding
 import com.bs.sriwilis.helper.Result
@@ -32,12 +35,14 @@ import com.bumptech.glide.Glide
 import com.yalantis.ucrop.UCrop
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 class EditCatalogActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditCatalogBinding
     private var currentImageUri: Uri? = null
+    private lateinit var catalogAdapter: CatalogAdapter
 
     private val viewModel by viewModels<ManageCatalogViewModel> {
         ViewModelFactory.getInstance(this)
@@ -84,11 +89,13 @@ class EditCatalogActivity : AppCompatActivity() {
         binding = ActivityEditCatalogBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val categoryId = intent.getStringExtra("id") ?: throw IllegalArgumentException("ID Kategori tidak ada")
+        val catalogId = intent.getStringExtra("id") ?: throw IllegalArgumentException("ID Katalog tidak ada")
 
-        categoryId.let {
+        catalogId.let {
             viewModel.fetchCatalogDetails(it)
         }
+
+        catalogAdapter = CatalogAdapter(emptyList(), this)
 
         observeCatalog()
         observeViewModel()
@@ -114,8 +121,18 @@ class EditCatalogActivity : AppCompatActivity() {
                     catalogDetails.gambarKatalog?.let { gambarKatalog ->
                         if (gambarKatalog.isNotEmpty()) {
                             val imageBytes = Base64.decode(gambarKatalog, Base64.DEFAULT)
-                            Glide.with(this@EditCatalogActivity)
-                                .load(imageBytes)
+
+                            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            val tempFile = File(cacheDir, "api_image.jpg")
+                            val outStream = FileOutputStream(tempFile)
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
+                            outStream.flush()
+                            outStream.close()
+
+                            currentImageUri = tempFile.toUri()
+
+                             Glide.with(this@EditCatalogActivity)
+                                .load(currentImageUri)
                                 .into(binding.ivCatalogPreview)
                         } else {
                             binding.ivCatalogPreview.setImageResource(R.drawable.iv_panduan2)
@@ -155,30 +172,7 @@ class EditCatalogActivity : AppCompatActivity() {
                 showToast(getString(R.string.tv_make_sure))
                 return@setOnClickListener
             }
-
-            if (currentImageUri == null) {
-                showToast(getString(R.string.tv_make_sure_image))
-                return@setOnClickListener
-            }
-
             editCatalog(catalogId, name, desc, price, number, link, imageBase64)
-
-            viewModel.catalog.observe(this, Observer { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        showToast(getString(R.string.tv_on_process))
-                    }
-                    is Result.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        showToast(getString(R.string.tv_category_change_process_success))
-                        finish()
-                    }
-                    is Result.Error -> {
-                        showToast(" ${result.error}")
-                    }
-                }
-            })
         }
     }
 
@@ -231,6 +225,7 @@ class EditCatalogActivity : AppCompatActivity() {
                         setTitle("Berhasil!")
                         setMessage("Katalog Berhasil Diubah")
                         setPositiveButton("Ok") { _, _ ->
+                            refreshCategoryList()
                             finish()
                         }
                         create()
@@ -249,5 +244,11 @@ class EditCatalogActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun refreshCategoryList() {
+        viewModel.getCatalog()
+
+        catalogAdapter.notifyDataSetChanged()
     }
 }

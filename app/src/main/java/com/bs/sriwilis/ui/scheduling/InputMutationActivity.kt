@@ -1,12 +1,7 @@
-package com.bs.sriwilis.ui.mutation
+package com.bs.sriwilis.ui.scheduling
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.bs.sriwilis.R
-import com.bs.sriwilis.databinding.ActivityChangePasswordBinding
 import com.bs.sriwilis.databinding.ActivityInputMutationBinding
 
 class InputMutationActivity : AppCompatActivity() {

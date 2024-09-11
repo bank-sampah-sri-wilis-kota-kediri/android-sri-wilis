@@ -1,8 +1,10 @@
 package com.bs.sriwilis.ui.homepage.operation
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -24,6 +26,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.bs.sriwilis.R
+import com.bs.sriwilis.adapter.CategoryAdapter
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.databinding.ActivityEditCategoryBinding
 import com.bs.sriwilis.helper.Result
@@ -32,12 +35,14 @@ import com.bumptech.glide.Glide
 import com.yalantis.ucrop.UCrop
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 class EditCategoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditCategoryBinding
     private var currentImageUri: Uri? = null
+    private lateinit var categoryAdapter: CategoryAdapter
 
     private val viewModel by viewModels<ManageCategoryViewModel> {
         ViewModelFactory.getInstance(this)
@@ -90,6 +95,8 @@ class EditCategoryActivity : AppCompatActivity() {
             viewModel.fetchCategoryDetails(it)
         }
 
+        categoryAdapter = CategoryAdapter(emptyList(), this)
+
         observeCategory()
         observeViewModel()
         setupAction()
@@ -114,7 +121,18 @@ class EditCategoryActivity : AppCompatActivity() {
 
                     categoryDetails.gambarKategori?.let { gambarKategori ->
                         if (gambarKategori.isNotEmpty()) {
+
                             val imageBytes = Base64.decode(gambarKategori, Base64.DEFAULT)
+
+                            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            val tempFile = File(cacheDir, "api_image.jpg")
+                            val outStream = FileOutputStream(tempFile)
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
+                            outStream.flush()
+                            outStream.close()
+
+                            currentImageUri = tempFile.toUri()
+
                             Glide.with(this@EditCategoryActivity)
                                 .load(imageBytes)
                                 .into(binding.ivCategoryListPreview)
@@ -147,6 +165,7 @@ class EditCategoryActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("SuspiciousIndentation")
     private fun setupAction() {
         binding.btnChangeCategory.setOnClickListener {
 
@@ -161,30 +180,8 @@ class EditCategoryActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (currentImageUri == null) {
-                showToast(getString(R.string.tv_make_sure_image))
-                return@setOnClickListener
-            }
-
         editCategory(userId, name, price, type, imageBase64)
-
-        viewModel.editCategoryResult.observe(this, Observer { result ->
-            when (result) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    showToast(getString(R.string.tv_on_process))
-                }
-                is Result.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    showToast(getString(R.string.tv_category_change_process_success))
-                    finish()
-                }
-                is Result.Error -> {
-                    showToast(" ${result.error}")
-                }
-            }
-        })
-    }
+        }
     }
 
     private fun setupSpinner() {
@@ -233,10 +230,6 @@ class EditCategoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
     private fun observeViewModel() {
         viewModel.editCategoryResult.observe(this, Observer { result ->
             when (result) {
@@ -248,7 +241,7 @@ class EditCategoryActivity : AppCompatActivity() {
                     AlertDialog.Builder(this).apply {
                         setTitle("Berhasil!")
                         setMessage("Kategori Berhasil Diubah")
-                        setPositiveButton("Ok") { _, _ ->
+                        setPositiveButton("OK") { _, _ ->
                             finish()
                         }
                         create()
@@ -267,5 +260,9 @@ class EditCategoryActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
