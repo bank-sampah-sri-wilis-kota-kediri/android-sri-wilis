@@ -7,6 +7,7 @@ import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityHomepageBinding
 import com.bs.sriwilis.ui.history.HistoryOrderFragment
 import com.bs.sriwilis.ui.scheduling.OrderScheduleFragment
+import com.bs.sriwilis.ui.scheduling.OrderUnscheduledFragment
 import com.bs.sriwilis.ui.settings.SettingsFragment
 
 class HomepageActivity : AppCompatActivity() {
@@ -38,8 +39,8 @@ class HomepageActivity : AppCompatActivity() {
                     true
                 }
                 R.id.mutation -> {
-                    if (!isCurrentFragment(OrderScheduleFragment::class.java)) {
-                        replaceFragment(OrderScheduleFragment())
+                    if (!isCurrentFragment(OrderUnscheduledFragment::class.java)) {
+                        replaceFragment(OrderUnscheduledFragment())
                     }
                     true
                 }

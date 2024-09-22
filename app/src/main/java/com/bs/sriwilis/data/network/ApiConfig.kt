@@ -1,4 +1,4 @@
-import com.bangkit.factha.data.network.ApiServiceAuth
+import com.bs.sriwilis.data.network.ApiServiceAuth
 import com.bs.sriwilis.BuildConfig
 import com.bs.sriwilis.data.network.ApiServiceMain
 import okhttp3.Interceptor

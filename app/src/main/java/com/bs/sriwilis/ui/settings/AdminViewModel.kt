@@ -16,6 +16,9 @@ class AdminViewModel(private val repository: MainRepository): ViewModel() {
     private val _changeResult = MutableLiveData<Result<SingleAdminResponse>>()
     val changeResult: LiveData<Result<SingleAdminResponse>> = _changeResult
 
+    private val _changeResultPassword = MutableLiveData<Result<AdminResponse>>()
+    val changeResultPassword: LiveData<Result<AdminResponse>> = _changeResultPassword
+
     private val _admin = MutableLiveData<Result<List<AdminData?>>>()
     val admin: LiveData<Result<List<AdminData?>>> get() = _admin
 
@@ -49,9 +52,9 @@ class AdminViewModel(private val repository: MainRepository): ViewModel() {
 
     fun changePassword(adminId: String, password: String) {
         viewModelScope.launch {
-            _changeResult.value = Result.Loading
+            _changeResultPassword.value = Result.Loading
             val result = repository.changePasswordAdmin(adminId, password)
-            _changeResult.value = result
+            _changeResultPassword.value = result
         }
     }
     

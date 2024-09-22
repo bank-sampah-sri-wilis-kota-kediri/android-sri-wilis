@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bs.sriwilis.R
 import com.bs.sriwilis.adapter.CategoryAdapter
 import com.bs.sriwilis.adapter.UserAdapter
-import com.bs.sriwilis.data.preference.UserPreferences
-import com.bs.sriwilis.data.preference.dataStore
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.databinding.ActivityManageCategoryBinding
 import com.bs.sriwilis.helper.Result
@@ -34,7 +32,6 @@ class ManageCategoryActivity : AppCompatActivity() {
     private val viewModel by viewModels<ManageCategoryViewModel> {
         ViewModelFactory.getInstance(this)
     }
-    private var token: String? = null
     private lateinit var categoryAdapter: CategoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {

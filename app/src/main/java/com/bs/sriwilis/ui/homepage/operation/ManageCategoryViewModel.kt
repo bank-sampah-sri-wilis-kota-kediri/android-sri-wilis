@@ -26,10 +26,10 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
     private val _categoryData = MutableLiveData<Result<CategoryData>>()
     val categoryData: LiveData<Result<CategoryData>> get() = _categoryData
 
-    fun addCategory(token: String, name: String, price: String, type: String, imageBase64: String) {
+    fun addCategory(name: String, price: String, type: String, imageBase64: String) {
         viewModelScope.launch {
             _addCategoryResult.value = Result.Loading
-            val result = repository.addCategory(token, name, price, type, imageBase64)
+            val result = repository.addCategory(name, price, type, imageBase64)
             _addCategoryResult.value = result
         }
     }
@@ -94,4 +94,5 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
             }
         }
     }
+
 }

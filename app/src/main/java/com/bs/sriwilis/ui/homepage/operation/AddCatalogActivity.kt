@@ -22,15 +22,15 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.bs.sriwilis.R
-import com.bs.sriwilis.data.preference.UserPreferences
-import com.bs.sriwilis.data.preference.dataStore
 import com.bs.sriwilis.databinding.ActivityAddCatalogBinding
 import com.bs.sriwilis.databinding.ActivityLoginBinding
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.yalantis.ucrop.UCrop
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -90,22 +90,25 @@ class AddCatalogActivity : AppCompatActivity() {
         binding.apply {
             btnBack.setOnClickListener { finish() }
             btnUploadPhoto.setOnClickListener { startGallery() }
-            btnSave.setOnClickListener { submitCatalog() }
+            btnSave.setOnClickListener {
+                lifecycleScope.launch {
+                    submitCatalog()
+                }
+            }
             btnBack.setOnClickListener { finish() }
         }
     }
 
-    private fun submitCatalog() {
+    private suspend fun submitCatalog() {
         val imageBase64 = currentImageUri?.let { uriToBase64(it) } ?: ""
         val name = binding.edtCatalogName.text.toString()
         val price = binding.edtCatalogPrice.text.toString()
         val link = binding.edtLinkShopee.text.toString()
         val number = binding.edtMobileNumber.text.toString()
         val desc = binding.edtDescriptionCatalog.text.toString()
-        val userPreferences = UserPreferences.getInstance(this.dataStore)
-        val token = runBlocking { userPreferences.token.first() }
+        val token = viewModel.getToken()
 
-        if (name.isEmpty() || price.isEmpty() || link.isEmpty() || number.isEmpty() || desc.isEmpty()) {
+        if (name.isEmpty() || price.isEmpty() || link.isEmpty() || number.isEmpty() || desc.isEmpty() || imageBase64.isEmpty()) {
             showToast(getString(R.string.tv_make_sure))
             return
         }

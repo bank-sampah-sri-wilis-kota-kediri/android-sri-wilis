@@ -9,7 +9,7 @@
 
         android:icon="@drawable/ic_menu2"
         android:id="@+id/order"
-        android:title="@string/btn_order"
+        android:title="@string/tv_menu2_title"
         />
     <item
         android:id="@+id/placeholder"
@@ -18,7 +18,7 @@
     <item
         android:id="@+id/mutation"
         android:icon="@drawable/ic_menu3"
-        android:title="@string/btn_mutation"
+        android:title="@string/btn_scheduling"
         />
     <item
         android:icon="@drawable/ic_menu4"

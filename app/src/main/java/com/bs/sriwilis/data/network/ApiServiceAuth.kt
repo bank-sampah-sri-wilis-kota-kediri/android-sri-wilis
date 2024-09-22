@@ -1,6 +1,7 @@
-package com.bangkit.factha.data.network
+package com.bs.sriwilis.data.network
 
 import com.bs.sriwilis.data.response.LoginResponse
+import com.bs.sriwilis.data.response.LoginResponseDTO
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -12,5 +13,5 @@ interface ApiServiceAuth {
     suspend fun login(
         @Field("no_hp_admin") no_hp_admin: String,
         @Field("password_admin") password_admin: String
-    ): Response<LoginResponse>
+    ): Response<LoginResponseDTO>
 }

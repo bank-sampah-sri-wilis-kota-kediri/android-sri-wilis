@@ -18,12 +18,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityLoginBinding
 import com.bs.sriwilis.ui.homepage.HomepageActivity
 import com.bs.sriwilis.ui.settings.ChangePasswordActivity
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.ui.splashscreen.WelcomeViewModel
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
@@ -31,6 +35,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
 
     private val viewModel by viewModels<LoginViewModel> {
+        ViewModelFactory.getInstance(this)
+    }
+
+    private val viewModelWelcome by viewModels<WelcomeViewModel> {
         ViewModelFactory.getInstance(this)
     }
 
@@ -139,6 +147,9 @@ class LoginActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is Result.Success -> {
+                    lifecycleScope.launch {
+                        viewModelWelcome.syncData()
+                    }
                     binding.progressBar.visibility = View.GONE
                     AlertDialog.Builder(this).apply {
                         setTitle("Sukses")
@@ -146,6 +157,7 @@ class LoginActivity : AppCompatActivity() {
                         setPositiveButton("OK") { _, _ ->
                             val intent = Intent(this@LoginActivity, HomepageActivity::class.java)
                             startActivity(intent)
+                            finish()
                         }
                         create()
                         show()

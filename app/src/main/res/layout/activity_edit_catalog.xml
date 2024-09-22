@@ -191,7 +191,7 @@
                     android:id="@+id/edt_mobile_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="8123456789"
+                    android:hint="@string/tv_hint_input_wa_number"
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
