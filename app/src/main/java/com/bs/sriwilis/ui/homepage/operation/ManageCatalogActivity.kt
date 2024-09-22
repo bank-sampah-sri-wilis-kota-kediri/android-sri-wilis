@@ -14,8 +14,6 @@ import com.bs.sriwilis.R
 import com.bs.sriwilis.adapter.CatalogAdapter
 import com.bs.sriwilis.adapter.CategoryAdapter
 import com.bs.sriwilis.adapter.UserAdapter
-import com.bs.sriwilis.data.preference.UserPreferences
-import com.bs.sriwilis.data.preference.dataStore
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.databinding.ActivityManageCatalogBinding
 import com.bs.sriwilis.helper.Result
@@ -54,12 +52,8 @@ class ManageCatalogActivity : AppCompatActivity() {
         binding.rvCatalog.layoutManager = LinearLayoutManager(this)
         binding.rvCatalog.adapter = catalogAdapter
 
-        val userPreferences = UserPreferences.getInstance(this.dataStore)
         lifecycleScope.launch {
-            token = userPreferences.token.first()
-            token?.let {
                 viewModel.getCatalog()
-            }
         }
     }
 

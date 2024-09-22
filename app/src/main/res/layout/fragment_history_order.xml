@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".ui.history.HistoryOrderFragment">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_appbar"
         android:layout_width="match_parent"
@@ -40,7 +46,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cv_status_process"
+            android:id="@+id/cv_order_filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
@@ -62,7 +68,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cv_status_mutation"
+            android:id="@+id/cv_mutation_filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.bs.sriwilis.R
 import com.bs.sriwilis.adapter.CategoryAdapter
 import com.bs.sriwilis.adapter.UserAdapter
@@ -18,6 +19,8 @@ import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.databinding.ActivityEditUserBinding
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class EditUserActivity : AppCompatActivity() {
 
@@ -59,10 +62,10 @@ class EditUserActivity : AppCompatActivity() {
 
                     val userDetails = result.data
 
-                    binding.edtEditUserPhone.text = userDetails.noHpNasabah.toEditable()
-                    binding.edtFullNameForm.text = userDetails.namaNasabah.toEditable()
-                    binding.edtEditUserAddress.text = userDetails.alamatNasabah.toEditable()
-                    binding.edtEditUserAccountBalance.text = userDetails.saldoNasabah.toString().toEditable()
+                    binding.edtEditUserPhone.text = userDetails.no_hp_nasabah.toEditable()
+                    binding.edtFullNameForm.text = userDetails.nama_nasabah.toEditable()
+                    binding.edtEditUserAddress.text = userDetails.alamat_nasabah.toEditable()
+                    binding.edtEditUserAccountBalance.text = userDetails.saldo_nasabah.toString().toEditable()
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -98,7 +101,7 @@ class EditUserActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.registerResult.observe(this, Observer { result ->
+        viewModel.users.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -108,7 +111,11 @@ class EditUserActivity : AppCompatActivity() {
                     AlertDialog.Builder(this).apply {
                         setTitle("Berhasil!")
                         setMessage("Akun Pengguna Berhasil Diubah")
-                        setPositiveButton("Ok") { _, _ ->
+                        setPositiveButton("OK") { _, _ ->
+                            lifecycleScope.launch {
+                                viewModel.syncData()
+                                viewModel.getUsers()
+                            }
                             refreshUserList()
                             finish()
                         }
@@ -131,7 +138,9 @@ class EditUserActivity : AppCompatActivity() {
     }
 
     private fun refreshUserList() {
-        viewModel.getUsers()
+        lifecycleScope.launch {
+            viewModel.getUsers()
+        }
 
         userAdapter.notifyDataSetChanged()
     }

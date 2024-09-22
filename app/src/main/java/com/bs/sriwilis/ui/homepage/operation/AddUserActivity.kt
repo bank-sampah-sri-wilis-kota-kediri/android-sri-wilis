@@ -7,6 +7,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -14,11 +15,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.ui.authorization.LoginActivity
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class AddUserActivity : AppCompatActivity() {
 
@@ -48,6 +52,11 @@ class AddUserActivity : AppCompatActivity() {
             val name = binding.edtFullNameForm.text.toString()
             val address = binding.edtUserAddressForm.text.toString()
             val balance = binding.edtUserBalanceForm.text.toString()
+
+            // Validate input
+            if (phone.isEmpty() || name.isEmpty() || address.isEmpty()) {
+                showToast("Seluruh Data harus diisi!")
+            }
 
             registerUser(phone, password, name, address, balance)
         }
@@ -93,7 +102,11 @@ class AddUserActivity : AppCompatActivity() {
                     AlertDialog.Builder(this).apply {
                         setTitle("Berhasil!")
                         setMessage("Akun Pengguna berhasil dibuat")
-                        setPositiveButton("Ok") { _, _ ->
+                        setPositiveButton("OK") { _, _ ->
+                            lifecycleScope.launch {
+                                viewModel.syncData()
+                                viewModel.getUsers()
+                            }
                             finish()
                         }
                         create()
@@ -112,5 +125,9 @@ class AddUserActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

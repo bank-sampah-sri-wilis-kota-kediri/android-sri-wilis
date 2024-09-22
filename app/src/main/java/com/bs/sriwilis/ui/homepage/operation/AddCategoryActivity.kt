@@ -24,8 +24,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.bs.sriwilis.R
-import com.bs.sriwilis.data.preference.UserPreferences
-import com.bs.sriwilis.data.preference.dataStore
 import com.bs.sriwilis.databinding.ActivityAddCatalogBinding
 import com.bs.sriwilis.databinding.ActivityAddCategoryBinding
 import com.bs.sriwilis.utils.ViewModelFactory
@@ -101,21 +99,21 @@ class AddCategoryActivity : AppCompatActivity() {
     private fun setupAction() {
         binding.btnAddCategory.setOnClickListener {
             val imageBase64 = currentImageUri?.let { uriToBase64(it) } ?: ""
-            val name = binding.edtCategoryNameForm.text.toString()
-            val price = binding.edtCategoryPrice.text.toString()
+            val name = binding.edtCategoryNameForm.text.toString().trim()
+            val price = binding.edtCategoryPrice.text.toString().trim()
             val type = binding.spinnerTag.selectedItem.toString()
-            val userPreferences = UserPreferences.getInstance(this.dataStore)
-            val token = runBlocking { userPreferences.token.first() }
-
-            if (token != null) {
-                addCategory(token, name, price, type, imageBase64)
+            // Validate input
+            if (name.isEmpty() || price.isEmpty() || imageBase64.isEmpty()) {
+                showToast("Seluruh Data harus diisi!")
+            } else {
+                addCategory(name, price, type, imageBase64)
             }
         }
     }
 
-    private fun addCategory(token: String, name: String, price: String, type: String, imageBase64: String) {
+    private fun addCategory(name: String, price: String, type: String, imageBase64: String) {
         binding.progressBar.visibility = View.VISIBLE
-        viewModel.addCategory(token, name, price, type, imageBase64)
+        viewModel.addCategory(name, price, type, imageBase64)
     }
 
     private fun setupSpinner() {

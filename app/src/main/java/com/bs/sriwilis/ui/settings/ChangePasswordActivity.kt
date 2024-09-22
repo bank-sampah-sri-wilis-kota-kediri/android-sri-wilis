@@ -26,7 +26,7 @@ import java.io.FileOutputStream
 
 class ChangePasswordActivity : AppCompatActivity() {
 
-    private var isOldPasswordValid = false
+    private val adminId = "1"
     private lateinit var binding: ActivityChangePasswordBinding
 
     private val viewModel by viewModels<AdminViewModel> {
@@ -49,10 +49,14 @@ class ChangePasswordActivity : AppCompatActivity() {
 
     private fun setupAction() {
         binding.btnChangePassword.setOnClickListener {
-            val oldPassword = binding.edtOldPasswordForm.text.toString()
             val newPassword = binding.edtNewPasswordForm.text.toString()
+            val newPasswordConfirmation = binding.edtNewPasswordConfirmationForm.text.toString()
 
-            changePassword(oldPassword, newPassword)
+            if (newPassword == newPasswordConfirmation) {
+                changePassword(adminId, newPassword)
+            } else {
+                showToast(R.string.tv_password_do_not_match.toString())
+            }
         }
     }
 
@@ -108,9 +112,9 @@ class ChangePasswordActivity : AppCompatActivity() {
         })
     }*/
 
-    private fun changePassword(oldPassword: String, newPassword: String) {
+    private fun changePassword(adminId: String, newPassword: String) {
         binding.progressBar.visibility = View.VISIBLE
-        viewModel.changePassword(oldPassword, newPassword)
+        viewModel.changePassword(adminId, newPassword)
     }
 
     fun String?.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)

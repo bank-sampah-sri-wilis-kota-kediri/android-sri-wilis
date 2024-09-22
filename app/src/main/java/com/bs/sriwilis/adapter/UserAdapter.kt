@@ -7,27 +7,34 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
 import com.bs.sriwilis.data.repository.MainRepository
+import com.bs.sriwilis.data.repository.modelhelper.CardNasabah
 import com.bs.sriwilis.data.response.UserData
 import com.bs.sriwilis.data.response.UserItem
+import com.bs.sriwilis.data.room.entity.NasabahEntity
 import com.bs.sriwilis.databinding.CardUserListBinding
 import com.bs.sriwilis.ui.homepage.operation.EditUserActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
+import com.bs.sriwilis.ui.splashscreen.WelcomeViewModel
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import com.bs.sriwilis.helper.Result
 
 class UserAdapter(
-    private var user: List<UserItem?>,
+    private var user: List<CardNasabah?>,
     private val context: Context
 
 ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
@@ -38,9 +45,9 @@ class UserAdapter(
 
     inner class UserViewHolder(private val binding: CardUserListBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(users: UserItem?) {
+        fun bind(users: CardNasabah?) {
             with(binding) {
-                users?.gambarNasabah?.let { gambarNasabah ->
+                users?.gambar_nasabah?.let { gambarNasabah ->
                     val imageBytes = Base64.decode(gambarNasabah, Base64.DEFAULT)
                     Glide.with(itemView.context)
                         .load(imageBytes)
@@ -49,8 +56,8 @@ class UserAdapter(
                     ivCategoryListPreview.setImageResource(R.drawable.ic_profile)
                 }
 
-                tvUserName.text = users?.namaNasabah
-                tvUserAddress.text = users?.alamatNasabah
+                tvUserName.text = users?.nama_nasabah
+                tvUserAddress.text = users?.alamat_nasabah
 
                 itemView.setOnClickListener {
                     users?.id?.let { id ->
@@ -62,8 +69,11 @@ class UserAdapter(
                 }
 
                 btnDelete.setOnClickListener {
-                    users?.id?.let { id ->
-                        showDeleteConfirmationDialog(id)
+                    users?.no_hp_nasabah.let { phone ->
+                        if (phone != null) {
+                            showDeleteConfirmationDialog(itemView, phone)
+                        }
+                        Log.d("cek ke klik kah", "btn delete ${users?.no_hp_nasabah}")
                     }
                 }
             }
@@ -87,22 +97,28 @@ class UserAdapter(
         holder.bind(user[position])
     }
 
-    fun updateUsers(newUsers: List<UserItem?>) {
+    fun updateUsers(newUsers: List<CardNasabah?>) {
         this.user = newUsers
         notifyDataSetChanged()
     }
 
-    private fun showDeleteConfirmationDialog(userId: String) {
+    private fun showDeleteConfirmationDialog(itemView: View, userPhone: String) {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle("Konfirmasi Penghapusan Akun")
         dialogBuilder.setMessage("Anda yakin ingin menghapus akun ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
-            viewModel.deleteUser(userId)
-            viewModel.getUsers()
+
+            val activity = itemView.context as AppCompatActivity
+            activity.lifecycleScope.launch {
+                viewModel.deleteUser(userPhone)
+                viewModel.syncData()
+                viewModel.getUsers()
+            }
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()
         }
+
         val alertDialog = dialogBuilder.create()
         alertDialog.show()
     }

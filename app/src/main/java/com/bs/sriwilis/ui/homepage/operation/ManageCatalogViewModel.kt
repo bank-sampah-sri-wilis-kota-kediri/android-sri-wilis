@@ -89,4 +89,8 @@ class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel
             }
         }
     }
+
+    suspend fun getToken(): String {
+        return repository.getToken().toString()
+    }
 }

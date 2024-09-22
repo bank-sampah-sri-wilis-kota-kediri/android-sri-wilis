@@ -25,11 +25,22 @@ class HistoryMutationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.rvOrder
-
         binding.apply {
-
+            cvOrderFilter.setOnClickListener {
+                replaceFragment(HistoryOrderFragment())
+            }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_history, fragment)
+            .commit()
     }
 
 }
