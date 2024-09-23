@@ -15,6 +15,9 @@
         android:theme="@style/Theme.BankSampahSriWilis"
         tools:targetApi="31">
         <activity
+            android:name=".AddCartTransactionActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.scheduling.SchedulingDetailActivity"
             android:exported="false" />
         <activity

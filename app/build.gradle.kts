@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.material)
+    implementation(libs.androidx.swiperefreshlayout)
 
     /*  //ui
             implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")

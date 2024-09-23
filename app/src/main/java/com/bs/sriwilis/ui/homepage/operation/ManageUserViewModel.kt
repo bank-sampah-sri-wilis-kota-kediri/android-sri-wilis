@@ -25,8 +25,8 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
     private val _users = MutableLiveData<Result<GetUserByIdResponse>>()
     val users: LiveData<Result<GetUserByIdResponse>> get() = _users
 
-    private val _usersData = MutableLiveData<Result<UserItem>>()
-    val usersData: LiveData<Result<UserItem>> get() = _usersData
+    private val _usersData = MutableLiveData<Result<CardNasabah>>()
+    val usersData: LiveData<Result<CardNasabah>> get() = _usersData
 
     private val _deleteResult = MutableLiveData<Result<Boolean>>()
     val deleteResult: LiveData<Result<Boolean>> get() = _deleteResult
@@ -77,10 +77,10 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
         _nasabah.postValue(result)
     }
 
-    fun fetchUserDetails(userId: String) {
+    fun fetchUserDetails(phone: String) {
         viewModelScope.launch {
             _usersData.value = Result.Loading
-            when (val result = repository.getUserById(userId)) {
+            when (val result = repository.getNasabahByPhone(phone)) {
                 is Result.Success -> {
                     _usersData.value = Result.Success(result.data)
                 }

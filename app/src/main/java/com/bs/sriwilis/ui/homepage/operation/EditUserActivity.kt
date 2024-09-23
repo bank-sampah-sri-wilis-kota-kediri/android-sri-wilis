@@ -37,8 +37,9 @@ class EditUserActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val userId = intent.getStringExtra("userId") ?: throw IllegalArgumentException("ID Pengguna tidak ada")
+        val phone = intent.getStringExtra("phone") ?: throw IllegalArgumentException("Nomor Pengguna tidak ada")
 
-        userId.let {
+        phone.let {
             viewModel.fetchUserDetails(it)
         }
 
@@ -62,10 +63,12 @@ class EditUserActivity : AppCompatActivity() {
 
                     val userDetails = result.data
 
-                    binding.edtEditUserPhone.text = userDetails.no_hp_nasabah.toEditable()
-                    binding.edtFullNameForm.text = userDetails.nama_nasabah.toEditable()
-                    binding.edtEditUserAddress.text = userDetails.alamat_nasabah.toEditable()
-                    binding.edtEditUserAccountBalance.text = userDetails.saldo_nasabah.toString().toEditable()
+                    if (userDetails != null) {
+                        binding.edtEditUserPhone.text = userDetails.no_hp_nasabah.toEditable()
+                        binding.edtFullNameForm.text = userDetails.nama_nasabah.toEditable()
+                        binding.edtEditUserAddress.text = userDetails.alamat_nasabah.toEditable()
+                        binding.edtEditUserAccountBalance.text = userDetails.saldo_nasabah.toString().toEditable()
+                    }
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE

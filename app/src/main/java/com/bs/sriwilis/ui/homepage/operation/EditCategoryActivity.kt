@@ -119,7 +119,7 @@ class EditCategoryActivity : AppCompatActivity() {
 
                     val categoryDetails = result.data
 
-                    categoryDetails.gambarKategori?.let { gambarKategori ->
+                    categoryDetails.gambar_kategori?.let { gambarKategori ->
                         if (gambarKategori.isNotEmpty()) {
 
                             val imageBytes = Base64.decode(gambarKategori, Base64.DEFAULT)
@@ -143,12 +143,12 @@ class EditCategoryActivity : AppCompatActivity() {
                         binding.ivCategoryListPreview.setImageResource(R.drawable.iv_panduan2)
                     }
 
-                    binding.edtCategoryNameForm.text = categoryDetails.namaKategori.toEditable()
-                    binding.edtCategoryPriceForm.text = categoryDetails.hargaKategori.toString().toEditable()
+                    binding.edtCategoryNameForm.text = categoryDetails.nama_kategori.toEditable()
+                    binding.edtCategoryPriceForm.text = categoryDetails.harga_kategori.toString().toEditable()
 
                     val spinnerAdapter = binding.spinnerWasteCategory.adapter
                     val position = (0 until spinnerAdapter.count)
-                        .firstOrNull { spinnerAdapter.getItem(it).toString() == categoryDetails.jenisKategori.toString() }
+                        .firstOrNull { spinnerAdapter.getItem(it).toString() == categoryDetails.jenis_kategori.toString() }
 
                     if (position != null) {
                         binding.spinnerWasteCategory.setSelection(position)

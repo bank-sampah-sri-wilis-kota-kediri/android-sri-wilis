@@ -60,11 +60,19 @@ class UserAdapter(
                 tvUserAddress.text = users?.alamat_nasabah
 
                 itemView.setOnClickListener {
-                    users?.id?.let { id ->
-                        onItemClick?.invoke(id)
-                        val intent = Intent(itemView.context, EditUserActivity::class.java)
-                        intent.putExtra("userId", id)
-                        itemView.context.startActivity(intent)
+                    users?.let { user ->
+                        user.no_hp_nasabah.let { phone ->
+                            user.id.let { userId ->  // Assuming `id_nasabah` is the userId field
+                                onItemClick?.invoke(phone)
+
+                                val intent = Intent(itemView.context, EditUserActivity::class.java).apply {
+                                    putExtra("phone", phone)
+                                    putExtra("userId", userId)
+                                }
+
+                                itemView.context.startActivity(intent)
+                            }
+                        }
                     }
                 }
 
