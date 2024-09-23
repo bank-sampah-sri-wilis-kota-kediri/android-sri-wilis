@@ -64,6 +64,7 @@ class ManageUserActivity : AppCompatActivity() {
                 }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.swipeRefreshLayout.isRefreshing = false
                     val userData = result.data
                     Log.d("cek nasabah", userData.toString())
                         lifecycleScope.launch {
@@ -77,13 +78,5 @@ class ManageUserActivity : AppCompatActivity() {
             }
         }
         viewModel.getUsers()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        lifecycleScope.launch {
-            viewModel.getUsers()
-            viewModel.syncData()
-        }
     }
 }

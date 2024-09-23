@@ -199,5 +199,11 @@
     <string name="tv_choose_date">Pilih Tanggal</string>
     <string name="tv_example_date_time">12-06-2024</string>
     <string name="tv_strip">-</string>
+    <string name="tv_choose_nasabah_spinner_title">Pilih Nasabah</string>
+    <string name="tv_waste_cart">Keranjang Sampah</string>
+    <string name="tv_price_estimation_lable">Harga</string>
+    <string name="tv_weight_estimation_label">Berat</string>
+    <string name="tv_date_transaction_title">Tanggal Transaksi</string>
+    <string name="tv_cart_transaction">Keranjang Transaksi</string>
 
 </resources>

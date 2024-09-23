@@ -8,6 +8,12 @@ data class NasabahResponseDTO (
     val message: String?
 )
 
+data class SingleNasabahResponseDTO (
+    val data: UserItem,
+    val success: Boolean?,
+    val message: String?
+)
+
 
 data class UserItem(
     val no_hp_nasabah: String?,

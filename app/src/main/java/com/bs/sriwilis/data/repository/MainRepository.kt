@@ -2,8 +2,10 @@ package com.bs.sriwilis.data.repository
 
 import android.util.Log
 import com.bs.sriwilis.data.AppDatabase
+import com.bs.sriwilis.data.mapping.MappingKategori
 import com.bs.sriwilis.data.mapping.MappingNasabah
 import com.bs.sriwilis.data.network.ApiServiceMain
+import com.bs.sriwilis.data.repository.modelhelper.CardCategory
 import com.bs.sriwilis.data.repository.modelhelper.CardNasabah
 import com.bs.sriwilis.data.response.AdminData
 import com.bs.sriwilis.data.response.AdminResponse
@@ -24,6 +26,7 @@ import com.bs.sriwilis.data.response.SingleCategoryResponse
 import com.bs.sriwilis.data.response.SinglePesananSampahResponse
 import com.bs.sriwilis.data.response.UserItem
 import com.bs.sriwilis.data.room.dao.NasabahDao
+import com.bs.sriwilis.data.room.entity.CategoryEntity
 import com.bs.sriwilis.data.room.entity.LoginResponseEntity
 import com.bs.sriwilis.data.room.entity.NasabahEntity
 import kotlinx.coroutines.flow.Flow
@@ -37,7 +40,8 @@ class MainRepository(
     private val appDatabase: AppDatabase
 ) {
 
-    private val mappingPesananSampah = MappingNasabah()
+    private val mappingNasabah = MappingNasabah()
+    private val mappingKategori = MappingKategori()
 
     suspend fun getToken(): String? {
         val loginResponse = appDatabase.loginResponseDao().getLoginResponseById(1)
@@ -54,7 +58,6 @@ class MainRepository(
     }
 
     //CRUD Admin
-
     suspend fun getAdminData(): Result<AdminData> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
@@ -172,8 +175,6 @@ class MainRepository(
         }
     }
 
-
-
     suspend fun editUser(userId: String, phone: String, name: String, address: String, balance: Double): Result<GetUserByIdResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
@@ -210,7 +211,7 @@ class MainRepository(
 
                 Result.Success(true)
             } else {
-                Result.Error("Failed to remove bookmark: ${response.code()}")
+                Result.Error("Failed to remove nasabah: ${response.code()}")
             }
         } catch (e: Exception) {
             Log.e("MainRepository", "Exception occurred: ${e.message}")
@@ -226,6 +227,11 @@ class MainRepository(
             val nasabahResult = getAllNasabah()
             if (nasabahResult is Result.Error) {
                 return Result.Error("Failed to sync nasabah: ${nasabahResult.error}")
+            }
+
+            val categoryResult = getCategory()
+            if (categoryResult is Result.Error) {
+                return Result.Error("Failed to sync nasabah: ${categoryResult.error}")
             }
 
             Result.Success(Unit)
@@ -245,7 +251,7 @@ class MainRepository(
                 val responseBody = response.body() ?: return Result.Error("Response body is null")
 
                 // Mapping dari DTO ke Entitas Room
-                val nasabahEntities = mappingPesananSampah.mapNasabahResponseDtoToEntity(responseBody)
+                val nasabahEntities = mappingNasabah.mapNasabahResponseDtoToEntity(responseBody)
 
                 // Simpan data ke database Room (opsional, jika perlu disimpan)
                 withContext(Dispatchers.IO) {
@@ -312,19 +318,24 @@ class MainRepository(
         }
     }
 
-    suspend fun getCategory(): Result<CategoryResponse> {
+    suspend fun getCategory(): Result<List<CategoryEntity>> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
             Log.d("tokenmainrepository", "$token")
             val response = apiService.getAllCategory("Bearer $token")
 
             if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    Result.Success(body)
-                } else {
-                    Result.Error("Response body is null")
+                val responseBody = response.body() ?: return Result.Error("Response body is null")
+
+                // Mapping dari DTO ke Entitas Room
+                val categoryEntities = mappingKategori.mapCategoryResponseDtoToEntity(responseBody)
+
+                // Simpan data ke database Room (opsional, jika perlu disimpan)
+                withContext(Dispatchers.IO) {
+                    appDatabase.categoryDao().insert(categoryEntities)
                 }
+
+                Result.Success(categoryEntities)
             } else {
                 Result.Error("Failed to fetch saved news: ${response.message()} (${response.code()})")
             }
@@ -385,9 +396,16 @@ class MainRepository(
             val response = apiService.deleteCategory(categoryId, "Bearer $token")
 
             if (response.isSuccessful) {
+
+                withContext(Dispatchers.IO) {
+                    categoryId.let {
+                        appDatabase.categoryDao().deleteCategoryById(categoryId)
+                    }
+                }
+
                 Result.Success(true)
             } else {
-                Result.Error("Failed to remove bookmark: ${response.code()}")
+                Result.Error("Failed to remove kategori: ${response.code()}")
             }
         } catch (e: Exception) {
             Log.e("MainRepository", "Exception occurred: ${e.message}")
@@ -639,6 +657,49 @@ class MainRepository(
             }
         }
     }
+
+    suspend fun getNasabahByPhone(phone: String): Result<CardNasabah> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val nasabahData = appDatabase.nasabahDao().getNasabahByPhone(phone)
+                Result.Success(nasabahData)
+            } catch (e: Exception) {
+                Result.Error("Error occured: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getAllCategoriesDao(): Result<List<CardCategory>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val categoryData = appDatabase.categoryDao().getAllCategory()
+                Result.Success(categoryData)
+            } catch (e: Exception) {
+                Result.Error("Error occured: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getCategoryByIdDao(categoryId: String): Result<CardCategory> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val nasabahData = appDatabase.categoryDao().getCategoryById(categoryId)
+                Result.Success(nasabahData)
+            } catch (e: Exception) {
+                Result.Error("Error occured: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getNasabahPhonesDao(): Result<List<String>> {
+        return try {
+            val phones = appDatabase.nasabahDao().getNasabahPhones()
+            Result.Success(phones)
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Error fetching phone numbers")
+        }
+    }
+
 
     companion object {
         @Volatile

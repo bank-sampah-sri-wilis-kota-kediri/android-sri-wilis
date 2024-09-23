@@ -3,6 +3,7 @@ package com.bs.sriwilis.ui.homepage.operation
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -41,11 +42,11 @@ class ManageCategoryActivity : AppCompatActivity() {
 
         categoryAdapter = CategoryAdapter(emptyList(), this)
 
-        categoryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+/*        categoryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 viewModel.getCategory()
             }
-        }
+        }*/
 
         binding.apply {
             fabAddCategory.setOnClickListener {
@@ -54,7 +55,8 @@ class ManageCategoryActivity : AppCompatActivity() {
             }
             btnBack.setOnClickListener { finish() }
         }
-        observeCategory()
+
+        lifecycleScope.launch { observeCategory() }
         setupRecyclerView()
     }
 
@@ -63,7 +65,32 @@ class ManageCategoryActivity : AppCompatActivity() {
         binding.rvCategory.adapter = categoryAdapter
     }
 
-    private fun observeCategory() {
+    private suspend fun observeUser() {
+        viewModel.categories.observe(this) { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    val categoriesData = result.data
+                    lifecycleScope.launch {
+                        viewModel.syncData()
+                    }
+                    if (categoriesData != null) {
+                        categoryAdapter.updateCategory(categoriesData)
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                }
+            }
+        }
+        viewModel.getCategory()
+    }
+
+
+    private suspend fun observeCategory() {
         viewModel.categories.observe(this) { result ->
             when (result) {
                 is Result.Loading -> {
@@ -88,6 +115,9 @@ class ManageCategoryActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.getCategory()
+        lifecycleScope.launch {
+            viewModel.getCategory()
+            viewModel.syncData()
+        }
     }
 }

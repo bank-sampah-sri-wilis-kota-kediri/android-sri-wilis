@@ -10,6 +10,7 @@ import com.bs.sriwilis.ui.authorization.LoginViewModel
 import com.bs.sriwilis.ui.homepage.HomeViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
+import com.bs.sriwilis.ui.homepage.operation.ManageTransactionViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
 import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
 import com.bs.sriwilis.ui.scheduling.OrderUnschedulingViewModel
@@ -67,6 +68,10 @@ class ViewModelFactory private constructor(
             modelClass.isAssignableFrom(SchedulingDetailViewModel::class.java) -> {
                 val repository = InjectionMain.provideRepository(context)
                 SchedulingDetailViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(ManageTransactionViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                ManageTransactionViewModel(repository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

@@ -1,11 +1,14 @@
 package com.bs.sriwilis.ui.homepage
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.bs.sriwilis.AddCartTransactionActivity
 import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityHomepageBinding
 import com.bs.sriwilis.ui.history.HistoryOrderFragment
+import com.bs.sriwilis.ui.homepage.operation.AddTransaction
 import com.bs.sriwilis.ui.scheduling.OrderScheduleFragment
 import com.bs.sriwilis.ui.scheduling.OrderUnscheduledFragment
 import com.bs.sriwilis.ui.settings.SettingsFragment
@@ -52,6 +55,12 @@ class HomepageActivity : AppCompatActivity() {
                 }
                 else -> false
             }
+        }
+
+        binding.fabAddOrder.setOnClickListener {
+            val intent = Intent(this, AddTransaction::class.java)
+            startActivity(intent)
+
         }
     }
 

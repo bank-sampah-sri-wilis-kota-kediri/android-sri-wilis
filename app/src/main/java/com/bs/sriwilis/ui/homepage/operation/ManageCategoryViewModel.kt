@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bs.sriwilis.data.repository.MainRepository
+import com.bs.sriwilis.data.repository.modelhelper.CardCategory
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.SingleCategoryResponse
@@ -20,11 +21,11 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
     private val _editCategoryResult = MutableLiveData<Result<SingleCategoryResponse>>()
     val editCategoryResult: LiveData<Result<SingleCategoryResponse>> = _editCategoryResult
 
-    private val _categories = MutableLiveData<Result<List<CategoryData>?>>()
-    val categories: LiveData<Result<List<CategoryData>?>> get() = _categories
+    private val _categories = MutableLiveData<Result<List<CardCategory>?>>()
+    val categories: LiveData<Result<List<CardCategory>?>> get() = _categories
 
-    private val _categoryData = MutableLiveData<Result<CategoryData>>()
-    val categoryData: LiveData<Result<CategoryData>> get() = _categoryData
+    private val _categoryData = MutableLiveData<Result<CardCategory>>()
+    val categoryData: LiveData<Result<CardCategory>> get() = _categoryData
 
     fun addCategory(name: String, price: String, type: String, imageBase64: String) {
         viewModelScope.launch {
@@ -43,29 +44,16 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
         }
     }
 
-    fun getCategory() {
-        _categories.value = Result.Loading
-        viewModelScope.launch {
-            val result = repository.getCategory()
-            when (result) {
-                is Result.Success -> {
-                    _categories.value = Result.Success(result.data.data)
-                }
-
-                is Result.Error -> {
-                    _categories.value = Result.Error(result.error)
-                    Log.e("ManageCatalogViewModel", "Failed to fetch catalog: ${result.error}")
-                }
-
-                Result.Loading -> {}
-            }
-        }
+    suspend fun getCategory() {
+        _categories.postValue(Result.Loading)
+        val result = repository.getAllCategoriesDao()
+        _categories.postValue(result)
     }
 
     fun fetchCategoryDetails(id: String) {
         viewModelScope.launch {
             _categoryData.value = Result.Loading
-            when (val result = repository.getCategoryById(id)) {
+            when (val result = repository.getCategoryByIdDao(id)) {
                 is Result.Success -> {
                     _categoryData.postValue(Result.Success(result.data))
                 }
@@ -93,6 +81,10 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
                 Result.Loading -> {}
             }
         }
+    }
+
+    suspend fun syncData(): Result<Unit> {
+        return repository.syncData()
     }
 
 }

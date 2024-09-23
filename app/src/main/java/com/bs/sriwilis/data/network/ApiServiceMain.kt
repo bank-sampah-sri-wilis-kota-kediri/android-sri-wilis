@@ -4,6 +4,7 @@ import com.bs.sriwilis.data.response.AddCatalogRequest
 import com.bs.sriwilis.data.response.AdminResponse
 import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CategoryResponse
+import com.bs.sriwilis.data.response.CategoryResponseDTO
 import com.bs.sriwilis.data.response.GetAdminByIdResponse
 import com.bs.sriwilis.data.response.GetCatalogByIdResponse
 import com.bs.sriwilis.data.response.GetCategoryByIdResponse
@@ -98,7 +99,7 @@ interface ApiServiceMain {
     @POST("kategori/add")
     suspend fun addCategory(
         @Header("Authorization") token: String,
-        @Field("nama_kategori") no_hp_nasabah: String,
+        @Field("nama_kategori") nama_kategori: String,
         @Field("harga_kategori") harga_kategori: String,
         @Field("jenis_kategori") jenis_kategori: String,
         @Field("gambar_kategori") gambar_kategori: String,
@@ -107,7 +108,7 @@ interface ApiServiceMain {
     @GET("kategori/show-all")
     suspend fun getAllCategory(
         @Header("Authorization") token: String,
-    ): Response<CategoryResponse>
+    ): Response<CategoryResponseDTO>
 
     @GET("kategori/{id}")
     suspend fun getCategoryById(
