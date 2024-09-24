@@ -15,6 +15,9 @@
         android:theme="@style/Theme.BankSampahSriWilis"
         tools:targetApi="31">
         <activity
+            android:name=".ui.homepage.operation.AddCartTransactionActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddCartTransactionActivity"
             android:exported="false" />
         <activity

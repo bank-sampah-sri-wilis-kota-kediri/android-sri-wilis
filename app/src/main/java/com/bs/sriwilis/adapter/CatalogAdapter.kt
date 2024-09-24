@@ -57,7 +57,7 @@ class CatalogAdapter(
                     ivCategoryListPreview.setImageResource(R.drawable.iv_panduan2)
                 }
 
-                tvCatalogName.text = catalog?.judulKatalog
+                tvCatalogName.text = catalog?.hargaKatalog.toString()
                 tvCatalogListType?.text = catalog?.shopeeLink
                 tvCatalogPrice?.text = "Rp" + catalog?.hargaKatalog.toString()
                 descCatalog.text = catalog?.deskripsiKatalog

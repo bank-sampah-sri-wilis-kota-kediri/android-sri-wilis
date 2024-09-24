@@ -29,9 +29,9 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
 
     fun addCategory(name: String, price: String, type: String, imageBase64: String) {
         viewModelScope.launch {
-            _addCategoryResult.value = Result.Loading
+            _addCategoryResult.postValue(Result.Loading)
             val result = repository.addCategory(name, price, type, imageBase64)
-            _addCategoryResult.value = result
+            _addCategoryResult.postValue(result)
         }
     }
 

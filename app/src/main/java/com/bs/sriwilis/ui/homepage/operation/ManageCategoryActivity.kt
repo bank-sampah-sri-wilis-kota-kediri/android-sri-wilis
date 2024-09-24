@@ -36,17 +36,20 @@ class ManageCategoryActivity : AppCompatActivity() {
     private lateinit var categoryAdapter: CategoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        categoryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                lifecycleScope.launch {
+                    viewModel.getCategory()
+                }
+            }
+        }
         super.onCreate(savedInstanceState)
         binding = ActivityManageCategoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         categoryAdapter = CategoryAdapter(emptyList(), this)
 
-/*        categoryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                viewModel.getCategory()
-            }
-        }*/
+
 
         binding.apply {
             fabAddCategory.setOnClickListener {
