@@ -1,5 +1,7 @@
 package com.bs.sriwilis.ui.homepage.operation
 
+import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,6 +17,7 @@ import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityAddTransactionBinding
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
+import java.util.Calendar
 
 class AddTransaction : AppCompatActivity() {
 
@@ -23,6 +26,10 @@ class AddTransaction : AppCompatActivity() {
         ViewModelFactory.getInstance(this)
     }
     private lateinit var spinner: Spinner
+
+    private var selectedPhone: String? = null
+    private var selectedDate: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +40,16 @@ class AddTransaction : AppCompatActivity() {
         spinner = binding.spinnerNasabahChoose
 
         getUserPhone()
+        setupDatePicker()
+
+        binding.apply {
+            btnAddCart.setOnClickListener {
+                val intent = Intent(this@AddTransaction, AddCartTransactionActivity::class.java)
+                startActivity(intent)
+            }
+
+            btnBack.setOnClickListener { finish() }
+        }
     }
 
     private fun getUserPhone() {
@@ -51,7 +68,7 @@ class AddTransaction : AppCompatActivity() {
                             position: Int,
                             id: Long
                         ) {
-                            val selectedPhone = viewModel.getPhoneByPosition(position)
+                            selectedPhone = viewModel.getPhoneByPosition(position)
                             Log.d("SelectedPhone", "Phone: $selectedPhone")
                         }
 
@@ -69,6 +86,27 @@ class AddTransaction : AppCompatActivity() {
             }
         }
         viewModel.getUserPhones()
+    }
+
+    private fun setupDatePicker() {
+        binding.btnSelectDate.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val datePickerDialog = DatePickerDialog(
+                this,
+                { _, selectedYear, selectedMonth, selectedDay ->
+                    // Format the date
+                    selectedDate = String.format("%02d-%02d-%d", selectedDay, selectedMonth + 1, selectedYear)
+                    binding.tvSelectedDate.text = selectedDate
+                    Log.d("SelectedDate", "Date: $selectedDate")
+                },
+                year, month, day
+            )
+            datePickerDialog.show()
+        }
     }
 
 }

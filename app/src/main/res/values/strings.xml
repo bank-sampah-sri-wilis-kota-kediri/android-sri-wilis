@@ -205,5 +205,6 @@
     <string name="tv_weight_estimation_label">Berat</string>
     <string name="tv_date_transaction_title">Tanggal Transaksi</string>
     <string name="tv_cart_transaction">Keranjang Transaksi</string>
+    <string name="tv_price_waste_form_title">Harga</string>
 
 </resources>
