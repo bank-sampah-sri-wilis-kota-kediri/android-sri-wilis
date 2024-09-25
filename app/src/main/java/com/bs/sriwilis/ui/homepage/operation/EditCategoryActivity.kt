@@ -1,8 +1,10 @@
 package com.bs.sriwilis.ui.homepage.operation
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,12 +19,14 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.bs.sriwilis.R
+import com.bs.sriwilis.adapter.CategoryAdapter
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.databinding.ActivityEditCategoryBinding
 import com.bs.sriwilis.helper.Result
@@ -31,12 +35,14 @@ import com.bumptech.glide.Glide
 import com.yalantis.ucrop.UCrop
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 class EditCategoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditCategoryBinding
     private var currentImageUri: Uri? = null
+    private lateinit var categoryAdapter: CategoryAdapter
 
     private val viewModel by viewModels<ManageCategoryViewModel> {
         ViewModelFactory.getInstance(this)
@@ -89,9 +95,12 @@ class EditCategoryActivity : AppCompatActivity() {
             viewModel.fetchCategoryDetails(it)
         }
 
+        categoryAdapter = CategoryAdapter(emptyList(), this)
+
+        observeCategory()
+        observeViewModel()
         setupAction()
         setupSpinner()
-        observeUser()
 
         binding.apply {
             btnUploadPhoto.setOnClickListener { startGallery() }
@@ -99,7 +108,7 @@ class EditCategoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeUser() {
+    private fun observeCategory() {
         viewModel.categoryData.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
@@ -110,9 +119,20 @@ class EditCategoryActivity : AppCompatActivity() {
 
                     val categoryDetails = result.data
 
-                    categoryDetails.gambarKategori?.let { gambarKategori ->
+                    categoryDetails.gambar_kategori?.let { gambarKategori ->
                         if (gambarKategori.isNotEmpty()) {
+
                             val imageBytes = Base64.decode(gambarKategori, Base64.DEFAULT)
+
+                            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            val tempFile = File(cacheDir, "api_image.jpg")
+                            val outStream = FileOutputStream(tempFile)
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
+                            outStream.flush()
+                            outStream.close()
+
+                            currentImageUri = tempFile.toUri()
+
                             Glide.with(this@EditCategoryActivity)
                                 .load(imageBytes)
                                 .into(binding.ivCategoryListPreview)
@@ -123,12 +143,12 @@ class EditCategoryActivity : AppCompatActivity() {
                         binding.ivCategoryListPreview.setImageResource(R.drawable.iv_panduan2)
                     }
 
-                    binding.edtCategoryNameForm.text = categoryDetails.namaKategori.toEditable()
-                    binding.edtCategoryPriceForm.text = categoryDetails.hargaKategori.toString().toEditable()
+                    binding.edtCategoryNameForm.text = categoryDetails.nama_kategori.toEditable()
+                    binding.edtCategoryPriceForm.text = categoryDetails.harga_kategori.toString().toEditable()
 
                     val spinnerAdapter = binding.spinnerWasteCategory.adapter
                     val position = (0 until spinnerAdapter.count)
-                        .firstOrNull { spinnerAdapter.getItem(it).toString() == categoryDetails.jenisKategori.toString() }
+                        .firstOrNull { spinnerAdapter.getItem(it).toString() == categoryDetails.jenis_kategori.toString() }
 
                     if (position != null) {
                         binding.spinnerWasteCategory.setSelection(position)
@@ -145,6 +165,7 @@ class EditCategoryActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("SuspiciousIndentation")
     private fun setupAction() {
         binding.btnChangeCategory.setOnClickListener {
 
@@ -154,25 +175,13 @@ class EditCategoryActivity : AppCompatActivity() {
         val type = binding.spinnerWasteCategory.selectedItem.toString()
         val imageBase64 = currentImageUri?.let { uriToBase64(it) } ?: ""
 
-        editCategory(userId, name, price, type, imageBase64)
-
-        viewModel.editCategoryResult.observe(this, Observer { result ->
-            when (result) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    showToast(getString(R.string.tv_on_process))
-                }
-                is Result.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    showToast(getString(R.string.tv_category_change_process_success))
-                    finish()
-                }
-                is Result.Error -> {
-                    showToast(" ${result.error}")
-                }
+            if (name.isEmpty() || price.isEmpty() || type.isEmpty()){
+                showToast(getString(R.string.tv_make_sure))
+                return@setOnClickListener
             }
-        })
-    }
+
+        editCategory(userId, name, price, type, imageBase64)
+        }
     }
 
     private fun setupSpinner() {
@@ -219,6 +228,38 @@ class EditCategoryActivity : AppCompatActivity() {
             e.printStackTrace()
             ""
         }
+    }
+
+    private fun observeViewModel() {
+        viewModel.editCategoryResult.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Berhasil!")
+                        setMessage("Kategori Berhasil Diubah")
+                        setPositiveButton("OK") { _, _ ->
+                            finish()
+                        }
+                        create()
+                        show()
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Gagal!")
+                        setMessage("Kategori Gagal Diubah")
+                        setPositiveButton("OK", null)
+                        create()
+                        show()
+                    }
+                }
+            }
+        })
     }
 
     private fun showToast(message: String) {

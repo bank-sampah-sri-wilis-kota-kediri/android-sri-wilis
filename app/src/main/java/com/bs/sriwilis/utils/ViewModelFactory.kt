@@ -7,9 +7,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.bs.sriwilis.helper.InjectionAuth
 import com.bs.sriwilis.helper.InjectionMain
 import com.bs.sriwilis.ui.authorization.LoginViewModel
+import com.bs.sriwilis.ui.homepage.HomeViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
+import com.bs.sriwilis.ui.homepage.operation.ManageTransactionViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
+import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
+import com.bs.sriwilis.ui.scheduling.OrderUnschedulingViewModel
+import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
+import com.bs.sriwilis.ui.settings.AdminViewModel
 import com.bs.sriwilis.ui.settings.SettingViewModel
 import com.bs.sriwilis.ui.splashscreen.WelcomeViewModel
 
@@ -27,9 +33,17 @@ class ViewModelFactory private constructor(
                 val repository = InjectionMain.provideRepository(context)
                 WelcomeViewModel(repository) as T
             }
+            modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                HomeViewModel(repository) as T
+            }
             modelClass.isAssignableFrom(SettingViewModel::class.java) -> {
                 val repository = InjectionMain.provideRepository(context)
                 SettingViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(AdminViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                AdminViewModel(repository) as T
             }
             modelClass.isAssignableFrom(ManageUserViewModel::class.java) -> {
                 val repository = InjectionMain.provideRepository(context)
@@ -42,6 +56,22 @@ class ViewModelFactory private constructor(
             modelClass.isAssignableFrom(ManageCatalogViewModel::class.java) -> {
                 val repository = InjectionMain.provideRepository(context)
                 ManageCatalogViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(OrderSchedulingViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                OrderSchedulingViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(OrderUnschedulingViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                OrderUnschedulingViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(SchedulingDetailViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                SchedulingDetailViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(ManageTransactionViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                ManageTransactionViewModel(repository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

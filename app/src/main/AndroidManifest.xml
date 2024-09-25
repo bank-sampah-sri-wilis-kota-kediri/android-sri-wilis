@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_bank_sampah_sri_willis"
@@ -14,6 +14,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BankSampahSriWilis"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.homepage.operation.AddCartTransactionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddCartTransactionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.scheduling.SchedulingDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.AddTransaction"
+            android:exported="false" />
         <activity
             android:name=".ui.homepage.operation.EditUserActivity"
             android:exported="false" />
@@ -45,13 +57,13 @@
             android:name=".ui.authorization.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.order.OrderActivity"
+            android:name=".ui.history.OrderActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.order.DetailOrderActivity"
+            android:name=".ui.history.DetailHistoryActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.mutation.InputMutationActivity"
+            android:name=".ui.scheduling.InputMutationActivity"
             android:exported="false" />
         <activity
             android:name=".ui.settings.ChangePasswordActivity"
@@ -77,7 +89,7 @@
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
 </manifest>

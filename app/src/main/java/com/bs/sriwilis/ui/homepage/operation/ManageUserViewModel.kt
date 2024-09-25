@@ -6,9 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bs.sriwilis.data.repository.MainRepository
-import com.bs.sriwilis.data.response.GetAllUserResponse
+import com.bs.sriwilis.data.repository.modelhelper.CardNasabah
+import com.bs.sriwilis.data.response.GetUserByIdResponse
+import com.bs.sriwilis.data.response.NasabahResponseDTO
 import com.bs.sriwilis.data.response.RegisterUserResponse
 import com.bs.sriwilis.data.response.UserItem
+import com.bs.sriwilis.data.room.entity.NasabahEntity
 import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
 
@@ -16,11 +19,41 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
     private val _registerResult = MutableLiveData<Result<RegisterUserResponse>>()
     val registerResult: LiveData<Result<RegisterUserResponse>> = _registerResult
 
-    private val _users = MutableLiveData<Result<GetAllUserResponse>>()
-    val users: LiveData<Result<GetAllUserResponse>> get() = _users
+    private val _nasabah = MutableLiveData<Result<List<CardNasabah>>>()
+    val nasabah: LiveData<Result<List<CardNasabah>>> get() = _nasabah
 
-    private val _usersData = MutableLiveData<Result<UserItem>>()
-    val usersData: LiveData<Result<UserItem>> get() = _usersData
+    private val _users = MutableLiveData<Result<GetUserByIdResponse>>()
+    val users: LiveData<Result<GetUserByIdResponse>> get() = _users
+
+    private val _usersData = MutableLiveData<Result<CardNasabah>>()
+    val usersData: LiveData<Result<CardNasabah>> get() = _usersData
+
+    private val _deleteResult = MutableLiveData<Result<Boolean>>()
+    val deleteResult: LiveData<Result<Boolean>> get() = _deleteResult
+
+    fun deleteUser(userPhone: String) {
+        viewModelScope.launch {
+            _deleteResult.postValue(Result.Loading)
+            try {
+                when (val result = repository.deleteUser(userPhone)) {
+                    is Result.Success -> {
+                        if (result.data) {
+                            _deleteResult.postValue(Result.Success(true))
+                        } else {
+                            _deleteResult.postValue(Result.Error("Failed to delete user"))
+                        }
+                    }
+                    is Result.Error -> {
+                        _deleteResult.postValue(Result.Error(result.error ?: "Unknown error occurred"))
+                    }
+                    Result.Loading -> {
+                    }
+                }
+            } catch (e: Exception) {
+                _deleteResult.postValue(Result.Error(e.message ?: "Unknown error occurred"))
+            }
+        }
+    }
 
     fun register(phone: String, password: String, name: String, address: String, balance: String) {
         viewModelScope.launch {
@@ -32,28 +65,27 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
 
     fun editUser(userId: String, phone: String, name: String, address: String, balance: Double) {
         viewModelScope.launch {
-            _registerResult.value = Result.Loading
+            _users.value = Result.Loading
             val result = repository.editUser(userId, phone, name, address, balance)
-            _registerResult.value = result
+            _users.value = result
         }
     }
 
-    fun getUsers() {
-        viewModelScope.launch {
-            val result = repository.getUser()
-            _users.postValue(result)
-        }
+    suspend fun getUsers() {
+        _nasabah.postValue(Result.Loading)
+        val result = repository.getAllNasabahDao()
+        _nasabah.postValue(result)
     }
 
-    fun fetchUserDetails(userId: String) {
+    fun fetchUserDetails(phone: String) {
         viewModelScope.launch {
             _usersData.value = Result.Loading
-            when (val result = repository.getUserById(userId)) {
+            when (val result = repository.getNasabahByPhone(phone)) {
                 is Result.Success -> {
-                    _usersData.postValue(Result.Success(result.data))
+                    _usersData.value = Result.Success(result.data)
                 }
                 is Result.Error -> {
-                    _usersData.postValue(Result.Error(result.error))
+                    _usersData.value = Result.Error(result.error)
                     Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
                 }
 
@@ -62,20 +94,8 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
         }
     }
 
-    fun deleteUser(userId: String) {
-        viewModelScope.launch {
-            _usersData.value = Result.Loading
-            when (val result = repository.deleteUser(userId)) {
-                is Result.Success -> {
-                    result.data
-                }
-                is Result.Error -> {
-                    _usersData.postValue(Result.Error(result.error))
-                    Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
-                }
-                Result.Loading -> {}
-            }
-        }
+    suspend fun syncData(): Result<Unit> {
+        return repository.syncData()
     }
 
 }

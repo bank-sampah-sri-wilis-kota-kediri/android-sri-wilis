@@ -17,10 +17,10 @@
 
     <ImageView
         android:id="@+id/ic_logo"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="275dp"
+        android:layout_height="275dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_bank_sampah_sri_wilis"/>
+        android:src="@drawable/ic_bank_sampah_sri_willis"/>
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("kotlin-kapt")
 }
 
 android {
@@ -76,6 +77,14 @@ dependencies {
     implementation(libs.material.v130alpha03)
     implementation(libs.glide)
 
+    //room
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.room.compiler)
+    kapt(libs.androidx.room.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.material)
+    implementation(libs.androidx.swiperefreshlayout)
 
     /*  //ui
             implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")

@@ -6,30 +6,32 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bs.sriwilis.data.repository.MainRepository
+import com.bs.sriwilis.data.repository.modelhelper.CardCategory
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
+import com.bs.sriwilis.data.response.SingleCategoryResponse
 import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
 
 class ManageCategoryViewModel(private val repository: MainRepository) : ViewModel() {
 
-    private val _addCategoryResult = MutableLiveData<Result<CategoryResponse>>()
-    val addCategoryResult: LiveData<Result<CategoryResponse>> = _addCategoryResult
+    private val _addCategoryResult = MutableLiveData<Result<SingleCategoryResponse>>()
+    val addCategoryResult: LiveData<Result<SingleCategoryResponse>> = _addCategoryResult
 
-    private val _editCategoryResult = MutableLiveData<Result<CategoryResponse>>()
-    val editCategoryResult: LiveData<Result<CategoryResponse>> = _editCategoryResult
+    private val _editCategoryResult = MutableLiveData<Result<SingleCategoryResponse>>()
+    val editCategoryResult: LiveData<Result<SingleCategoryResponse>> = _editCategoryResult
 
-    private val _categories = MutableLiveData<Result<CategoryResponse>>()
-    val categories: LiveData<Result<CategoryResponse>> get() = _categories
+    private val _categories = MutableLiveData<Result<List<CardCategory>?>>()
+    val categories: LiveData<Result<List<CardCategory>?>> get() = _categories
 
-    private val _categoryData = MutableLiveData<Result<CategoryData>>()
-    val categoryData: LiveData<Result<CategoryData>> get() = _categoryData
+    private val _categoryData = MutableLiveData<Result<CardCategory>>()
+    val categoryData: LiveData<Result<CardCategory>> get() = _categoryData
 
-    fun addCategory(token: String, name: String, price: String, type: String, imageBase64: String) {
+    fun addCategory(name: String, price: String, type: String, imageBase64: String) {
         viewModelScope.launch {
-            _editCategoryResult.value = Result.Loading
-            val result = repository.addCategory(token, name, price, type, imageBase64)
-            _editCategoryResult.value = result
+            _addCategoryResult.postValue(Result.Loading)
+            val result = repository.addCategory(name, price, type, imageBase64)
+            _addCategoryResult.postValue(result)
         }
     }
 
@@ -37,21 +39,21 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
         viewModelScope.launch {
             _editCategoryResult.value = Result.Loading
             val result = repository.editCategory(userId, name, price, type, image)
+            Log.d("status edit kategori",result.toString())
             _editCategoryResult.value = result
         }
     }
 
-    fun getCategory() {
-        viewModelScope.launch {
-            val result = repository.getCategory()
-            _categories.postValue(result)
-        }
+    suspend fun getCategory() {
+        _categories.postValue(Result.Loading)
+        val result = repository.getAllCategoriesDao()
+        _categories.postValue(result)
     }
 
     fun fetchCategoryDetails(id: String) {
         viewModelScope.launch {
             _categoryData.value = Result.Loading
-            when (val result = repository.getCategoryById(id)) {
+            when (val result = repository.getCategoryByIdDao(id)) {
                 is Result.Success -> {
                     _categoryData.postValue(Result.Success(result.data))
                 }
@@ -65,7 +67,7 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
         }
     }
 
-    fun deleteUser(categoryId: String) {
+    fun deleteCategory(categoryId: String) {
         viewModelScope.launch {
             _categoryData.value = Result.Loading
             when (val result = repository.deleteCategory(categoryId)) {
@@ -80,4 +82,9 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
             }
         }
     }
+
+    suspend fun syncData(): Result<Unit> {
+        return repository.syncData()
+    }
+
 }

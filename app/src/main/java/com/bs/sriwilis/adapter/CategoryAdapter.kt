@@ -12,9 +12,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
 import com.bs.sriwilis.data.repository.MainRepository
+import com.bs.sriwilis.data.repository.modelhelper.CardCategory
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.UserData
 import com.bs.sriwilis.data.response.UserItem
@@ -31,7 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CategoryAdapter(
-    private var category: List<CategoryData?>,
+    private var category: List<CardCategory?>,
     private val context: Context
 
 ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
@@ -42,20 +44,20 @@ class CategoryAdapter(
 
     inner class CategoryViewHolder(private val binding: CardCategoryListBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(category: CategoryData?) {
+        fun bind(category: CardCategory?) {
             with(binding) {
-                category?.gambarKategori?.let { gambarKategori ->
+                category?.gambar_kategori?.let { gambarKategori ->
                     val imageBytes = Base64.decode(gambarKategori, Base64.DEFAULT)
                     Glide.with(itemView.context)
                         .load(imageBytes)
                         .into(ivCategoryListPreview)
                 } ?: run {
-                    ivCategoryListPreview.setImageResource(R.drawable.iv_panduan2)
+                    ivCategoryListPreview.setImageResource(R.drawable.iv_waste_box)
                 }
 
-                tvCategoryListName.text = category?.namaKategori
-                tvCategoryListType.text = category?.jenisKategori
-                tvCategoryItemPrice.text = category?.hargaKategori.toString()
+                tvCategoryListName.text = category?.nama_kategori
+                tvCategoryListType.text = category?.jenis_kategori
+                tvCategoryItemPrice.text = "Rp" + category?.harga_kategori.toString()
 
                 itemView.setOnClickListener {
                     category?.id?.let { id ->
@@ -68,7 +70,7 @@ class CategoryAdapter(
 
                 btnDelete.setOnClickListener {
                     category?.id?.let { id ->
-                        showDeleteConfirmationDialog(id)
+                        showDeleteConfirmationDialog(itemView, id)
                     }
                 }
             }
@@ -92,17 +94,23 @@ class CategoryAdapter(
         holder.bind(category[position])
     }
 
-    fun updateCategory(newCategories: List<CategoryData?>) {
+    fun updateCategory(newCategories: List<CardCategory?>) {
         this.category = newCategories
         notifyDataSetChanged()
     }
 
-    private fun showDeleteConfirmationDialog(catalogId: String) {
+    private fun showDeleteConfirmationDialog(itemView: View, categoryId: String) {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
         dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
-            viewModel.deleteUser(catalogId)
+
+            val activity = itemView.context as AppCompatActivity
+            activity.lifecycleScope.launch {
+                viewModel.deleteCategory(categoryId)
+                viewModel.syncData()
+                viewModel.getCategory()
+            }
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()

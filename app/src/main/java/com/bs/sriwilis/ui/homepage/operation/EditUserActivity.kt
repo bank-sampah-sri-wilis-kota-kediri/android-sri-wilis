@@ -6,19 +6,26 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.bs.sriwilis.R
+import com.bs.sriwilis.adapter.CategoryAdapter
+import com.bs.sriwilis.adapter.UserAdapter
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
 import com.bs.sriwilis.databinding.ActivityEditUserBinding
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class EditUserActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditUserBinding
+    private lateinit var userAdapter: UserAdapter
 
     private val viewModel by viewModels<ManageUserViewModel> {
         ViewModelFactory.getInstance(this)
@@ -30,12 +37,14 @@ class EditUserActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val userId = intent.getStringExtra("userId") ?: throw IllegalArgumentException("ID Pengguna tidak ada")
+        val phone = intent.getStringExtra("phone") ?: throw IllegalArgumentException("Nomor Pengguna tidak ada")
 
-        userId.let {
+        phone.let {
             viewModel.fetchUserDetails(it)
         }
 
         observeUser()
+        observeViewModel()
         setupAction()
 
         binding.apply {
@@ -53,10 +62,13 @@ class EditUserActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
 
                     val userDetails = result.data
-                    binding.edtEditUserPhone.text = userDetails.noHpNasabah.toEditable()
-                    binding.edtFullNameForm.text = userDetails.namaNasabah.toEditable()
-                    binding.edtEditUserAddress.text = userDetails.alamatNasabah.toEditable()
-                    binding.edtEditUserAccountBalance.text = userDetails.saldoNasabah.toString().toEditable()
+
+                    if (userDetails != null) {
+                        binding.edtEditUserPhone.text = userDetails.no_hp_nasabah.toEditable()
+                        binding.edtFullNameForm.text = userDetails.nama_nasabah.toEditable()
+                        binding.edtEditUserAddress.text = userDetails.alamat_nasabah.toEditable()
+                        binding.edtEditUserAccountBalance.text = userDetails.saldo_nasabah.toString().toEditable()
+                    }
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -80,7 +92,8 @@ class EditUserActivity : AppCompatActivity() {
         }
     }
 
-    private fun editUser(userId: String, name: String, phone: String, address: String, balance: Double) {
+    private fun editUser(userId: String, phone: String, name: String, address: String, balance: Double) {
+        binding.progressBar.visibility = View.VISIBLE
         viewModel.editUser(userId, name, phone, address, balance)
     }
 
@@ -88,5 +101,50 @@ class EditUserActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun observeViewModel() {
+        viewModel.users.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Berhasil!")
+                        setMessage("Akun Pengguna Berhasil Diubah")
+                        setPositiveButton("OK") { _, _ ->
+                            lifecycleScope.launch {
+                                viewModel.syncData()
+                                viewModel.getUsers()
+                            }
+                            refreshUserList()
+                            finish()
+                        }
+                        create()
+                        show()
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Gagal!")
+                        setMessage("Akun Pengguna Gagal Diubah")
+                        setPositiveButton("OK", null)
+                        create()
+                        show()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun refreshUserList() {
+        lifecycleScope.launch {
+            viewModel.getUsers()
+        }
+
+        userAdapter.notifyDataSetChanged()
     }
 }
