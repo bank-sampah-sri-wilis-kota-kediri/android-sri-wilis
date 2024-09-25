@@ -16,6 +16,8 @@ import com.bs.sriwilis.data.response.SingleAdminResponse
 import com.bs.sriwilis.data.response.SingleCatalogResponse
 import com.bs.sriwilis.data.response.SingleCategoryResponse
 import com.bs.sriwilis.data.response.SinglePesananSampahResponse
+import com.bs.sriwilis.model.CartTransaction
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -207,6 +209,17 @@ interface ApiServiceMain {
         @Header("Authorization") token: String
     ): Response<Unit>
 
+    // ADD TRANSACTION CRUD
+
+    @POST("transaksi/add")
+    fun addCartTransaction(
+        @Header("Authorization") token: String,
+        @Field("no_hp_nasabah") no_hp_nasabah: String,
+        @Field("tanggal") tanggal: String,
+        @Body cartTransaction: CartTransaction
+    ): Response<Void>
+
+
     // SCHEDULING CRUD
 
     @GET("pesanan/show-all-pesanan-sampah-keranjang")
@@ -240,5 +253,6 @@ interface ApiServiceMain {
     suspend fun getOrderScheduleById(
         @Header("Authorization") token: String,
     ): Response<PesananSampahKeranjangResponse>
+
 
 }

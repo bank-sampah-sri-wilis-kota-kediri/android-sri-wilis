@@ -135,7 +135,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_catalog_price">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_catalog_price"
+                    android:id="@+id/edt_waste_weight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Kg"
@@ -162,7 +162,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_link_shopee">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_link_shopee"
+                    android:id="@+id/edt_waste_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Rp" />
