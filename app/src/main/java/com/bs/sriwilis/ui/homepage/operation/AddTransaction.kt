@@ -1,5 +1,6 @@
 package com.bs.sriwilis.ui.homepage.operation
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -8,15 +9,20 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
+import com.bs.sriwilis.adapter.CartTransactionAdapter
 import com.bs.sriwilis.databinding.ActivityAddTransactionBinding
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.model.CartTransaction
 import java.util.Calendar
 
 class AddTransaction : AppCompatActivity() {
@@ -27,9 +33,14 @@ class AddTransaction : AppCompatActivity() {
     }
     private lateinit var spinner: Spinner
 
-    private var selectedPhone: String? = null
+    private var selectedId: String? = null
     private var selectedDate: String? = null
 
+    private var totalWeight: Int = 0
+    private var totalPrice: Float = 0.0f
+    private var cartItems = mutableListOf<CartTransaction>()
+
+    private lateinit var adapter: CartTransactionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,20 +50,44 @@ class AddTransaction : AppCompatActivity() {
 
         spinner = binding.spinnerNasabahChoose
 
-        getUserPhone()
+        val recyclerView: RecyclerView = findViewById(R.id.rv_transaction_cart)
+        val cartItems = mutableListOf<CartTransaction>()
+
+        adapter = CartTransactionAdapter(cartItems)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        getUserId()
         setupDatePicker()
 
         binding.apply {
             btnAddCart.setOnClickListener {
                 val intent = Intent(this@AddTransaction, AddCartTransactionActivity::class.java)
-                startActivity(intent)
+                startActivityForResult(intent, REQUEST_CODE_ADD_CART)
             }
 
             btnBack.setOnClickListener { finish() }
         }
     }
 
-    private fun getUserPhone() {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_ADD_CART && resultCode == Activity.RESULT_OK) {
+            val cartTransactions = data?.getParcelableArrayListExtra<CartTransaction>("transaksi_sampah")
+            cartTransactions?.forEach {
+                Log.d("ReceivedTransaction", "Transaction: $it")
+                adapter.addCartTransaction(it)
+                cartItems.add(it)
+            }
+
+            // Update total weight and price after adding items
+            calculateTotal(cartItems)
+        }
+    }
+
+
+
+    private fun getUserId() {
         viewModel.nasabah.observe(this) { result ->
             when (result) {
                 is Result.Success -> {
@@ -68,8 +103,8 @@ class AddTransaction : AppCompatActivity() {
                             position: Int,
                             id: Long
                         ) {
-                            selectedPhone = viewModel.getPhoneByPosition(position)
-                            Log.d("SelectedPhone", "Phone: $selectedPhone")
+                            selectedId = viewModel.getIdByPosition(position)
+                            Log.d("SelectedPhone", "Phone: $selectedId")
                         }
 
                         override fun onNothingSelected(parent: AdapterView<*>?) { }
@@ -80,12 +115,10 @@ class AddTransaction : AppCompatActivity() {
                     Log.e("Spinner", "Error loading user details: ${result.error}")
                 }
 
-                Result.Loading -> {
-                    // Show loading indicator
-                }
+                Result.Loading -> { }
             }
         }
-        viewModel.getUserPhones()
+        viewModel.getUserId()
     }
 
     private fun setupDatePicker() {
@@ -109,4 +142,60 @@ class AddTransaction : AppCompatActivity() {
         }
     }
 
+    private fun calculateTotal(cartTransactions: List<CartTransaction>) {
+        totalWeight = cartTransactions.sumOf { it.berat }
+        totalPrice = cartTransactions.sumOf { it.harga.toDouble() }.toFloat()
+
+        Log.d("TotalCalculation", "Total weight: $totalWeight kg, Total price: Rp $totalPrice")
+
+        binding.tvWeightEstimation.text = "$totalWeight kg"
+        binding.tvPriceEstimation.text = "Rp $totalPrice"
+    }
+
+   /* private suspend fun submitCatalog() {
+        val nasabah = selectedPhone
+        val tanggal = selectedDate
+        val link = binding.edtLinkShopee.text.toString()
+        val number = binding.edtMobileNumber.text.toString()
+        val desc = binding.edtDescriptionCatalog.text.toString()
+        val token = viewModel.getToken()
+
+        if (nasabah != null && tanggal != null &&) {
+            if (nasabah.isEmpty() || tanggal.isEmpty() ) {
+                showToast(getString(R.string.tv_make_sure))
+                return
+            }
+        }
+
+        if (token != null) {
+            binding.progressBar.visibility = View.VISIBLE
+            viewModel.addCatalog(token, name, desc, price, number, link, imageBase64)
+        }
+
+        viewModel.addCatalogResult.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    showToast(getString(R.string.tv_on_process))
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    showToast(getString(R.string.tv_category_process_success))
+                    finish()
+                }
+                is Result.Error -> {
+                    showToast(" ${result.error}")
+                }
+            }
+        })
+    }
+*/
+
+    companion object {
+        private const val REQUEST_CODE_ADD_CART = 1002
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 }
