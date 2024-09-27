@@ -19,7 +19,7 @@ class CartTransactionAdapter(private val cartItems: MutableList<CartTransaction>
 
         fun bind(cartTransaction: CartTransaction) {
             tvOrderName.text = cartTransaction.kategori
-            tvWeight.text = cartTransaction.berat.toString() + "Kg"
+            tvWeight.text = cartTransaction.berat.toString() + " kg"
         }
     }
 

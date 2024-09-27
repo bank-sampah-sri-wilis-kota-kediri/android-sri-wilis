@@ -53,7 +53,7 @@ class OrderScheduledAdapter(
         fun bind(scheduledOrder: DataKeranjangItem?) {
             with(binding) {
                 scheduledOrder?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerName(nasabahId.toString()) { customerName ->
+                    viewModel.getCustomerName(nasabahId) { customerName ->
                         tvNamaPesanan.text = customerName
                     }
                 }
@@ -64,7 +64,7 @@ class OrderScheduledAdapter(
                 tvBeratTransaksi.text = "$totalBerat kg"
 
                 itemView.setOnClickListener {
-                    scheduledOrder?.id?.let { id ->
+                    scheduledOrder?.idNasabah?.let { id ->
                         onItemClick?.invoke(id)
                         val intent = Intent(itemView.context, SchedulingDetailActivity::class.java)
                         intent.putExtra("id", id)

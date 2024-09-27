@@ -32,7 +32,7 @@ data class PesananSampahItem(
 	val kategori: String? = null,
 
 	@field:SerializedName("id")
-	val id: Int? = null,
+	val id: String,
 
 	@field:SerializedName("gambar")
 	val gambar: String? = null
@@ -40,13 +40,18 @@ data class PesananSampahItem(
 
 data class SinglePesananSampahResponse(
 	@field:SerializedName("data")
-	val data: AdminData? = null,
+	val data: DataKeranjangItem? = null,
 
 	@field:SerializedName("success")
 	val success: Boolean? = null,
 
 	@field:SerializedName("message")
 	val message: String? = null
+)
+
+data class DataKeranjangItemResponse(
+	val status: String,
+	val data: List<DataKeranjangItem>
 )
 
 data class DataKeranjangItem(
@@ -58,7 +63,7 @@ data class DataKeranjangItem(
 	val idPesanan: String? = null,
 
 	@field:SerializedName("id_nasabah")
-	val idNasabah: Int? = null,
+	val idNasabah: String,
 
 	@field:SerializedName("updated_at")
 	val updatedAt: Any? = null,

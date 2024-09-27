@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -37,62 +38,25 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CartAdapter(
-    private var cart: List<PesananSampahItem?>,
-    private val context: Context
+class CartAdapter(private val items: List<PesananSampahItem?>) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
-) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
-
-    var onItemClick: ((String) -> Unit)? = null
-    private var categorylist: List<String> = emptyList()
-    private lateinit var viewModel: ManageCatalogViewModel
-
-    inner class CartViewHolder(private val binding: CardOrderSchedulingDetailListBinding) : RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(cart: PesananSampahItem?) {
-            with(binding) {
-                tvKategoriPesanan.text = cart?.kategori
-                tvBeratPesanan.text = cart?.beratPerkiraan.toString()
-            }
-        }
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val kategoriTextView: TextView = itemView.findViewById(R.id.tv_kategori_pesanan)
+        val beratTextView: TextView = itemView.findViewById(R.id.tv_berat_pesanan)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
-        val binding = CardOrderSchedulingDetailListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
-        val activity = parent.context as AppCompatActivity
-        viewModel = ViewModelProvider(activity)[ManageCatalogViewModel::class.java]
-
-        return CartViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.card_order_scheduling_detail_list, parent, false)
+        return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return cart.size
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = items[position]
+        holder.kategoriTextView.text = item?.kategori
+        holder.beratTextView.text = item?.beratPerkiraan.toString()
     }
 
-    override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        holder.bind(cart[position])
-    }
-
-    fun updateCatalog(newCart: List<PesananSampahItem?>) {
-        this.cart = newCart
-        notifyDataSetChanged()
-    }
-
-    private fun showDeleteConfirmationDialog(catalogId: String) {
-        val dialogBuilder = AlertDialog.Builder(context)
-        dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
-        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini?")
-        dialogBuilder.setPositiveButton("Ya") { _, _ ->
-            viewModel.deleteCatalog(catalogId)
-            viewModel.getCatalog()
-        }
-        dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
-            dialog.dismiss()
-        }
-        val alertDialog = dialogBuilder.create()
-        alertDialog.show()
-    }
-
-
+    override fun getItemCount(): Int = items.size
 }
+

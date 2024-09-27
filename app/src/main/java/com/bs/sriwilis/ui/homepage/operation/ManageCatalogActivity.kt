@@ -51,10 +51,6 @@ class ManageCatalogActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         binding.rvCatalog.layoutManager = LinearLayoutManager(this)
         binding.rvCatalog.adapter = catalogAdapter
-
-        lifecycleScope.launch {
-                viewModel.getCatalog()
-        }
     }
 
     private fun observeCatalog() {

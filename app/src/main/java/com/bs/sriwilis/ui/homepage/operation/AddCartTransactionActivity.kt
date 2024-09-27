@@ -54,17 +54,19 @@ class AddCartTransactionActivity : AppCompatActivity() {
             btnSave.setOnClickListener { saveCartTransaction() }
 
             edtWasteWeight.addTextChangedListener {
-                val weight = it.toString().toIntOrNull() ?: 0
-                updatePrice(weight)
+                updatePrice()
             }
+
         }
         getCategorySpinner()
     }
 
-    private fun updatePrice(weight: Int) {
+    private fun updatePrice() {
+        val weight = binding.edtWasteWeight.text.toString().toFloatOrNull() ?: 0.0f
         val calculatedPrice = basePrice * weight
-        binding.edtWastePrice.setText(calculatedPrice.toString()) // Automatically update the price field
+        binding.edtWastePrice.setText(calculatedPrice.toString())
     }
+
 
     private fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -92,9 +94,9 @@ class AddCartTransactionActivity : AppCompatActivity() {
             Toast.makeText(this, "Semua data harus diisi!", Toast.LENGTH_SHORT).show()
         }
 
+        val cartTransactionId = cartTransactions.size + 1
+
         val cartTransaction = CartTransaction(
-            id = "",
-            id_keranjang_transaksi = "",
             kategori = selectedCategory,
             berat = weight,
             harga = price,
@@ -102,6 +104,7 @@ class AddCartTransactionActivity : AppCompatActivity() {
         )
 
         cartTransactions.add(cartTransaction)
+
 
         // Calculate total weight and price
         val totalWeight = cartTransactions.sumOf { it.berat }
@@ -146,6 +149,8 @@ class AddCartTransactionActivity : AppCompatActivity() {
                             val categoryItem = viewModel.getCategoryByPosition(position) // Retrieve full object
                             basePrice = categoryItem?.basePrice ?: 0.0f // Now retrieve base price if needed
                             Log.d("SelectedCategory", "Category: $selectedCategory, Base Price: $basePrice")
+
+                            updatePrice()
                         }
 
                         override fun onNothingSelected(parent: AdapterView<*>?) { }
