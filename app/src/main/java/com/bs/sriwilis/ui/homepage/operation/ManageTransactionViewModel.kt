@@ -11,10 +11,12 @@ import com.bs.sriwilis.data.repository.modelhelper.CardNasabah
 import com.bs.sriwilis.data.response.GetUserByIdResponse
 import com.bs.sriwilis.data.response.NasabahResponseDTO
 import com.bs.sriwilis.data.response.RegisterUserResponse
+import com.bs.sriwilis.data.response.TransactionResponse
 import com.bs.sriwilis.data.response.UserItem
 import com.bs.sriwilis.data.room.entity.NasabahEntity
 import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.model.CartTransaction
 
 class ManageTransactionViewModel(private val repository: MainRepository) : ViewModel() {
 
@@ -38,6 +40,9 @@ class ManageTransactionViewModel(private val repository: MainRepository) : ViewM
 
     private val _categoryNames = MutableLiveData<Result<List<String>>>()
     val categoryNames: LiveData<Result<List<String>>> get() = _categoryNames
+
+    private val _transactionResult = MutableLiveData<Result<TransactionResponse>>()
+    val transactionResult: LiveData<Result<TransactionResponse>> get() = _transactionResult
 
     data class Category(val name: String, val basePrice: Float)
 
@@ -117,6 +122,18 @@ class ManageTransactionViewModel(private val repository: MainRepository) : ViewM
             is Result.Error -> null
             Result.Loading -> null
             null -> null
+        }
+    }
+
+    fun addCartTransaction(
+        idNasabah: String,
+        tanggal: String,
+        cartTransaction: List<CartTransaction>
+    ) {
+        viewModelScope.launch {
+            _transactionResult.value = Result.Loading
+            val result = repository.addCartTransaction(idNasabah, tanggal, cartTransaction)
+            _transactionResult.value = result
         }
     }
 

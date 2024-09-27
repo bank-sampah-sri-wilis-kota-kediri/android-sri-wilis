@@ -52,7 +52,7 @@ class OrderUnscheduledAdapter(
         fun bind(unscheduledOrder: DataKeranjangItem?) {
             with(binding) {
                 unscheduledOrder?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerName(nasabahId.toString()) { customerName ->
+                    viewModel.getCustomerName(nasabahId) { customerName ->
                         tvNamaPesanan.text = customerName
                     }
                 }
@@ -63,7 +63,7 @@ class OrderUnscheduledAdapter(
                 tvBeratTransaksi.text = "$totalBerat kg"
 
                 itemView.setOnClickListener {
-                    unscheduledOrder?.id?.let { id ->
+                    unscheduledOrder?.idNasabah?.let { id ->
                         onItemClick?.invoke(id)
                         val intent = Intent(itemView.context, SchedulingDetailActivity::class.java)
                         intent.putExtra("id", id)

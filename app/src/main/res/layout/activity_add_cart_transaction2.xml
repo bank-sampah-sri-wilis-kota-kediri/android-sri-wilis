@@ -165,7 +165,8 @@
                     android:id="@+id/edt_waste_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Rp" />
+                    android:hint="Rp"
+                    android:enabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

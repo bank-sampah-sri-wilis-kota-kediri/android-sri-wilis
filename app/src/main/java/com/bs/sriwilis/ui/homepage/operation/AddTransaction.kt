@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
@@ -23,6 +24,7 @@ import com.bs.sriwilis.databinding.ActivityAddTransactionBinding
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.model.CartTransaction
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class AddTransaction : AppCompatActivity() {
@@ -65,8 +67,10 @@ class AddTransaction : AppCompatActivity() {
                 val intent = Intent(this@AddTransaction, AddCartTransactionActivity::class.java)
                 startActivityForResult(intent, REQUEST_CODE_ADD_CART)
             }
-
             btnBack.setOnClickListener { finish() }
+            btnSave.setOnClickListener {
+                lifecycleScope.launch { submitTransaction() }
+            }
         }
     }
 
@@ -80,12 +84,9 @@ class AddTransaction : AppCompatActivity() {
                 cartItems.add(it)
             }
 
-            // Update total weight and price after adding items
             calculateTotal(cartItems)
         }
     }
-
-
 
     private fun getUserId() {
         viewModel.nasabah.observe(this) { result ->
@@ -104,7 +105,7 @@ class AddTransaction : AppCompatActivity() {
                             id: Long
                         ) {
                             selectedId = viewModel.getIdByPosition(position)
-                            Log.d("SelectedPhone", "Phone: $selectedId")
+                            Log.d("SelectedId", "ID: $selectedId")
                         }
 
                         override fun onNothingSelected(parent: AdapterView<*>?) { }
@@ -152,44 +153,37 @@ class AddTransaction : AppCompatActivity() {
         binding.tvPriceEstimation.text = "Rp $totalPrice"
     }
 
-   /* private suspend fun submitCatalog() {
-        val nasabah = selectedPhone
+    private fun submitTransaction() {
+        val idNasabah = selectedId
         val tanggal = selectedDate
-        val link = binding.edtLinkShopee.text.toString()
-        val number = binding.edtMobileNumber.text.toString()
-        val desc = binding.edtDescriptionCatalog.text.toString()
-        val token = viewModel.getToken()
 
-        if (nasabah != null && tanggal != null &&) {
-            if (nasabah.isEmpty() || tanggal.isEmpty() ) {
-                showToast(getString(R.string.tv_make_sure))
-                return
-            }
-        }
-
-        if (token != null) {
-            binding.progressBar.visibility = View.VISIBLE
-            viewModel.addCatalog(token, name, desc, price, number, link, imageBase64)
-        }
-
-        viewModel.addCatalogResult.observe(this, Observer { result ->
-            when (result) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    showToast(getString(R.string.tv_on_process))
-                }
-                is Result.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    showToast(getString(R.string.tv_category_process_success))
-                    finish()
-                }
-                is Result.Error -> {
-                    showToast(" ${result.error}")
+        if (idNasabah != null && tanggal != null && cartItems.isNotEmpty()) {
+            viewModel.transactionResult.observe(this) { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                        showToast(getString(R.string.tv_on_process))
+                    }
+                    is Result.Success -> {
+                        binding.progressBar.visibility = View.GONE
+                        showToast(getString(R.string.tv_transaction_success))
+                        finish()
+                    }
+                    is Result.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        showToast("Error: ${result.error}")
+                    }
                 }
             }
-        })
+
+            // Trigger the transaction
+            viewModel.addCartTransaction(idNasabah, tanggal, cartItems)
+        } else {
+            showToast("Please select a user, date, and add items to the cart")
+        }
     }
-*/
+
+
 
     companion object {
         private const val REQUEST_CODE_ADD_CART = 1002

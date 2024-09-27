@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.FragmentHistoryMutationBinding
+import com.bs.sriwilis.databinding.FragmentHistoryOrderBinding
 import com.bs.sriwilis.databinding.FragmentOrderFailedBinding
 
 class HistoryMutationFragment : Fragment() {
@@ -18,8 +19,8 @@ class HistoryMutationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history_mutation, container, false)
+        _binding = FragmentHistoryMutationBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,7 +40,8 @@ class HistoryMutationFragment : Fragment() {
 
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container_history, fragment)
+            .replace(R.id.fragment_container_history_order, fragment)
+            .addToBackStack(null)
             .commit()
     }
 
