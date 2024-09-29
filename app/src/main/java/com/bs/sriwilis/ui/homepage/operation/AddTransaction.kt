@@ -158,6 +158,8 @@ class AddTransaction : AppCompatActivity() {
         val tanggal = selectedDate
 
         if (idNasabah != null && tanggal != null && cartItems.isNotEmpty()) {
+            // Trigger the transaction
+            viewModel.addCartTransaction(idNasabah, tanggal, cartItems)
             viewModel.transactionResult.observe(this) { result ->
                 when (result) {
                     is Result.Loading -> {
@@ -175,9 +177,6 @@ class AddTransaction : AppCompatActivity() {
                     }
                 }
             }
-
-            // Trigger the transaction
-            viewModel.addCartTransaction(idNasabah, tanggal, cartItems)
         } else {
             showToast("Please select a user, date, and add items to the cart")
         }

@@ -27,6 +27,7 @@ import com.bs.sriwilis.data.response.SinglePesananSampahResponse
 import com.bs.sriwilis.data.response.TransactionDataItem
 import com.bs.sriwilis.data.response.TransactionResponse
 import com.bs.sriwilis.data.response.TransaksiSampahItem
+import com.bs.sriwilis.data.response.TransaksiSampahItemResponse
 import com.bs.sriwilis.model.CartTransaction
 import retrofit2.Call
 import retrofit2.Response
@@ -36,6 +37,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -222,11 +224,12 @@ interface ApiServiceMain {
 
     // TRANSACTION CRUD
 
+    @Headers("Content-type: application/json")
     @POST("transaksi/add")
     suspend fun addCartTransaction(
         @Header("Authorization") token: String,
         @Body cartTransactionRequest: CartTransactionRequest
-    ): Response<TransactionResponse>
+    ): Response<TransaksiSampahItemResponse>
 
     @GET("transaksi/show-all")
     suspend fun getAllTransaction(
@@ -267,20 +270,22 @@ interface ApiServiceMain {
         @Field("tanggal") tanggal: String,
     ): Response<SinglePesananSampahResponse>
 
-    @FormUrlEncoded
-    @PUT("pesanan/update-status/{id}")
+    @PUT("pesanan/update-status-berhasil/{id}")
     suspend fun updateStatusSelesai(
         @Path("id") orderId: String,
         @Header("Authorization") token: String,
-        @Field("dummyField") dummyField: String = "1"
     ): Response<SinglePesananSampahResponse>
 
-    @FormUrlEncoded
+    @PUT("pesanan/update-status-sudah-dijadwalkan/{id}")
+    suspend fun updateStatusSudahDijadwalkan(
+        @Path("id") orderId: String,
+        @Header("Authorization") token: String,
+    ): Response<SinglePesananSampahResponse>
+
     @PUT("pesanan/update-status-gagal/{id}")
     suspend fun updateStatusGagal(
         @Path("id") orderId: String,
         @Header("Authorization") token: String,
-        @Field("dummyField") dummyField: String = "1"
     ): Response<SinglePesananSampahResponse>
 
     @GET("pesanan/selesai-diantar/{id}")

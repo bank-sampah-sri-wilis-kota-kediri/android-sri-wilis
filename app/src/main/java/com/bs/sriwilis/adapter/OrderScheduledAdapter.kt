@@ -57,6 +57,12 @@ class OrderScheduledAdapter(
                         tvNamaPesanan.text = customerName
                     }
                 }
+                when(scheduledOrder?.statusPesanan?.lowercase()){
+                    "gagal" -> tvStatus.setBackgroundColor(context.getColor(R.color.red_primary))
+                    "sudah dijadwalkan" -> tvStatus.setBackgroundColor(context.getColor(R.color.yellow_primary))
+                    "selesai diantar" -> tvStatus.setBackgroundColor(context.getColor(R.color.green_label))
+                }
+                tvStatus.text = scheduledOrder?.statusPesanan
 
                 tvTanggalPesanan.text = scheduledOrder?.tanggal ?: "Belum Ditentukan"
 

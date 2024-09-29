@@ -25,7 +25,7 @@ data class TransactionDataItem(
 	val transaksiSampah: List<TransaksiSampahItem?>? = null,
 
 	@field:SerializedName("id_nasabah")
-	val idNasabah: Int? = null,
+	val idNasabah: String? = null,
 
 	@field:SerializedName("updated_at")
 	val updatedAt: Any? = null,
@@ -49,34 +49,28 @@ data class PesanananSampahItemResponse(
 )
 
 data class TransaksiSampahItemResponse(
-	val status: String,
-	val data: List<TransaksiSampahItem>
+	@field:SerializedName("transaksi_sampah")
+	val data: TransactionDataItem? = null,
+
+	@field:SerializedName("success")
+	val success: Boolean? = null,
+
+	@field:SerializedName("message")
+	val message: String? = null
 )
 
 
 data class TransaksiSampahItem(
 
 	@field:SerializedName("harga")
-	val harga: String? = null,
-
-	@field:SerializedName("updated_at")
-	val updatedAt: String? = null,
-
-	@field:SerializedName("id_keranjang_transaksi")
-	val idKeranjangTransaksi: Int? = null,
+	val harga: Float,
 
 	@field:SerializedName("berat")
 	val berat: Int? = null,
 
-	@field:SerializedName("created_at")
-	val createdAt: String? = null,
-
 	@field:SerializedName("kategori")
 	val kategori: String? = null,
 
-	@field:SerializedName("id")
-	val id: Int? = null,
-
 	@field:SerializedName("gambar")
-	val gambar: Any? = null
+	val gambar: String? = null
 )

@@ -31,6 +31,10 @@ class HistoryOrderAdapter(
     private var categorylist: List<String> = emptyList()
     private lateinit var viewModel: ManageHistoryOrderViewModel
 
+    init {
+        transaction = transaction.reversed()
+    }
+
 
     inner class HistoryOrderViewHolder(private val binding: CardHistoryOrderBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -80,7 +84,7 @@ class HistoryOrderAdapter(
     }
 
     fun updateOrder(newCategories: List<TransactionDataItem?>) {
-        this.transaction = newCategories
+        this.transaction = newCategories.reversed()
         notifyDataSetChanged()
     }
 

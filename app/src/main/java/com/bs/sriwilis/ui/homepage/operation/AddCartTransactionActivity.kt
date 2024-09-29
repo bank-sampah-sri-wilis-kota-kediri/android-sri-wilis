@@ -33,7 +33,7 @@ class AddCartTransactionActivity : AppCompatActivity() {
     }
     private lateinit var spinner: Spinner
 
-    private var cartTransactions = mutableListOf<CartTransaction>() // List to hold cart transactions
+    private var cartTransactions = mutableListOf<CartTransaction>()
     private var selectedCategory: String? = null
     private var cartImage: Bitmap? = null
     private var basePrice: Float = 0.0f

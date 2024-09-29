@@ -51,19 +51,30 @@ class SchedulingDetailActivity : AppCompatActivity() {
             btnBack.setOnClickListener { finish() }
         }
 
-        val orderId = intent.getStringExtra("id") ?: throw IllegalArgumentException("ID Jadwal tidak ada")
+        val orderId = intent.getStringExtra("id")
+        val nasabahId = intent.getStringExtra("nasabahId")
 
-        orderId.let {
-            viewModel.fetchSchedule(it)
-            viewModel.fetchTransactionItemById(it)
-            viewModel.fetchDataKeranjangById(it)
+        nasabahId.let {
+            if (it != null) {
+                viewModel.fetchSchedule(it)
+                viewModel.fetchTransactionItemById(it)
+                viewModel.fetchDataKeranjangById(it)
+            }
         }
 
         setupDataKeranjang()
         setupTransactionData()
         setupDatePicker()
-        binding.btnSuksesPesanan.setOnClickListener { selectedDate?.let { updateStatusConfirm(orderId, it) } }
-        binding.btnCancelPesanan.setOnClickListener { updateStatusFailed(orderId) }
+        binding.btnSuksesPesanan.setOnClickListener { selectedDate?.let {
+            if (orderId != null) {
+                updateStatusConfirm(orderId, it)
+            }
+        } }
+        binding.btnCancelPesanan.setOnClickListener {
+            if (orderId != null) {
+                updateStatusFailed(orderId)
+            }
+        }
         observeViewModel()
 
         Log.d("orderId cik", "$orderId")
@@ -257,7 +268,7 @@ class SchedulingDetailActivity : AppCompatActivity() {
                 this,
                 { _, selectedYear, selectedMonth, selectedDay ->
                     // Format the date
-                    selectedDate = String.format("%02d-%02d-%d", selectedDay, selectedMonth + 1, selectedYear)
+                    selectedDate = String.format("%d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
                     binding.tvDateResult.text = selectedDate
                     Log.d("SelectedDate", "Date: $selectedDate")
                 },
@@ -270,7 +281,6 @@ class SchedulingDetailActivity : AppCompatActivity() {
     private fun updateStatusConfirm(orderId: String, date: String) {
         orderId.let {
             viewModel.registerDate(orderId, date)
-            viewModel.updateSuccess(orderId)
         }
     }
 
@@ -289,12 +299,19 @@ class SchedulingDetailActivity : AppCompatActivity() {
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
                     val data = result.data
+                    showToast("Update tanggal dan status pesanan sampah berhasil!")
+
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
+                    showToast("Update tanggal dan status pesanan sampah gagal!")
                 }
             }
         })
 
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

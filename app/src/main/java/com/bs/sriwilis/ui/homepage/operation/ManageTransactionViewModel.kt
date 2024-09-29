@@ -12,6 +12,8 @@ import com.bs.sriwilis.data.response.GetUserByIdResponse
 import com.bs.sriwilis.data.response.NasabahResponseDTO
 import com.bs.sriwilis.data.response.RegisterUserResponse
 import com.bs.sriwilis.data.response.TransactionResponse
+import com.bs.sriwilis.data.response.TransaksiSampahItem
+import com.bs.sriwilis.data.response.TransaksiSampahItemResponse
 import com.bs.sriwilis.data.response.UserItem
 import com.bs.sriwilis.data.room.entity.NasabahEntity
 import kotlinx.coroutines.launch
@@ -41,8 +43,8 @@ class ManageTransactionViewModel(private val repository: MainRepository) : ViewM
     private val _categoryNames = MutableLiveData<Result<List<String>>>()
     val categoryNames: LiveData<Result<List<String>>> get() = _categoryNames
 
-    private val _transactionResult = MutableLiveData<Result<TransactionResponse>>()
-    val transactionResult: LiveData<Result<TransactionResponse>> get() = _transactionResult
+    private val _transactionResult = MutableLiveData<Result<TransaksiSampahItemResponse?>>()
+    val transactionResult: LiveData<Result<TransaksiSampahItemResponse?>> = _transactionResult
 
     data class Category(val name: String, val basePrice: Float)
 
@@ -128,11 +130,11 @@ class ManageTransactionViewModel(private val repository: MainRepository) : ViewM
     fun addCartTransaction(
         idNasabah: String,
         tanggal: String,
-        cartTransaction: List<CartTransaction>
+        transaksi_sampah: List<CartTransaction>
     ) {
         viewModelScope.launch {
             _transactionResult.value = Result.Loading
-            val result = repository.addCartTransaction(idNasabah, tanggal, cartTransaction)
+            val result = repository.addCartTransaction(idNasabah, tanggal, transaksi_sampah)
             _transactionResult.value = result
         }
     }
