@@ -41,7 +41,7 @@
             android:text="Sampah Plastik" />
 
         <TextView
-            android:id="@+id/tv_mutation_date"
+            android:id="@+id/tv_weight_order_cart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"

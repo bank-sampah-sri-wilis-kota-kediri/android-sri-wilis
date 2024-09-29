@@ -1,4 +1,4 @@
-package com.bs.sriwilis.ui.homepage.operation
+package com.bs.sriwilis.ui.history
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -10,13 +10,17 @@ import com.bs.sriwilis.data.repository.modelhelper.CardCategory
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.SingleCategoryResponse
+import com.bs.sriwilis.data.response.TransactionDataItem
+import com.bs.sriwilis.data.response.TransactionResponse
+import com.bs.sriwilis.data.response.TransaksiSampahItem
 import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
 
-class ManageCategoryViewModel(private val repository: MainRepository) : ViewModel() {
+class ManageHistoryOrderViewModel(private val repository: MainRepository) : ViewModel() {
 
-    private val _addCategoryResult = MutableLiveData<Result<CategoryResponse>>()
-    val addCategoryResult: LiveData<Result<CategoryResponse>> = _addCategoryResult
+
+    private val _historyOrders = MutableLiveData<List<TransactionDataItem>?>()
+    val historyOrders: LiveData<List<TransactionDataItem>?> get() = _historyOrders
 
     private val _editCategoryResult = MutableLiveData<Result<SingleCategoryResponse>>()
     val editCategoryResult: LiveData<Result<SingleCategoryResponse>> = _editCategoryResult
@@ -27,14 +31,6 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
     private val _categoryData = MutableLiveData<Result<CardCategory>>()
     val categoryData: LiveData<Result<CardCategory>> get() = _categoryData
 
-    fun addCategory(name: String, price: String, type: String, imageBase64: String) {
-        viewModelScope.launch {
-            _addCategoryResult.postValue(Result.Loading)
-            val result = repository.addCategory(name, price, type, imageBase64)
-            _addCategoryResult.postValue(result)
-        }
-    }
-
     fun editCategory(userId: String, name: String, price: String, type: String, image: String) {
         viewModelScope.launch {
             _editCategoryResult.value = Result.Loading
@@ -44,10 +40,19 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
         }
     }
 
-    suspend fun getCategory() {
-        _categories.postValue(Result.Loading)
-        val result = repository.getAllCategoriesDao()
-        _categories.postValue(result)
+    fun getAllTransaction() {
+        viewModelScope.launch {
+            when (val result = repository.getAllTransaction()) {
+                is Result.Success -> {
+                    _historyOrders.postValue(result.data.data)
+                }
+                is Result.Error -> {
+                    Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
+                }
+
+                Result.Loading -> TODO()
+            }
+        }
     }
 
     fun fetchCategoryDetails(id: String) {
@@ -79,6 +84,21 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
                     Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
                 }
                 Result.Loading -> {}
+            }
+        }
+    }
+
+    fun getCustomerName(userId: String, callback: (String) -> Unit) {
+        viewModelScope.launch {
+            when (val result = repository.getUserById(userId)) {
+                is Result.Success -> {
+                    result.data.nama_nasabah?.let { callback(it) }
+                }
+                is Result.Error -> {
+                    callback("Unknown Customer")
+                }
+
+                Result.Loading -> TODO()
             }
         }
     }

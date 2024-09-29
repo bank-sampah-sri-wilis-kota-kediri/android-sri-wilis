@@ -1,21 +1,35 @@
 package com.bs.sriwilis.data.network
 
+import android.provider.ContactsContract.Data
+import com.bs.sriwilis.data.repository.MainRepository
 import com.bs.sriwilis.data.response.AddCatalogRequest
 import com.bs.sriwilis.data.response.AdminResponse
+import com.bs.sriwilis.data.response.CartTransactionRequest
 import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.CategoryResponseDTO
+import com.bs.sriwilis.data.response.DataKeranjangItem
+import com.bs.sriwilis.data.response.DataKeranjangItemResponse
 import com.bs.sriwilis.data.response.GetAdminByIdResponse
 import com.bs.sriwilis.data.response.GetCatalogByIdResponse
 import com.bs.sriwilis.data.response.GetCategoryByIdResponse
 import com.bs.sriwilis.data.response.GetUserByIdResponse
 import com.bs.sriwilis.data.response.NasabahResponseDTO
+import com.bs.sriwilis.data.response.OrderCartResponse
+import com.bs.sriwilis.data.response.PesananSampahItem
 import com.bs.sriwilis.data.response.PesananSampahKeranjangResponse
+import com.bs.sriwilis.data.response.PesanananSampahItemResponse
 import com.bs.sriwilis.data.response.RegisterUserResponse
 import com.bs.sriwilis.data.response.SingleAdminResponse
 import com.bs.sriwilis.data.response.SingleCatalogResponse
 import com.bs.sriwilis.data.response.SingleCategoryResponse
 import com.bs.sriwilis.data.response.SinglePesananSampahResponse
+import com.bs.sriwilis.data.response.TransactionDataItem
+import com.bs.sriwilis.data.response.TransactionResponse
+import com.bs.sriwilis.data.response.TransaksiSampahItem
+import com.bs.sriwilis.data.response.TransaksiSampahItemResponse
+import com.bs.sriwilis.model.CartTransaction
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -23,6 +37,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -103,7 +118,7 @@ interface ApiServiceMain {
         @Field("harga_kategori") harga_kategori: String,
         @Field("jenis_kategori") jenis_kategori: String,
         @Field("gambar_kategori") gambar_kategori: String,
-    ): Response<SingleCategoryResponse>
+    ): Response<CategoryResponse>
 
     @GET("kategori/show-all")
     suspend fun getAllCategory(
@@ -207,7 +222,40 @@ interface ApiServiceMain {
         @Header("Authorization") token: String
     ): Response<Unit>
 
+    // TRANSACTION CRUD
+
+    @Headers("Content-type: application/json")
+    @POST("transaksi/add")
+    suspend fun addCartTransaction(
+        @Header("Authorization") token: String,
+        @Body cartTransactionRequest: CartTransactionRequest
+    ): Response<TransaksiSampahItemResponse>
+
+    @GET("transaksi/show-all")
+    suspend fun getAllTransaction(
+        @Header("Authorization") token: String,
+    ): Response<TransactionResponse>
+
     // SCHEDULING CRUD
+
+    @GET("transaksi/nasabah/{id}")
+    suspend fun getOrderCartByNasabahId(
+        @Header("Authorization") token: String,
+        @Path("id") id_nasabah: String,
+        ): Response<OrderCartResponse>
+
+    @GET("transaksi/nasabah/{id}")
+    suspend fun getTransactionDetailByNasabahId(
+        @Header("Authorization") token: String,
+        @Path("id") id_nasabah: String,
+    ): Response<PesanananSampahItemResponse>
+
+    @GET("transaksi/nasabah/{id}")
+    suspend fun getDataKeranjangDetailByNasabahId(
+        @Header("Authorization") token: String,
+        @Path("id") id_nasabah: String,
+    ): Response<DataKeranjangItemResponse>
+
 
     @GET("pesanan/show-all-pesanan-sampah-keranjang")
     suspend fun getAllOrderSchedule(
@@ -222,14 +270,18 @@ interface ApiServiceMain {
         @Field("tanggal") tanggal: String,
     ): Response<SinglePesananSampahResponse>
 
-    @FormUrlEncoded
-    @PUT("pesanan/update-status-selesai/{id}")
+    @PUT("pesanan/update-status-berhasil/{id}")
     suspend fun updateStatusSelesai(
         @Path("id") orderId: String,
         @Header("Authorization") token: String,
     ): Response<SinglePesananSampahResponse>
 
-    @FormUrlEncoded
+    @PUT("pesanan/update-status-sudah-dijadwalkan/{id}")
+    suspend fun updateStatusSudahDijadwalkan(
+        @Path("id") orderId: String,
+        @Header("Authorization") token: String,
+    ): Response<SinglePesananSampahResponse>
+
     @PUT("pesanan/update-status-gagal/{id}")
     suspend fun updateStatusGagal(
         @Path("id") orderId: String,
@@ -240,5 +292,4 @@ interface ApiServiceMain {
     suspend fun getOrderScheduleById(
         @Header("Authorization") token: String,
     ): Response<PesananSampahKeranjangResponse>
-
 }

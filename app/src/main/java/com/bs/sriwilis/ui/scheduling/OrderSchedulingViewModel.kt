@@ -28,7 +28,8 @@ class OrderSchedulingViewModel(private val repository: MainRepository) : ViewMod
         viewModelScope.launch {
             when (val result = repository.getAllOrderSchedule()) {
                 is Result.Success -> {
-                    val filteredOrders = result.data.dataKeranjang?.filter { it.statusPesanan == "Sudah Dijadwalkan" }
+                    val filteredOrders = result.data.dataKeranjang?.filter { it.statusPesanan?.lowercase() == "selesai diantar" || it.statusPesanan?.lowercase() == "sudah dijadwalkan" || it.statusPesanan?.lowercase() == "gagal"}
+                    Log.d("tes in ",filteredOrders.toString())
                     _scheduledOrdersLiveData.postValue(filteredOrders)
                 }
                 is Result.Error -> _errorLiveData.postValue(result.error)

@@ -53,10 +53,16 @@ class OrderScheduledAdapter(
         fun bind(scheduledOrder: DataKeranjangItem?) {
             with(binding) {
                 scheduledOrder?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerName(nasabahId.toString()) { customerName ->
+                    viewModel.getCustomerName(nasabahId) { customerName ->
                         tvNamaPesanan.text = customerName
                     }
                 }
+                when(scheduledOrder?.statusPesanan?.lowercase()){
+                    "gagal" -> tvStatus.setBackgroundColor(context.getColor(R.color.red_primary))
+                    "sudah dijadwalkan" -> tvStatus.setBackgroundColor(context.getColor(R.color.yellow_primary))
+                    "selesai diantar" -> tvStatus.setBackgroundColor(context.getColor(R.color.green_label))
+                }
+                tvStatus.text = scheduledOrder?.statusPesanan
 
                 tvTanggalPesanan.text = scheduledOrder?.tanggal ?: "Belum Ditentukan"
 
@@ -64,7 +70,7 @@ class OrderScheduledAdapter(
                 tvBeratTransaksi.text = "$totalBerat kg"
 
                 itemView.setOnClickListener {
-                    scheduledOrder?.id?.let { id ->
+                    scheduledOrder?.idNasabah?.let { id ->
                         onItemClick?.invoke(id)
                         val intent = Intent(itemView.context, SchedulingDetailActivity::class.java)
                         intent.putExtra("id", id)

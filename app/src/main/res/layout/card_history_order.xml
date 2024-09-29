@@ -32,7 +32,7 @@
             android:fontFamily="@font/inter_semi_bold"
             android:textColor="@android:color/black"
             android:textSize="16sp"
-            android:text="@string/tv_strip"
+            android:text="-"
             app:layout_constraintStart_toEndOf="@+id/tv_label_nama_pesanan"
             app:layout_constraintTop_toTopOf="@+id/tv_label_nama_pesanan"
             android:layout_marginStart="8dp"/>
@@ -58,7 +58,7 @@
             android:textColor="@android:color/black"
             android:textSize="16sp"
             android:background="@color/blue_calm"
-            android:text="12 Desember 2024"
+            android:text="-"
             app:layout_constraintStart_toEndOf="@+id/tv_label_tanggal_pesanan"
             app:layout_constraintTop_toTopOf="@+id/tv_label_tanggal_pesanan"
             android:layout_marginStart="8dp"/>
@@ -71,7 +71,7 @@
             android:fontFamily="@font/inter_bold"
             android:textColor="@color/blue_primary"
             android:textSize="16sp"
-            android:text="Berat:"
+            android:text="Total:"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_tanggal_pesanan"
             android:layout_marginTop="2dp" />
@@ -83,7 +83,7 @@
             android:fontFamily="@font/inter_semi_bold"
             android:textColor="@android:color/black"
             android:textSize="16sp"
-            android:text="5 kg"
+            android:text="-"
             app:layout_constraintStart_toEndOf="@+id/tv_label_berat_transaksi"
             app:layout_constraintTop_toTopOf="@+id/tv_label_berat_transaksi"
             android:layout_marginStart="8dp"/>
@@ -96,7 +96,7 @@
             android:fontFamily="@font/inter_bold"
             android:textColor="@color/blue_primary"
             android:textSize="16sp"
-            android:text="No WA:"
+            android:text="Harga:"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_label_berat_transaksi"
             android:layout_marginTop="2dp" />
@@ -108,24 +108,24 @@
             android:fontFamily="@font/inter_semi_bold"
             android:textColor="@android:color/black"
             android:textSize="16sp"
-            android:text="+6288000000"
+            android:text="-"
             app:layout_constraintStart_toEndOf="@+id/tv_label_nomor_wa_pesanan"
             app:layout_constraintTop_toTopOf="@+id/tv_label_nomor_wa_pesanan"
             android:layout_marginStart="8dp"/>
 
         <TextView
-            android:id="@+id/tv_status"
+            android:id="@+id/tv_status_history_order"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status"
-            android:textSize="16sp"
-            android:padding="4dp"
-            android:fontFamily="@font/inter_medium"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@color/blue_primary"
+            android:fontFamily="@font/inter_extra_bold"
+            android:padding="8dp"
+            android:text="@string/tv_status_history_order"
+            android:textColor="@color/white"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@color/green_label"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

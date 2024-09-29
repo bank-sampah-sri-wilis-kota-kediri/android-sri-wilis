@@ -12,65 +12,44 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.TransactionDataItem
+import com.bs.sriwilis.data.response.TransaksiSampahItem
 import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardHistoryOrderBinding
 import com.bs.sriwilis.databinding.CardMutationHistory2Binding
 import com.bs.sriwilis.databinding.CardOrderBinding
+import com.bs.sriwilis.databinding.CardOrderSchedulingDetailListBinding
 import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
+import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
 import com.bumptech.glide.Glide
 
-class HistoryOrderAdapter(
-    private var transaction: List<TransactionDataItem?>,
+class CartOrderAdapter(
+    private var transaction: List<TransaksiSampahItem?>,
     private val context: Context
 
-) : RecyclerView.Adapter<HistoryOrderAdapter.HistoryOrderViewHolder>() {
+) : RecyclerView.Adapter<CartOrderAdapter.HistoryOrderViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
     private var categorylist: List<String> = emptyList()
-    private lateinit var viewModel: ManageHistoryOrderViewModel
-
-    init {
-        transaction = transaction.reversed()
-    }
+    private lateinit var viewModel: SchedulingDetailViewModel
 
 
-    inner class HistoryOrderViewHolder(private val binding: CardHistoryOrderBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class HistoryOrderViewHolder(private val binding: CardOrderSchedulingDetailListBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(transaction: TransactionDataItem?) {
+        fun bind(transaction: TransaksiSampahItem?) {
             with(binding) {
-                tvStatusHistoryOrder.text = transaction?.statusTransaksi
-
-                transaction?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerName(nasabahId.toString()) { customerName ->
-                        tvNamaPesanan.text = customerName
-                    }
-                }
-
-
-                tvTanggalPesanan.text = transaction?.tanggal
-                tvBeratTransaksi.text = transaction?.transaksiSampah?.size.toString()
-                tvNomorWaPesanan.text = "Rp" + transaction?.nominalTransaksi
-
-
-/*                itemView.setOnClickListener {
-                    category?.id?.let { id ->
-                        onItemClick?.invoke(id)
-                        val intent = Intent(itemView.context, EditCategoryActivity::class.java)
-                        intent.putExtra("id", id)
-                        itemView.context.startActivity(intent)
-                    }
-                }*/
+                tvBeratPesanan.text = transaction?.berat.toString() + " kg"
+                tvKategoriPesanan.text = transaction?.kategori
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryOrderViewHolder {
-        val binding = CardHistoryOrderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = CardOrderSchedulingDetailListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         val activity = parent.context as AppCompatActivity
-        viewModel = ViewModelProvider(activity)[ManageHistoryOrderViewModel::class]
+        viewModel = ViewModelProvider(activity)[SchedulingDetailViewModel::class]
 
         return HistoryOrderViewHolder(binding)
     }
@@ -83,12 +62,12 @@ class HistoryOrderAdapter(
         holder.bind(transaction[position])
     }
 
-    fun updateOrder(newCategories: List<TransactionDataItem?>) {
-        this.transaction = newCategories.reversed()
+    fun updateOrder(newCategories: List<TransaksiSampahItem?>) {
+        this.transaction = newCategories
         notifyDataSetChanged()
     }
 
-    private fun showDeleteConfirmationDialog(catalogId: String) {
+/*    private fun showDeleteConfirmationDialog(catalogId: String) {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
         dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
@@ -100,5 +79,5 @@ class HistoryOrderAdapter(
         }
         val alertDialog = dialogBuilder.create()
         alertDialog.show()
-    }
+    }*/
 }

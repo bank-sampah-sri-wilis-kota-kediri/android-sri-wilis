@@ -6,19 +6,15 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bs.sriwilis.adapter.CartAdapter
-import com.bs.sriwilis.adapter.CategoryAdapter
+import com.bs.sriwilis.adapter.CartOrderAdapter
 import com.bs.sriwilis.databinding.ActivitySchedulingDetailBinding
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.utils.ViewModelFactory
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -28,7 +24,9 @@ class SchedulingDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySchedulingDetailBinding
     private lateinit var dateTextView: TextView
     private lateinit var selectDateButton: Button
-    private lateinit var cartAdapter: CartAdapter
+    private lateinit var adapter: CartOrderAdapter
+    private var selectedDate: String? = null
+
 
     private val viewModel by viewModels<SchedulingDetailViewModel> {
         ViewModelFactory.getInstance(this)
@@ -39,7 +37,10 @@ class SchedulingDetailActivity : AppCompatActivity() {
         binding = ActivitySchedulingDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var dateTextView = binding.tvDateResult
+        val currentDate = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        binding.tvDateResult.text = dateFormat.format(currentDate)
+
         var selectDateButton = binding.btnDatePicker
 
         selectDateButton.setOnClickListener {
@@ -50,7 +51,48 @@ class SchedulingDetailActivity : AppCompatActivity() {
             btnBack.setOnClickListener { finish() }
         }
 
-        setupRecyclerView()
+        val orderId = intent.getStringExtra("id")
+        val nasabahId = intent.getStringExtra("nasabahId")
+
+        nasabahId.let {
+            if (it != null) {
+                viewModel.fetchSchedule(it)
+                viewModel.fetchTransactionItemById(it)
+                viewModel.fetchDataKeranjangById(it)
+            }
+        }
+
+        setupDataKeranjang()
+        setupTransactionData()
+        setupDatePicker()
+        binding.btnSuksesPesanan.setOnClickListener { selectedDate?.let {
+            if (orderId != null) {
+                updateStatusConfirm(orderId, it)
+            }
+        } }
+        binding.btnCancelPesanan.setOnClickListener {
+            if (orderId != null) {
+                updateStatusFailed(orderId)
+            }
+        }
+        observeViewModel()
+
+        Log.d("orderId cik", "$orderId")
+
+        adapter = CartOrderAdapter(emptyList(), this)
+
+        binding.rvPesanan.layoutManager = LinearLayoutManager(this)
+        binding.rvPesanan.adapter = adapter
+
+        viewModel.cartOrderData.observe(this) { orders ->
+            val orderCart = orders?.flatMap { it.transaksiSampah!! } ?: emptyList()
+
+            if (orders != null) {
+                adapter.updateOrder(orderCart)
+            } else {
+                adapter.updateOrder(emptyList())
+            }
+        }
     }
 
  /*   private fun observeUser() {
@@ -134,15 +176,6 @@ class SchedulingDetailActivity : AppCompatActivity() {
         userAdapter.notifyDataSetChanged()
     }*/
 
-    private fun setupRecyclerView() {
-        binding.rvPesanan.layoutManager = LinearLayoutManager(this)
-        binding.rvPesanan.adapter = CartAdapter(emptyList(), this)
-
-        lifecycleScope.launch {
-            viewModel.getPesananSampah()
-        }
-    }
-
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -164,30 +197,121 @@ class SchedulingDetailActivity : AppCompatActivity() {
         datePickerDialog.show()
     }
 
-    private fun observeViewModel() {
-        viewModel.pesananSampahData.observe(this) { result ->
+    private fun setupDataKeranjang() {
+        viewModel.dataKeranjangItem.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
-                    // Show progress bar if needed
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+
+                    val dataKeranjang = result.data
+
+                    dataKeranjang?.forEach {
+                        it.idNasabah.let { nasabahId ->
+                            viewModel.getCustomerName(nasabahId) { customerName ->
+                                binding.tvNamaDetailPesanan.text = customerName
+                                viewModel.getCustomerPhone(nasabahId) { customerPhone ->
+                                    binding.tvNomorwaDetailPesanan.text = customerPhone
+                                    viewModel.getCustomerAddress(nasabahId) { customerAddress ->
+                                        binding.tvAlamatDetailPesanan.text = customerAddress
+                                    }
+                            }
+                        }
+                        }
+                    }
+                }
+
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                }
+
+                else -> {}
+            }
+        })
+    }
+
+    private fun setupTransactionData() {
+        viewModel.transactionDataItem.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+
+                    val transactionDetail = result.data
+
+                    transactionDetail?.forEach {
+                        val totalBerat = transactionDetail?.sumOf { it?.beratPerkiraan ?: 0 } ?: 0
+                        binding.tvBeratDetailPesanan.text = "$totalBerat kg"
+                     }
+                    }
+
+                is Result.Error -> TODO()
+                else -> {}
+            }
+        })
+    }
+
+    private fun setupDatePicker() {
+        binding.btnDatePicker.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val datePickerDialog = DatePickerDialog(
+                this,
+                { _, selectedYear, selectedMonth, selectedDay ->
+                    // Format the date
+                    selectedDate = String.format("%d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
+                    binding.tvDateResult.text = selectedDate
+                    Log.d("SelectedDate", "Date: $selectedDate")
+                },
+                year, month, day
+            )
+            datePickerDialog.show()
+        }
+    }
+
+    private fun updateStatusConfirm(orderId: String, date: String) {
+        orderId.let {
+            viewModel.registerDate(orderId, date)
+        }
+    }
+
+    private fun updateStatusFailed(orderId: String) {
+        orderId.let {
+            viewModel.updateFailed(orderId)
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.crudResponse.observe(this, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val pesananList = result.data
-                    if (pesananList.isNotEmpty()) {
-                        // Update the RecyclerView's adapter with new data
-/*
-                        cartAdapter.updateCatalog(pesananList)
-*/
-                    }
+                    val data = result.data
+                    showToast("Update tanggal dan status pesanan sampah berhasil!")
+
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
-                    // Handle the error, show a toast or log the error
-                    Log.e("SchedulingDetail", "Error fetching orders: ${result.error}")
+                    showToast("Update tanggal dan status pesanan sampah gagal!")
                 }
             }
-        }
+        })
+
     }
 
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 }

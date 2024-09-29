@@ -1,5 +1,6 @@
 package com.bs.sriwilis.data.repository
 
+import android.provider.ContactsContract.Data
 import android.util.Log
 import com.bs.sriwilis.data.AppDatabase
 import com.bs.sriwilis.data.mapping.MappingKategori
@@ -9,21 +10,30 @@ import com.bs.sriwilis.data.repository.modelhelper.CardCategory
 import com.bs.sriwilis.data.repository.modelhelper.CardNasabah
 import com.bs.sriwilis.data.response.AdminData
 import com.bs.sriwilis.data.response.AdminResponse
+import com.bs.sriwilis.data.response.CartTransactionRequest
 import com.bs.sriwilis.data.response.CatalogData
 import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.DataKeranjangItem
+import com.bs.sriwilis.data.response.DataKeranjangItemResponse
 import com.bs.sriwilis.data.response.GetAdminByIdResponse
 import com.bs.sriwilis.data.response.GetUserByIdResponse
 import com.bs.sriwilis.data.response.LoginResponseDTO
 import com.bs.sriwilis.data.response.NasabahResponseDTO
+import com.bs.sriwilis.data.response.OrderCartResponse
+import com.bs.sriwilis.data.response.PesananSampahItem
 import com.bs.sriwilis.data.response.PesananSampahKeranjangResponse
+import com.bs.sriwilis.data.response.PesanananSampahItemResponse
 import com.bs.sriwilis.data.response.RegisterUserResponse
 import com.bs.sriwilis.data.response.SingleAdminResponse
 import com.bs.sriwilis.data.response.SingleCatalogResponse
 import com.bs.sriwilis.data.response.SingleCategoryResponse
 import com.bs.sriwilis.data.response.SinglePesananSampahResponse
+import com.bs.sriwilis.data.response.TransactionDataItem
+import com.bs.sriwilis.data.response.TransactionResponse
+import com.bs.sriwilis.data.response.TransaksiSampahItem
+import com.bs.sriwilis.data.response.TransaksiSampahItemResponse
 import com.bs.sriwilis.data.response.UserItem
 import com.bs.sriwilis.data.room.dao.NasabahDao
 import com.bs.sriwilis.data.room.entity.CategoryEntity
@@ -31,9 +41,13 @@ import com.bs.sriwilis.data.room.entity.LoginResponseEntity
 import com.bs.sriwilis.data.room.entity.NasabahEntity
 import kotlinx.coroutines.flow.Flow
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.model.CartTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainRepository(
     private val apiService: ApiServiceMain,
@@ -297,7 +311,7 @@ class MainRepository(
         price: String,
         type: String,
         imageBase64: String
-    ): Result<SingleCategoryResponse> {
+    ): Result<CategoryResponse> {
         return withContext(Dispatchers.IO) {
             try {
                 val token = getToken() ?: ""
@@ -545,9 +559,7 @@ class MainRepository(
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
-                    val filteredOrders = body.dataKeranjang?.filter {
-                        it.statusPesanan == "Pending" || it.statusPesanan == "Sudah Dijadwalkan"
-                    }
+                    val filteredOrders = body.dataKeranjang
                     body.dataKeranjang = filteredOrders
                     Result.Success(body)
                 } else {
@@ -561,10 +573,13 @@ class MainRepository(
         }
     }
 
-    suspend fun getAllCart(): Result<PesananSampahKeranjangResponse> {
+    suspend fun getOrderCartByNasabahId(idNasabah: String): Result<OrderCartResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
-            val response = apiService.getAllOrderSchedule("Bearer $token")
+            val response = apiService.getOrderCartByNasabahId("Bearer $token", idNasabah)
+
+            Log.d("Request", "Token: Bearer $token, idNasabah: $idNasabah")
+            Log.d("Response", response.body()?.toString() ?: "Response body is null")
 
             if (response.isSuccessful) {
                 val body = response.body()
@@ -574,7 +589,53 @@ class MainRepository(
                     Result.Error("Response body is null")
                 }
             } else {
-                Result.Error("Failed to fetch saved news: ${response.message()} (${response.code()})")
+                Result.Error("Failed to fetch data: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
+
+    suspend fun getTransactionDataItem(idNasabah: String): Result<PesanananSampahItemResponse> {
+        return try {
+            val token = getToken() ?: return Result.Error("Token is null")
+            val response = apiService.getTransactionDetailByNasabahId("Bearer $token", idNasabah)
+
+            Log.d("Request", "Token: Bearer $token, idNasabah: $idNasabah")
+            Log.d("Response", response.body()?.toString() ?: "Response body is null")
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.Success(body)
+                } else {
+                    Result.Error("Response body is null")
+                }
+            } else {
+                Result.Error("Failed to fetch data: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
+
+    suspend fun getDataKeranjangItem(idNasabah: String): Result<DataKeranjangItemResponse> {
+        return try {
+            val token = getToken() ?: return Result.Error("Token is null")
+            val response = apiService.getDataKeranjangDetailByNasabahId("Bearer $token", idNasabah)
+
+            Log.d("Request", "Token: Bearer $token, idNasabah: $idNasabah")
+            Log.d("Response", response.body()?.toString() ?: "Response body is null")
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.Success(body)
+                } else {
+                    Result.Error("Response body is null")
+                }
+            } else {
+                Result.Error("Failed to fetch data: ${response.message()} (${response.code()})")
             }
         } catch (e: Exception) {
             Result.Error("Error occurred: ${e.message}")
@@ -585,7 +646,7 @@ class MainRepository(
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.registerDate(orderId, token, date)
+            val response = apiService.registerDate(orderId, "Bearer $token", date)
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -602,11 +663,11 @@ class MainRepository(
         }
     }
 
-    suspend fun updateOrderSuccess(orderId: String): Result<SinglePesananSampahResponse> {
+    suspend fun updateSudahDijadwalkan(orderId: String): Result<SinglePesananSampahResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.updateStatusSelesai(orderId, token)
+            val response = apiService.updateStatusSudahDijadwalkan(orderId, "Bearer $token")
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -627,7 +688,7 @@ class MainRepository(
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.updateStatusSelesai(orderId, token)
+            val response = apiService.updateStatusGagal(orderId, token)
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -643,7 +704,6 @@ class MainRepository(
             Result.Error("Edit error: ${e.message}")
         }
     }
-
 
     // Get Local Data from Dao
 
@@ -700,6 +760,80 @@ class MainRepository(
         }
     }
 
+    // Transaction CRUD
+    suspend fun addCartTransaction(
+        idNasabah: String,
+        tanggal: String,
+        transaksi_sampah: List<CartTransaction> // Keep using CartTransaction
+    ): Result<TransaksiSampahItemResponse?> {
+
+        val token = getToken() ?: return Result.Error("Token is null")
+        return try {
+            // Prepare the transaction items for the request
+            val transaksiSampahItems = transaksi_sampah.map { cartTransaction ->
+                TransaksiSampahItem(
+                    gambar = cartTransaction.gambar ?: null,
+                    harga = cartTransaction.harga,
+                    berat = cartTransaction.berat,
+                    kategori = cartTransaction.kategori,
+                )
+            }
+
+            // Create the request body
+            val cartTransactionRequest = CartTransactionRequest(
+                idNasabah = idNasabah,
+                tanggal = tanggal,
+                transaksiSampah = transaksiSampahItems
+            )
+
+            // Make the API request
+            val response = apiService.addCartTransaction("Bearer $token", cartTransactionRequest)
+            Log.i("infokan", cartTransactionRequest.toString())
+
+            if (response.isSuccessful) {
+                Result.Success(response.body())
+            } else {
+                // Log the status code and the error body (if available)
+                val statusCode = response.code()
+                val errorBody = response.errorBody()?.string()
+
+                Log.e("AddCartTransaction", "API call failed with status code: $statusCode")
+                Log.e("AddCartTransaction", "Error body: $errorBody")
+
+                Result.Error("Failed to add cart transaction: Status code $statusCode, Error body: $errorBody")
+            }
+
+        } catch (e: Exception) {
+            // Log the exception with the full stack trace
+            Log.e("AddCartTransactionError", "Error adding cart transaction", e)
+
+            // Return the error message and the exception as a string
+            Result.Error(e.toString())
+        }
+    }
+
+
+
+    suspend fun getAllTransaction(): Result<TransactionResponse> {
+        return try {
+            val token = getToken() ?: return Result.Error("Token is null")
+            Log.d("tokenmainrepository", "$token")
+            val response = apiService.getAllTransaction("Bearer $token")
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.Success(body)
+                } else {
+                    Result.Error("Response body is null")
+                }
+            } else {
+                Result.Error("Failed to fetch saved news: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
 
     companion object {
         @Volatile

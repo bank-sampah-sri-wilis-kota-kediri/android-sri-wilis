@@ -206,5 +206,8 @@
     <string name="tv_date_transaction_title">Tanggal Transaksi</string>
     <string name="tv_cart_transaction">Keranjang Transaksi</string>
     <string name="tv_price_waste_form_title">Harga</string>
+    <string name="tv_transaction_success">Transaksi Berhasil</string>
+    <string name="btn_add_transaction">Tambah</string>
+    <string name="tv_status_history_order">STATUS</string>
 
 </resources>

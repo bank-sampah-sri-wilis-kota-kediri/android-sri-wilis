@@ -7,9 +7,10 @@
     <color name="blue_secondary">#3ABEF9</color>
     <color name="green_teal">#74BBA3</color>
     <color name="blue_dark">#050C9C</color>
-    <color name="green_label">#59d975</color>
-    <color name="red_primary">#D95959</color>
+    <color name="green_label">#41E364</color>
+    <color name="red_primary">#E83D3D</color>
     <color name="grey_primary">#D9D9D9</color>
+    <color name="yellow_primary">#FFC107</color>
     <color name="grey_light">#EBEBEB</color>
     <color name="grey_secondary">#BDBDBD</color>
 
