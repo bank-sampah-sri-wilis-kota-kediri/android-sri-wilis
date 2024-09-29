@@ -134,10 +134,10 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
         }
     }
 
-    fun updateSuccess(orderId: String) {
+    fun updateSudahDijadwalkan(orderId: String) {
         viewModelScope.launch {
             _crudResponse.value = Result.Loading
-            val result = repository.updateOrderSuccess(orderId)
+            val result = repository.updateSudahDijadwalkan(orderId)
             _crudResponse.value = result
         }
     }

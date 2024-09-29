@@ -82,7 +82,7 @@ class HistoryOrderFragment : Fragment() {
 
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container_history_mutation, fragment)
+            .replace(R.id.fragment_container_history_order, fragment)
             .addToBackStack(null)
             .commit()
     }

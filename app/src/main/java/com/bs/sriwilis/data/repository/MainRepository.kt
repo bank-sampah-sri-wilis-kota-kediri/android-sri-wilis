@@ -33,6 +33,7 @@ import com.bs.sriwilis.data.response.SinglePesananSampahResponse
 import com.bs.sriwilis.data.response.TransactionDataItem
 import com.bs.sriwilis.data.response.TransactionResponse
 import com.bs.sriwilis.data.response.TransaksiSampahItem
+import com.bs.sriwilis.data.response.TransaksiSampahItemResponse
 import com.bs.sriwilis.data.response.UserItem
 import com.bs.sriwilis.data.room.dao.NasabahDao
 import com.bs.sriwilis.data.room.entity.CategoryEntity
@@ -558,9 +559,7 @@ class MainRepository(
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
-                    val filteredOrders = body.dataKeranjang?.filter {
-                        it.statusPesanan == "Pending" || it.statusPesanan == "Sudah Dijadwalkan"
-                    }
+                    val filteredOrders = body.dataKeranjang
                     body.dataKeranjang = filteredOrders
                     Result.Success(body)
                 } else {
@@ -647,7 +646,7 @@ class MainRepository(
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.registerDate(orderId, token, date)
+            val response = apiService.registerDate(orderId, "Bearer $token", date)
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -664,11 +663,11 @@ class MainRepository(
         }
     }
 
-    suspend fun updateOrderSuccess(orderId: String): Result<SinglePesananSampahResponse> {
+    suspend fun updateSudahDijadwalkan(orderId: String): Result<SinglePesananSampahResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.updateStatusSelesai(orderId, token)
+            val response = apiService.updateStatusSudahDijadwalkan(orderId, "Bearer $token")
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -765,30 +764,55 @@ class MainRepository(
     suspend fun addCartTransaction(
         idNasabah: String,
         tanggal: String,
-        cartTransaction: List<CartTransaction>
-    ): Result<TransactionResponse> {
+        transaksi_sampah: List<CartTransaction> // Keep using CartTransaction
+    ): Result<TransaksiSampahItemResponse?> {
 
         val token = getToken() ?: return Result.Error("Token is null")
-
-        Log.d("tokenmaincok", "$token")
-
         return try {
+            // Prepare the transaction items for the request
+            val transaksiSampahItems = transaksi_sampah.map { cartTransaction ->
+                TransaksiSampahItem(
+                    gambar = cartTransaction.gambar ?: null,
+                    harga = cartTransaction.harga,
+                    berat = cartTransaction.berat,
+                    kategori = cartTransaction.kategori,
+                )
+            }
+
+            // Create the request body
             val cartTransactionRequest = CartTransactionRequest(
-                id_nasabah = idNasabah,
+                idNasabah = idNasabah,
                 tanggal = tanggal,
-                cartTransaction = cartTransaction
+                transaksiSampah = transaksiSampahItems
             )
 
-            val response = apiService.addCartTransaction(token, cartTransactionRequest)
+            // Make the API request
+            val response = apiService.addCartTransaction("Bearer $token", cartTransactionRequest)
+            Log.i("infokan", cartTransactionRequest.toString())
+
             if (response.isSuccessful) {
-                Result.Success(response.body()!!)
+                Result.Success(response.body())
             } else {
-                Result.Error(Exception("Failed to add cart transaction: ${response.message()}").toString())
+                // Log the status code and the error body (if available)
+                val statusCode = response.code()
+                val errorBody = response.errorBody()?.string()
+
+                Log.e("AddCartTransaction", "API call failed with status code: $statusCode")
+                Log.e("AddCartTransaction", "Error body: $errorBody")
+
+                Result.Error("Failed to add cart transaction: Status code $statusCode, Error body: $errorBody")
             }
+
         } catch (e: Exception) {
+            // Log the exception with the full stack trace
+            Log.e("AddCartTransactionError", "Error adding cart transaction", e)
+
+            // Return the error message and the exception as a string
             Result.Error(e.toString())
         }
     }
+
+
 
     suspend fun getAllTransaction(): Result<TransactionResponse> {
         return try {

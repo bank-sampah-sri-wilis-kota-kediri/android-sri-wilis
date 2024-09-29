@@ -8,6 +8,6 @@ data class CartTransaction(
     val kategori: String,
     val berat: Int,
     val harga: Float,
-    val gambar: String?
+    val gambar: String?,
 ) : Parcelable
 

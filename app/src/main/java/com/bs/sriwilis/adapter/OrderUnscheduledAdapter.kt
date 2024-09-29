@@ -63,10 +63,12 @@ class OrderUnscheduledAdapter(
                 tvBeratTransaksi.text = "$totalBerat kg"
 
                 itemView.setOnClickListener {
-                    unscheduledOrder?.idNasabah?.let { id ->
-                        onItemClick?.invoke(id)
+                    unscheduledOrder?.let { order ->
+                        onItemClick?.invoke(order.idNasabah)
+
                         val intent = Intent(itemView.context, SchedulingDetailActivity::class.java)
-                        intent.putExtra("id", id)
+                        intent.putExtra("id", order.idPesanan)
+                        intent.putExtra("nasabahId", order.idNasabah)
                         itemView.context.startActivity(intent)
                     }
                 }

@@ -89,7 +89,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_bold"
-                        android:text="Nama Nasabah"
+                        android:text="-"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/inter_medium"
-                        android:text="10Kg"
+                        android:text="-"
                         android:textColor="@color/grey_primary"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="@+id/tv_nama_detail_pesanan"
@@ -112,7 +112,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/inter_medium"
-                        android:text="08982424242"
+                        android:text="-"
                         android:textColor="@color/grey_primary"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="@+id/tv_berat_detail_pesanan"
@@ -139,7 +139,7 @@
                         app:layout_constraintBottom_toTopOf="@+id/btn_date_picker"
                         app:layout_constraintEnd_toEndOf="@+id/btn_date_picker"
                         app:layout_constraintStart_toStartOf="@+id/btn_date_picker" />
-
+a
                     <View
                         android:id="@+id/line_separator"
                         android:layout_width="0dp"
@@ -157,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/inter_medium"
-                        android:text="@string/tv_example_address"
+                        android:text="-"
                         android:textColor="@color/grey_primary"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
