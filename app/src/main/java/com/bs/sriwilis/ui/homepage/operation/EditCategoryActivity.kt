@@ -25,6 +25,7 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.bs.sriwilis.R
 import com.bs.sriwilis.adapter.CategoryAdapter
 import com.bs.sriwilis.databinding.ActivityAddUserBinding
@@ -33,6 +34,7 @@ import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bumptech.glide.Glide
 import com.yalantis.ucrop.UCrop
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -264,5 +266,11 @@ class EditCategoryActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        lifecycleScope.launch { viewModel.syncData() }
     }
 }

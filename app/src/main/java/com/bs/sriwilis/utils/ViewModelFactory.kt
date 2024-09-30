@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bs.sriwilis.helper.InjectionAuth
 import com.bs.sriwilis.helper.InjectionMain
 import com.bs.sriwilis.ui.authorization.LoginViewModel
+import com.bs.sriwilis.ui.history.ManageHistoryMutationViewModel
 import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
 import com.bs.sriwilis.ui.homepage.HomeViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
@@ -77,6 +78,10 @@ class ViewModelFactory private constructor(
             modelClass.isAssignableFrom(ManageHistoryOrderViewModel::class.java) -> {
                 val repository = InjectionMain.provideRepository(context)
                 ManageHistoryOrderViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(ManageHistoryMutationViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                ManageHistoryMutationViewModel(repository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

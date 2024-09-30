@@ -24,6 +24,7 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.bs.sriwilis.R
 import com.bs.sriwilis.adapter.CatalogAdapter
 import com.bs.sriwilis.adapter.CategoryAdapter
@@ -33,6 +34,7 @@ import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bumptech.glide.Glide
 import com.yalantis.ucrop.UCrop
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -225,7 +227,7 @@ class EditCatalogActivity : AppCompatActivity() {
                         setTitle("Berhasil!")
                         setMessage("Katalog Berhasil Diubah")
                         setPositiveButton("Ok") { _, _ ->
-                            refreshCategoryList()
+                            lifecycleScope.launch { refreshCategoryList() }
                             finish()
                         }
                         create()
@@ -246,9 +248,16 @@ class EditCatalogActivity : AppCompatActivity() {
         })
     }
 
-    private fun refreshCategoryList() {
+    private suspend fun refreshCategoryList() {
+        viewModel.syncData()
         viewModel.getCatalog()
 
         catalogAdapter.notifyDataSetChanged()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        lifecycleScope.launch { viewModel.syncData() }
     }
 }

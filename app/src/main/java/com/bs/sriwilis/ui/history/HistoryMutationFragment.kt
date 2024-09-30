@@ -1,5 +1,6 @@
 package com.bs.sriwilis.ui.history
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -30,6 +31,14 @@ class HistoryMutationFragment : Fragment() {
             cvStatusOrder.setOnClickListener {
                 replaceFragment(HistoryOrderFragment())
             }
+            cvConfirm.setOnClickListener {
+                val intent = Intent(requireContext(), MutationConfirmedListActivity::class.java)
+                startActivity(intent)
+            }
+            cvNotConfirm.setOnClickListener {
+                val intent = Intent(requireContext(), MutationNotConfirmedListActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 
@@ -40,7 +49,7 @@ class HistoryMutationFragment : Fragment() {
 
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container_history_order, fragment)
+            .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
     }
