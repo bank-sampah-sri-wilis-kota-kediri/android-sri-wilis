@@ -22,6 +22,8 @@ import com.bs.sriwilis.data.response.GetUserByIdResponse
 import com.bs.sriwilis.data.response.LoginResponseDTO
 import com.bs.sriwilis.data.response.NasabahResponseDTO
 import com.bs.sriwilis.data.response.OrderCartResponse
+import com.bs.sriwilis.data.response.PenarikanListResponse
+import com.bs.sriwilis.data.response.PenarikanResponse
 import com.bs.sriwilis.data.response.PesananSampahItem
 import com.bs.sriwilis.data.response.PesananSampahKeranjangResponse
 import com.bs.sriwilis.data.response.PesanananSampahItemResponse
@@ -102,7 +104,7 @@ class MainRepository(
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.editAdmin(adminId, "Bearer $token", phone, name, address, image)
+            val response = apiService.editAdmin(adminId, "Bearer $token", name, phone, address, image)
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -819,6 +821,54 @@ class MainRepository(
             val token = getToken() ?: return Result.Error("Token is null")
             Log.d("tokenmainrepository", "$token")
             val response = apiService.getAllTransaction("Bearer $token")
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.Success(body)
+                } else {
+                    Result.Error("Response body is null")
+                }
+            } else {
+                Result.Error("Failed to fetch mutation: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
+
+    suspend fun updateStatus(mutationId: String, statusPenarikan: String, nomorToken: String? = null): Result<PenarikanResponse> {
+        return try {
+            val token = getToken() ?: return Result.Error("Token is null")
+
+            val response = if (nomorToken != null) {
+                apiService.updateMutationStatus(mutationId, "Bearer $token", statusPenarikan, nomorToken)
+            } else {
+                apiService.updateMutationStatusWithoutToken(mutationId, "Bearer $token", statusPenarikan)
+            }
+            if (response.isSuccessful) {
+                val editResponse = response.body()
+                if (editResponse != null) {
+                    Result.Success(editResponse)
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to edit status penarikan: ${response.code()} - ${response.message()}")
+            }
+        } catch (e: Exception) {
+            Log.e("EditUser", "Edit error", e)
+            Result.Error("Edit error: ${e.message}")
+        }
+    }
+
+    // Mutation
+
+    suspend fun getAllMutation(): Result<PenarikanListResponse> {
+        return try {
+            val token = getToken() ?: return Result.Error("Token is null")
+            Log.d("tokenmainrepository", "$token")
+            val response = apiService.getAllMutation("Bearer $token")
 
             if (response.isSuccessful) {
                 val body = response.body()

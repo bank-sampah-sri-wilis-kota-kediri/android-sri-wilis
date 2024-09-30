@@ -14,7 +14,6 @@ import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.TransactionDataItem
 import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardHistoryOrderBinding
-import com.bs.sriwilis.databinding.CardMutationHistory2Binding
 import com.bs.sriwilis.databinding.CardOrderBinding
 import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity

@@ -16,6 +16,8 @@ import com.bs.sriwilis.data.response.GetCategoryByIdResponse
 import com.bs.sriwilis.data.response.GetUserByIdResponse
 import com.bs.sriwilis.data.response.NasabahResponseDTO
 import com.bs.sriwilis.data.response.OrderCartResponse
+import com.bs.sriwilis.data.response.PenarikanListResponse
+import com.bs.sriwilis.data.response.PenarikanResponse
 import com.bs.sriwilis.data.response.PesananSampahItem
 import com.bs.sriwilis.data.response.PesananSampahKeranjangResponse
 import com.bs.sriwilis.data.response.PesanananSampahItemResponse
@@ -192,16 +194,10 @@ interface ApiServiceMain {
     ): Response<Unit>
 
     // PENARIKAN CRUD
-    @POST("penarikan/add")
-    suspend fun addMutation(
-        @Header("Authorization") token: String,
-        @Body requestBody: AddCatalogRequest
-    ): Response<CatalogResponse>
-
     @GET("penarikan/show-all")
     suspend fun getAllMutation(
         @Header("Authorization") token: String,
-    ): Response<CatalogResponse>
+    ): Response<PenarikanListResponse>
 
     @GET("penarikan/{id}")
     suspend fun getMutationById(
@@ -209,12 +205,22 @@ interface ApiServiceMain {
         @Header("Authorization") token: String
     ): Response<GetCatalogByIdResponse>
 
-    @PUT("penarikan/edit-by-id/{id}")
+    @FormUrlEncoded
+    @PUT("penarikan/update-status/{id}")
     suspend fun updateMutationStatus(
         @Path("id") catalogId: String,
         @Header("Authorization") token: String,
-        @Body requestBody: AddCatalogRequest
-    ): Response<CatalogResponse>
+        @Field("status_penarikan") status_penarikan: String,
+        @Field("nomor_token") nomor_token: String
+    ): Response<PenarikanResponse>
+
+    @FormUrlEncoded
+    @PUT("penarikan/update-status/{id}")
+    suspend fun updateMutationStatusWithoutToken(
+        @Path("id") catalogId: String,
+        @Header("Authorization") token: String,
+        @Field("status_penarikan") status_penarikan: String,
+    ): Response<PenarikanResponse>
 
     @DELETE("penarikan/{id}")
     suspend fun deleteMutation(

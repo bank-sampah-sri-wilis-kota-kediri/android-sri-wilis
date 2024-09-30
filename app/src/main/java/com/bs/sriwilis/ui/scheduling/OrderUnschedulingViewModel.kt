@@ -28,7 +28,7 @@ class OrderUnschedulingViewModel(private val repository: MainRepository) : ViewM
         viewModelScope.launch {
             when (val result = repository.getAllOrderSchedule()) {
                 is Result.Success -> {
-                    val filteredOrders = result.data.dataKeranjang?.filter { it.statusPesanan == "Pending" && it.tanggal != null}
+                    val filteredOrders = result.data.dataKeranjang?.filter { it.statusPesanan == "Pending" }
                     _unscheduledOrdersLiveData.postValue(filteredOrders)
                 }
                 is Result.Error -> _errorLiveData.postValue(result.error)

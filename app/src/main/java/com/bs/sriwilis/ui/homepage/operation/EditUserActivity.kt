@@ -147,4 +147,10 @@ class EditUserActivity : AppCompatActivity() {
 
         userAdapter.notifyDataSetChanged()
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        lifecycleScope.launch { viewModel.syncData() }
+    }
 }
