@@ -171,7 +171,7 @@ class AddCategoryActivity : AppCompatActivity() {
                     AlertDialog.Builder(this).apply {
                         setTitle("Berhasil!")
                         setMessage("Kategori berhasil ditambahkan")
-                        setPositiveButton("Ok") { _, _ ->
+                        setPositiveButton("OK") { _, _ ->
                             finish()
                         }
                         create()
@@ -182,8 +182,10 @@ class AddCategoryActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                     AlertDialog.Builder(this).apply {
                         setTitle("Gagal!")
-                        setMessage("Kategori gagal ditambahkan")
-                        setPositiveButton("OK", null)
+                        setMessage("Kategori berhasil ditambahkan")
+                        setPositiveButton("OK") { _, _ ->
+                            finish()
+                        }
                         create()
                         show()
                     }

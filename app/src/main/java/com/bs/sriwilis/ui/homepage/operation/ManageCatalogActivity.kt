@@ -37,6 +37,13 @@ class ManageCatalogActivity : AppCompatActivity() {
 
         catalogAdapter = CatalogAdapter(emptyList(), this)
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            lifecycleScope.launch {
+                viewModel.syncData()
+                viewModel.getCatalog()
+            }
+        }
+
         binding.apply {
             fabAddCatalog.setOnClickListener {
                 val intent = Intent(this@ManageCatalogActivity, AddCatalogActivity::class.java)
@@ -44,8 +51,11 @@ class ManageCatalogActivity : AppCompatActivity() {
             }
             btnBack.setOnClickListener { finish() }
         }
-        observeCatalog()
-        setupRecyclerView()
+
+        lifecycleScope.launch {
+            observeCatalog()
+            setupRecyclerView()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -53,13 +63,14 @@ class ManageCatalogActivity : AppCompatActivity() {
         binding.rvCatalog.adapter = catalogAdapter
     }
 
-    private fun observeCatalog() {
+    private suspend fun observeCatalog() {
         viewModel.catalog.observe(this) { result ->
             when (result) {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is Result.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
                     binding.progressBar.visibility = View.GONE
                     val catalogDetails = result.data
                     catalogAdapter.updateCatalog(catalogDetails)
@@ -69,11 +80,6 @@ class ManageCatalogActivity : AppCompatActivity() {
                 }
             }
         }
-        viewModel.getCatalog()
-    }
-
-    override fun onResume() {
-        super.onResume()
         viewModel.getCatalog()
     }
 }

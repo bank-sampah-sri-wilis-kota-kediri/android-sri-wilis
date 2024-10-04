@@ -33,7 +33,6 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         binding = ActivityMutationNotConfirmedListBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -42,6 +41,10 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
 
         binding.apply {
             btnBack.setOnClickListener { finish() }
+
+            swipeRefreshLayout.setOnRefreshListener {
+                viewModel.getAllMutation()
+            }
         }
 
         setupRecyclerView()
@@ -89,6 +92,7 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
                 }
 
                 is Result.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
                     binding.progressBar.visibility = View.GONE
                     showToast("Update Status Penarikan Berhasil")
                 }

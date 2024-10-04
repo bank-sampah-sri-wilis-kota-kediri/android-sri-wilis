@@ -94,7 +94,7 @@ class EditUserActivity : AppCompatActivity() {
 
     private fun editUser(userId: String, phone: String, name: String, address: String, balance: Double) {
         binding.progressBar.visibility = View.VISIBLE
-        viewModel.editUser(userId, name, phone, address, balance)
+        viewModel.editUser(userId, phone, name, address, balance)
     }
 
     fun String?.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
@@ -119,7 +119,6 @@ class EditUserActivity : AppCompatActivity() {
                                 viewModel.syncData()
                                 viewModel.getUsers()
                             }
-                            refreshUserList()
                             finish()
                         }
                         create()
@@ -138,14 +137,6 @@ class EditUserActivity : AppCompatActivity() {
                 }
             }
         })
-    }
-
-    private fun refreshUserList() {
-        lifecycleScope.launch {
-            viewModel.getUsers()
-        }
-
-        userAdapter.notifyDataSetChanged()
     }
 
     override fun onResume() {

@@ -149,19 +149,20 @@ class LoginActivity : AppCompatActivity() {
                 is Result.Success -> {
                     lifecycleScope.launch {
                         viewModelWelcome.syncData()
-                    }
-                    binding.progressBar.visibility = View.GONE
-                    AlertDialog.Builder(this).apply {
-                        setTitle("Sukses")
-                        setMessage("Anda Berhasil Masuk")
-                        setPositiveButton("OK") { _, _ ->
-                            val intent = Intent(this@LoginActivity, HomepageActivity::class.java)
-                            startActivity(intent)
-                            finish()
+                        binding.progressBar.visibility = View.GONE
+                        AlertDialog.Builder(this@LoginActivity).apply {
+                            setTitle("Sukses")
+                            setMessage("Anda Berhasil Masuk")
+                            setPositiveButton("OK") { _, _ ->
+                                val intent = Intent(this@LoginActivity, HomepageActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
+                            create()
+                            show()
                         }
-                        create()
-                        show()
                     }
+
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE

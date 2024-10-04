@@ -110,7 +110,7 @@ class EditCatalogActivity : AppCompatActivity() {
     }
 
     private fun observeCatalog() {
-        viewModel.catalogData.observe(this, Observer { result ->
+        viewModel.catalogDetail.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -120,7 +120,7 @@ class EditCatalogActivity : AppCompatActivity() {
 
                     val catalogDetails = result.data
 
-                    catalogDetails.gambarKatalog?.let { gambarKatalog ->
+                    catalogDetails?.gambar_katalog?.let { gambarKatalog ->
                         if (gambarKatalog.isNotEmpty()) {
                             val imageBytes = Base64.decode(gambarKatalog, Base64.DEFAULT)
 
@@ -143,11 +143,11 @@ class EditCatalogActivity : AppCompatActivity() {
                         binding.ivCatalogPreview.setImageResource(R.drawable.iv_panduan2)
                     }
 
-                    binding.edtCatalogName.text = catalogDetails.judulKatalog.toEditable()
-                    binding.edtCatalogPrice.text = catalogDetails.hargaKatalog.toString().toEditable()
-                    binding.edtLinkShopee.text = catalogDetails.shopeeLink.toEditable()
-                    binding.edtMobileNumber.text = catalogDetails.noWa.toEditable()
-                    binding.edtDescriptionCatalog.text = catalogDetails.deskripsiKatalog.toEditable()
+                    binding.edtCatalogName.text = catalogDetails?.judul_katalog.toEditable()
+                    binding.edtCatalogPrice.text = catalogDetails?.harga_katalog.toString().toEditable()
+                    binding.edtLinkShopee.text = catalogDetails?.shopee_link.toEditable()
+                    binding.edtMobileNumber.text = catalogDetails?.no_wa.toEditable()
+                    binding.edtDescriptionCatalog.text = catalogDetails?.deskripsi_katalog.toEditable()
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -253,11 +253,5 @@ class EditCatalogActivity : AppCompatActivity() {
         viewModel.getCatalog()
 
         catalogAdapter.notifyDataSetChanged()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        lifecycleScope.launch { viewModel.syncData() }
     }
 }

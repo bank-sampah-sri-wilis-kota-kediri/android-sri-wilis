@@ -126,7 +126,7 @@ class AddCatalogActivity : AppCompatActivity() {
                 }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    showToast(getString(R.string.tv_category_process_success))
+                    showToast("Katalog Berhasil Ditambahkan!")
                     finish()
                 }
                 is Result.Error -> {

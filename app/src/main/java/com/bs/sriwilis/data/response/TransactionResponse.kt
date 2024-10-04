@@ -50,7 +50,7 @@ data class PesanananSampahItemResponse(
 
 data class TransaksiSampahItemResponse(
 	@field:SerializedName("transaksi_sampah")
-	val data: TransactionDataItem? = null,
+	val data: TransaksiSampahItem? = null,
 
 	@field:SerializedName("success")
 	val success: Boolean? = null,
@@ -61,9 +61,6 @@ data class TransaksiSampahItemResponse(
 
 
 data class TransaksiSampahItem(
-
-	@field:SerializedName("harga")
-	val harga: Float,
 
 	@field:SerializedName("berat")
 	val berat: Int? = null,

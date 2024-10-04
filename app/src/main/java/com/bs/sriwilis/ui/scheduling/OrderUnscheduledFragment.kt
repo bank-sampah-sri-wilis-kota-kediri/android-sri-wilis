@@ -1,10 +1,12 @@
 package com.bs.sriwilis.ui.scheduling
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -15,7 +17,8 @@ import com.bs.sriwilis.adapter.OrderUnscheduledAdapter
 import com.bs.sriwilis.databinding.FragmentOrderScheduleBinding
 import com.bs.sriwilis.databinding.FragmentOrderUnscheduledBinding
 import com.bs.sriwilis.helper.InjectionMain
-import com.bs.sriwilis.utils.OrderUnschedulingViewModelFactory
+import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.utils.OrderSchedulingViewModelFactory
 import com.bs.sriwilis.utils.ViewModelFactory
 import kotlinx.coroutines.launch
 
@@ -25,7 +28,7 @@ class OrderUnscheduledFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var adapter: OrderUnscheduledAdapter
-    private lateinit var viewModel: OrderUnschedulingViewModel
+    private lateinit var viewModel: OrderSchedulingViewModel
 
 
     override fun onCreateView(
@@ -39,37 +42,53 @@ class OrderUnscheduledFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            val repository = InjectionMain.provideRepository(requireContext())
+            viewModel =
+                ViewModelProvider(requireActivity(), OrderSchedulingViewModelFactory(repository))[OrderSchedulingViewModel::class.java]
+            setupUI()
+        }
+
+        observeOrder()
+
+        binding.bindingSwipe.setOnRefreshListener {
+            lifecycleScope.launch {
+                viewModel.syncData()
+                viewModel.getPesananSampahKeranjangUnscheduled()
+            }
+        }
+
+
         binding.apply {
             binding.cvScheduled.setOnClickListener {
                 replaceFragment(OrderScheduleFragment())
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val repository = InjectionMain.provideRepository(requireContext())
-            viewModel =
-                ViewModelProvider(requireActivity(), OrderUnschedulingViewModelFactory(repository))[OrderUnschedulingViewModel::class.java]
-            setupUI()
-        }
+
     }
 
-    private fun setupUI() {
+    private suspend fun setupUI() {
         adapter = OrderUnscheduledAdapter(emptyList(), requireContext(), viewModel)
 
         binding.rvUnscheduledTask.layoutManager = LinearLayoutManager(requireContext())
         binding.rvUnscheduledTask.adapter = adapter
 
-        viewModel.unscheduledOrdersLiveData.observe(viewLifecycleOwner) { orders ->
-            if (isAdded) {
-                if (orders != null) {
-                    adapter.updateOrder(orders)
-                } else {
-                    adapter.updateOrder(emptyList())
+        viewModel.pesananSampahEntities.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Result.Success -> {
+                    result.data.let { adapter.updateOrder(it) }
+                }
+                is Result.Error -> {
+                    Toast.makeText(requireContext(), "Gagal memuat data: ${result.error}", Toast.LENGTH_SHORT).show()
+                }
+                is Result.Loading -> {
+                    Log.d("Loading", "Loading")
                 }
             }
         }
 
-        viewModel.fetchUnscheduledOrders()
+        viewModel.getPesananSampahKeranjangUnscheduled()
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -82,5 +101,23 @@ class OrderUnscheduledFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun observeOrder() {
+        viewModel.pesananSampahEntities.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Result.Success -> {
+                    binding.bindingSwipe.isRefreshing = false
+                    result.data.let { adapter.updateOrder(it) }
+                }
+                is Result.Error -> {
+                    binding.bindingSwipe.isRefreshing = false
+                    Toast.makeText(requireContext(), "Gagal memuat data: ${result.error}", Toast.LENGTH_SHORT).show()
+                }
+                is Result.Loading -> {
+                    Log.d("Loading", "Loading")
+                }
+            }
+        }
     }
 }

@@ -25,7 +25,9 @@ import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.model.CartTransaction
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class AddTransaction : AppCompatActivity() {
 
@@ -54,6 +56,10 @@ class AddTransaction : AppCompatActivity() {
 
         val recyclerView: RecyclerView = findViewById(R.id.rv_transaction_cart)
         val cartItems = mutableListOf<CartTransaction>()
+
+        val currentDate = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        binding.tvSelectedDate.text = dateFormat.format(currentDate)
 
         adapter = CartTransactionAdapter(cartItems)
         recyclerView.adapter = adapter

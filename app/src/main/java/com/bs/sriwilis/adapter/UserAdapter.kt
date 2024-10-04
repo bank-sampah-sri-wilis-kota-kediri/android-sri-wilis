@@ -7,40 +7,26 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
-import com.bs.sriwilis.data.repository.MainRepository
 import com.bs.sriwilis.data.repository.modelhelper.CardNasabah
-import com.bs.sriwilis.data.response.UserData
-import com.bs.sriwilis.data.response.UserItem
-import com.bs.sriwilis.data.room.entity.NasabahEntity
 import com.bs.sriwilis.databinding.CardUserListBinding
 import com.bs.sriwilis.ui.homepage.operation.EditUserActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
-import com.bs.sriwilis.ui.splashscreen.WelcomeViewModel
-import com.bs.sriwilis.utils.ViewModelFactory
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import com.bs.sriwilis.helper.Result
 
 class UserAdapter(
     private var user: List<CardNasabah?>,
     private val context: Context
-
 ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
-    private var userlist: List<String> = emptyList()
     private lateinit var viewModel: ManageUserViewModel
 
     inner class UserViewHolder(private val binding: CardUserListBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -48,10 +34,16 @@ class UserAdapter(
         fun bind(users: CardNasabah?) {
             with(binding) {
                 users?.gambar_nasabah?.let { gambarNasabah ->
-                    val imageBytes = Base64.decode(gambarNasabah, Base64.DEFAULT)
-                    Glide.with(itemView.context)
-                        .load(imageBytes)
-                        .into(ivCategoryListPreview)
+                    try {
+                        val imageBytes = Base64.decode(gambarNasabah, Base64.DEFAULT)
+                        Glide.with(itemView.context)
+                            .load(imageBytes)
+                            .into(ivCategoryListPreview)
+                    } catch (e: IllegalArgumentException) {
+                        // Handle bad Base64 input gracefully
+                        e.printStackTrace()
+                        ivCategoryListPreview.setImageResource(R.drawable.ic_profile) // Set a default image
+                    }
                 } ?: run {
                     ivCategoryListPreview.setImageResource(R.drawable.ic_profile)
                 }
@@ -61,8 +53,8 @@ class UserAdapter(
 
                 itemView.setOnClickListener {
                     users?.let { user ->
-                        user.no_hp_nasabah.let { phone ->
-                            user.id.let { userId ->  // Assuming `id_nasabah` is the userId field
+                        user.no_hp_nasabah?.let { phone ->
+                            user.id?.let { userId ->
                                 onItemClick?.invoke(phone)
 
                                 val intent = Intent(itemView.context, EditUserActivity::class.java).apply {
@@ -77,11 +69,9 @@ class UserAdapter(
                 }
 
                 btnDelete.setOnClickListener {
-                    users?.no_hp_nasabah.let { phone ->
-                        if (phone != null) {
-                            showDeleteConfirmationDialog(itemView, phone)
-                        }
-                        Log.d("cek ke klik kah", "btn delete ${users?.no_hp_nasabah}")
+                    users?.no_hp_nasabah?.let { phone ->
+                        showDeleteConfirmationDialog(itemView, phone)
+                        Log.d("cek ke klik kah", "btn delete $phone")
                     }
                 }
             }
@@ -115,7 +105,6 @@ class UserAdapter(
         dialogBuilder.setTitle("Konfirmasi Penghapusan Akun")
         dialogBuilder.setMessage("Anda yakin ingin menghapus akun ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
-
             val activity = itemView.context as AppCompatActivity
             activity.lifecycleScope.launch {
                 viewModel.deleteUser(userPhone)

@@ -27,4 +27,7 @@ interface NasabahDao {
     @Query("SELECT no_hp_nasabah FROM nasabah_table")
     suspend fun getNasabahPhones(): List<String>
 
+    @Query("DELETE FROM nasabah_table")
+    suspend fun deleteAll()
+
 }

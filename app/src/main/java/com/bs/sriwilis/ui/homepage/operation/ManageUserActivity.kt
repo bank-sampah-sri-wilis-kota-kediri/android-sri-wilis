@@ -43,6 +43,13 @@ class ManageUserActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             btnBack.setOnClickListener { finish() }
+
+            swipeRefreshLayout.setOnRefreshListener {
+                lifecycleScope.launch {
+                    viewModel.syncData()
+                    viewModel.getUsers()
+                }
+            }
         }
         lifecycleScope.launch {
             viewModel.getUsers()
@@ -74,16 +81,10 @@ class ManageUserActivity : AppCompatActivity() {
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.swipeRefreshLayout.isRefreshing = false
                 }
             }
         }
         viewModel.getUsers()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        lifecycleScope.launch {
-            viewModel.getUsers()
-        }
     }
 }

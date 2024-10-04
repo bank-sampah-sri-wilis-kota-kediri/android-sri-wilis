@@ -15,6 +15,9 @@
         android:theme="@style/Theme.BankSampahSriWilis"
         tools:targetApi="31">
         <activity
+            android:name=".ui.scheduling.SchedulingDetailDoneActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.history.MutationConfirmedListActivity"
             android:exported="false" />
         <activity

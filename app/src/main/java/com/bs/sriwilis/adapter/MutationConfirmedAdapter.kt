@@ -51,15 +51,15 @@ class MutationConfirmedAdapter(
                 tvMutationDate.text = mutation?.tanggal
                 tvMutationNominal.text = "Rp" + mutation?.nominal.toString()
 
-                when (mutation?.jenisPenarikan?.lowercase()) {
+                when (mutation?.jenisPenarikan) {
                     "PLN" -> tvMutationStatus.text = "Token Listrik PLN"
-                    "cash" -> tvMutationStatus.text = "Pencairan Tunai"
-                    "transfer" -> tvMutationStatus.text = "Pencairan Transfer"
+                    "Tunai" -> tvMutationStatus.text = "Pencairan Tunai"
+                    "Transfer" -> tvMutationStatus.text = "Pencairan Transfer"
                 }
 
-                val statusColor = when (mutation?.statusPenarikan?.lowercase()) {
-                    "berhasil" -> ContextCompat.getColor(itemView.context, R.color.yellow_primary)
-                    "gagal" -> ContextCompat.getColor(itemView.context, R.color.red_primary)
+                val statusColor = when (mutation?.statusPenarikan) {
+                    "Berhasil" -> ContextCompat.getColor(itemView.context, R.color.yellow_primary)
+                    "Gagal" -> ContextCompat.getColor(itemView.context, R.color.red_primary)
                     else -> ContextCompat.getColor(itemView.context, R.color.green_teal)
                 }
 

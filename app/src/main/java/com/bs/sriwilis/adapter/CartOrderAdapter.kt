@@ -21,10 +21,11 @@ import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardDetailPesanan
 import com.bumptech.glide.Glide
 
 class CartOrderAdapter(
-    private var transaction: List<TransaksiSampahItem?>,
+    private var transaction: List<CardDetailPesanan?>,
     private val context: Context
 
 ) : RecyclerView.Adapter<CartOrderAdapter.HistoryOrderViewHolder>() {
@@ -36,10 +37,10 @@ class CartOrderAdapter(
 
     inner class HistoryOrderViewHolder(private val binding: CardOrderSchedulingDetailListBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(transaction: TransaksiSampahItem?) {
+        fun bind(transaction: CardDetailPesanan?) {
             with(binding) {
                 tvBeratPesanan.text = transaction?.berat.toString() + " kg"
-                tvKategoriPesanan.text = transaction?.kategori
+                tvKategoriPesanan.text = transaction?.nama_kategori
             }
         }
     }
@@ -61,7 +62,7 @@ class CartOrderAdapter(
         holder.bind(transaction[position])
     }
 
-    fun updateOrder(newCategories: List<TransaksiSampahItem?>) {
+    fun updateOrder(newCategories: List<CardDetailPesanan?>) {
         this.transaction = newCategories
         notifyDataSetChanged()
     }

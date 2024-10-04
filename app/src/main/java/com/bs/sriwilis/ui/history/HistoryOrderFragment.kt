@@ -1,12 +1,16 @@
 package com.bs.sriwilis.ui.history
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,17 +46,27 @@ class HistoryOrderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            val repository = InjectionMain.provideRepository(requireContext())
+            viewModel =
+                ViewModelProvider(requireActivity(), HistoryViewModelFactory(repository))[ManageHistoryOrderViewModel::class.java]
+
+            viewModel.getStatusOrderHistory()
+            setupUI()
+
+        }
+
+        observeOrder()
+
         binding.apply {
             cvMutationFilter.setOnClickListener {
                 replaceFragment(HistoryMutationFragment())
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val repository = InjectionMain.provideRepository(requireContext())
-            viewModel =
-                ViewModelProvider(requireActivity(), HistoryViewModelFactory(repository))[ManageHistoryOrderViewModel::class.java]
-            setupUI()
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.getStatusOrderHistory()
+            viewModel.getCombinedTransaction()
         }
     }
 
@@ -72,7 +86,7 @@ class HistoryOrderFragment : Fragment() {
             }
         }
 
-        viewModel.getAllTransaction()
+        viewModel.getCombinedTransaction()
     }
 
     override fun onDestroyView() {
@@ -87,22 +101,17 @@ class HistoryOrderFragment : Fragment() {
             .commit()
     }
 
-    /*private fun observeCatalog() {
-        viewModel.catalog.observe(this) { result ->
-            when (result) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                is Result.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    val catalogDetails = result.data
-                    catalogAdapter.updateCatalog(catalogDetails)
-                }
-                is Result.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                }
+    private fun observeOrder() {
+        viewModel.historyOrders.observe(viewLifecycleOwner, Observer { historyList ->
+            binding.swipeRefreshLayout.isRefreshing = false
+
+            if (historyList != null) {
+                adapter.updateOrder(historyList)
+            } else {
+                Log.d("error", "error observe")
             }
-        }
-        viewModel.getCatalog()
-    }*/
+        })
+    }
+
+
 }

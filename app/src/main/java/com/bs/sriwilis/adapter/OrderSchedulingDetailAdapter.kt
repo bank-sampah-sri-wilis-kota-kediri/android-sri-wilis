@@ -14,7 +14,6 @@ import com.bs.sriwilis.databinding.CardOrderSchedulingBinding
 import com.bs.sriwilis.databinding.CardOrderSchedulingDetailListBinding
 import com.bs.sriwilis.ui.homepage.operation.EditCatalogActivity
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
-import com.bs.sriwilis.ui.scheduling.OrderUnschedulingViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailActivity
 
 class OrderSchedulingDetailAdapter(
