@@ -119,8 +119,8 @@ class ManageCategoryActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch {
-            viewModel.getCategory()
             viewModel.syncData()
+            viewModel.getCategory()
         }
     }
 }

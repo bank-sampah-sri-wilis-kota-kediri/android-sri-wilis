@@ -3,6 +3,7 @@ package com.bs.sriwilis.adapter
 import android.content.Context
 import android.content.Intent
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
@@ -51,21 +52,27 @@ class MutationNotConfirmedAdapter(
                 tvMutationDate.text = mutation?.tanggal
                 tvMutationNominal.text = "Rp" + mutation?.nominal.toString()
 
-                when (mutation?.jenisPenarikan?.lowercase()) {
+                when (mutation?.jenisPenarikan) {
                     "PLN" -> tvMutationStatus.text = "Token Listrik PLN"
-                    "cash" -> tvMutationStatus.text = "Pencairan Tunai"
-                    "transfer" -> tvMutationStatus.text = "Pencairan Transfer"
+                    "Tunai" -> tvMutationStatus.text = "Pencairan Tunai"
+                    "Transfer" -> tvMutationStatus.text = "Pencairan Transfer"
                 }
 
+                mutation?.idNasabah?.let { nasabahId ->
+                    viewModel.getCustomerPhone(nasabahId.toString()) { customerPhone ->
+                        tvMutationUserTitle.text = customerPhone
+                    }
+                }
 
                 mutation?.id?.let { mutationId ->
                     btnRefuseMutation.setOnClickListener {
                         viewModel.updateStatus(mutationId, "Gagal")
                     }
                     btnAcceptMutation.setOnClickListener {
-                        if (mutation.jenisPenarikan?.lowercase() == "PLN"){
+                        Log.d("BTN NYA KESENTUH", "$mutationId")
+                        if (mutation.jenisPenarikan == "PLN"){
                             viewModel.updateStatus(mutationId, "Berhasil", "8223")
-                        } else if (mutation.jenisPenarikan?.lowercase() == "cash" || mutation.jenisPenarikan?.lowercase() == "transfer") {
+                        } else if (mutation.jenisPenarikan == "Tunai" || mutation.jenisPenarikan == "Transfer") {
                             viewModel.updateStatus(mutationId, "Berhasil")
                         }
                     }
@@ -95,18 +102,4 @@ class MutationNotConfirmedAdapter(
         this.mutations = newMutations
         notifyDataSetChanged()
     }
-
-    /*    private fun showDeleteConfirmationDialog(catalogId: String) {
-            val dialogBuilder = AlertDialog.Builder(context)
-            dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
-            dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
-            dialogBuilder.setPositiveButton("Ya") { _, _ ->
-                viewModel.deleteCategory(catalogId)
-            }
-            dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
-                dialog.dismiss()
-            }
-            val alertDialog = dialogBuilder.create()
-            alertDialog.show()
-        }*/
 }

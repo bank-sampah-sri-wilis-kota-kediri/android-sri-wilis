@@ -3,10 +3,13 @@ package com.bs.sriwilis.adapter
 import android.content.Context
 import android.content.Intent
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
@@ -15,13 +18,15 @@ import com.bs.sriwilis.data.response.TransactionDataItem
 import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardHistoryOrderBinding
 import com.bs.sriwilis.databinding.CardOrderBinding
+import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardTransaksi
 import com.bumptech.glide.Glide
 
 class HistoryOrderAdapter(
-    private var transaction: List<TransactionDataItem?>,
+    private var transaction: List<CardTransaksi?>,
     private val context: Context
 
 ) : RecyclerView.Adapter<HistoryOrderAdapter.HistoryOrderViewHolder>() {
@@ -30,27 +35,35 @@ class HistoryOrderAdapter(
     private var categorylist: List<String> = emptyList()
     private lateinit var viewModel: ManageHistoryOrderViewModel
 
-    init {
-        transaction = transaction.reversed()
-    }
-
-
     inner class HistoryOrderViewHolder(private val binding: CardHistoryOrderBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(transaction: TransactionDataItem?) {
+        fun bind(transaction: CardTransaksi?) {
             with(binding) {
-                tvStatusHistoryOrder.text = transaction?.statusTransaksi
 
-                transaction?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerName(nasabahId.toString()) { customerName ->
-                        tvNamaPesanan.text = customerName
-                    }
+                val lifecycleOwner = itemView.context as? AppCompatActivity
+
+
+                if (lifecycleOwner != null) {
+                    viewModel.statusOrder.observe(lifecycleOwner, Observer { result ->
+                        when (result) {
+                            is Result.Loading -> {}
+                            is Result.Success -> {
+
+                                val status = result.data
+
+                                binding.tvStatusHistoryOrder.text = status.status_transaksi
+                            }
+
+                            is Result.Error -> {}
+                        }
+                    })
                 }
 
 
+                tvNamaPesanan.text = transaction?.nama_nasabah
                 tvTanggalPesanan.text = transaction?.tanggal
-                tvBeratTransaksi.text = transaction?.transaksiSampah?.size.toString()
-                tvNomorWaPesanan.text = "Rp" + transaction?.nominalTransaksi
+                tvBeratTransaksi.text = transaction?.total_berat?.toString() + " kg"
+                tvNomorWaPesanan.text = transaction?.no_hp_nasabah
 
 
 /*                itemView.setOnClickListener {
@@ -82,8 +95,8 @@ class HistoryOrderAdapter(
         holder.bind(transaction[position])
     }
 
-    fun updateOrder(newCategories: List<TransactionDataItem?>) {
-        this.transaction = newCategories.reversed()
+    fun updateOrder(newOrders: List<CardTransaksi?>) {
+        this.transaction = newOrders
         notifyDataSetChanged()
     }
 

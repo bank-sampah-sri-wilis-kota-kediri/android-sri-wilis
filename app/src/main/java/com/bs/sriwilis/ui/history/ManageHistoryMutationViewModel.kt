@@ -19,8 +19,6 @@ import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
 
 class ManageHistoryMutationViewModel(private val repository: MainRepository) : ViewModel() {
-
-
     private val _historyMutation = MutableLiveData<Result<List<PenarikanData>?>>()
     val historyMutation: LiveData<Result<List<PenarikanData>?>> get() = _historyMutation
 
@@ -61,6 +59,20 @@ class ManageHistoryMutationViewModel(private val repository: MainRepository) : V
                     callback("Unknown Customer")
                 }
 
+                Result.Loading -> TODO()
+            }
+        }
+    }
+
+    fun getCustomerPhone(userId: String, callback: (String) -> Unit) {
+        viewModelScope.launch {
+            when (val result = repository.getUserById(userId)) {
+                is Result.Success -> {
+                    result.data.no_hp_nasabah?.let { callback(it) }
+                }
+                is Result.Error -> {
+                    callback("Unknown Customer")
+                }
                 Result.Loading -> TODO()
             }
         }

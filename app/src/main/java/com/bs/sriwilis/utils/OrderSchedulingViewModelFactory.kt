@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bs.sriwilis.data.repository.MainRepository
 import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
-import com.bs.sriwilis.ui.scheduling.OrderUnschedulingViewModel
 
 class OrderSchedulingViewModelFactory(private val repository: MainRepository) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")

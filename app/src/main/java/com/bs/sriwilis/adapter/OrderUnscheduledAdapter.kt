@@ -1,5 +1,6 @@
 package com.bs.sriwilis.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Base64
@@ -31,47 +32,44 @@ import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
 import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
-import com.bs.sriwilis.ui.scheduling.OrderUnschedulingViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailActivity
 import com.bs.sriwilis.utils.ViewModelFactory
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardDetailPesanan
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardPesanan
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class OrderUnscheduledAdapter(
-    private var unscheduledOrder: List<DataKeranjangItem?>,
+    private var unscheduledOrder: List<CardPesanan?>,
     private val context: Context,
-    private var viewModel: OrderUnschedulingViewModel
+    private var viewModel: OrderSchedulingViewModel
 ) : RecyclerView.Adapter<OrderUnscheduledAdapter.OrderUnscheduledViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
 
     inner class OrderUnscheduledViewHolder(private val binding: CardOrderSchedulingBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(unscheduledOrder: DataKeranjangItem?) {
+        @SuppressLint("SetTextI18n")
+        fun bind(unscheduledOrder: CardPesanan?) {
             with(binding) {
-                unscheduledOrder?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerName(nasabahId) { customerName ->
-                        tvNamaPesanan.text = customerName
-                    }
-                }
-
+                tvNamaPesanan.text = unscheduledOrder?.nama_nasabah
                 tvTanggalPesanan.text = unscheduledOrder?.tanggal ?: "Belum Ditentukan"
-
-                val totalBerat = unscheduledOrder?.pesananSampah?.sumOf { it?.beratPerkiraan ?: 0 } ?: 0
-                tvBeratTransaksi.text = "$totalBerat kg"
+                tvBeratTransaksi.text = unscheduledOrder?.total_berat.toString() + " kg"
 
                 itemView.setOnClickListener {
                     unscheduledOrder?.let { order ->
-                        onItemClick?.invoke(order.idNasabah)
+                        onItemClick?.invoke(order.id_pesanan)
 
                         val intent = Intent(itemView.context, SchedulingDetailActivity::class.java)
-                        intent.putExtra("id", order.idPesanan)
-                        intent.putExtra("nasabahId", order.idNasabah)
+                        intent.putExtra("id", order.id_pesanan)
                         itemView.context.startActivity(intent)
                     }
                 }
+
+                tvNomorWaPesanan.text = unscheduledOrder?.no_hp_nasabah.toString()
+                tvStatus.text = unscheduledOrder?.status_pesanan
             }
         }
     }
@@ -80,7 +78,7 @@ class OrderUnscheduledAdapter(
         val binding = CardOrderSchedulingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         val activity = parent.context as AppCompatActivity
-        viewModel = ViewModelProvider(activity)[OrderUnschedulingViewModel::class.java]
+        viewModel = ViewModelProvider(activity)[OrderSchedulingViewModel::class.java]
 
         return OrderUnscheduledViewHolder(binding)
     }
@@ -93,7 +91,7 @@ class OrderUnscheduledAdapter(
         holder.bind(unscheduledOrder[position])
     }
 
-    fun updateOrder(filtererdOrder: List<DataKeranjangItem?>) {
+    fun updateOrder(filtererdOrder: List<CardPesanan?>) {
         Log.d("OrderScheduledAdapter", "Updating catalog with ${filtererdOrder.size} items")
         this.unscheduledOrder = filtererdOrder
         notifyDataSetChanged()

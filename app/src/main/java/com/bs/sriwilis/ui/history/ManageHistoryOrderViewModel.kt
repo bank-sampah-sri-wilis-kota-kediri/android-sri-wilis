@@ -15,12 +15,17 @@ import com.bs.sriwilis.data.response.TransactionResponse
 import com.bs.sriwilis.data.response.TransaksiSampahItem
 import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardStatus
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardTransaksi
 
 class ManageHistoryOrderViewModel(private val repository: MainRepository) : ViewModel() {
 
 
-    private val _historyOrders = MutableLiveData<List<TransactionDataItem>?>()
-    val historyOrders: LiveData<List<TransactionDataItem>?> get() = _historyOrders
+    private val _historyOrders = MutableLiveData<List<CardTransaksi>?>()
+    val historyOrders: LiveData<List<CardTransaksi>?> get() = _historyOrders
+
+    private val _resultHistoryOrders = MutableLiveData<Result<List<CardTransaksi>?>>()
+    val resultHistoryOrders: LiveData<Result<List<CardTransaksi>?>> get() = _resultHistoryOrders
 
     private val _editCategoryResult = MutableLiveData<Result<SingleCategoryResponse>>()
     val editCategoryResult: LiveData<Result<SingleCategoryResponse>> = _editCategoryResult
@@ -31,6 +36,9 @@ class ManageHistoryOrderViewModel(private val repository: MainRepository) : View
     private val _categoryData = MutableLiveData<Result<CardCategory>>()
     val categoryData: LiveData<Result<CardCategory>> get() = _categoryData
 
+    private val _statusOrder = MutableLiveData<Result<CardStatus>>()
+    val statusOrder: LiveData<Result<CardStatus>> get() = _statusOrder
+
     fun editCategory(userId: String, name: String, price: String, type: String, image: String) {
         viewModelScope.launch {
             _editCategoryResult.value = Result.Loading
@@ -40,11 +48,26 @@ class ManageHistoryOrderViewModel(private val repository: MainRepository) : View
         }
     }
 
-    fun getAllTransaction() {
+    fun getCombinedTransaction() {
         viewModelScope.launch {
-            when (val result = repository.getAllTransaction()) {
+            when (val result = repository.getCombinedTransaksiData()) {
                 is Result.Success -> {
-                    _historyOrders.postValue(result.data.data)
+                    _historyOrders.postValue(result.data)
+                }
+                is Result.Error -> {
+                    Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
+                }
+
+                Result.Loading -> TODO()
+            }
+        }
+    }
+
+    fun getStatusOrderHistory() {
+        viewModelScope.launch {
+            when (val result = repository.getStatusOrderHistory()) {
+                is Result.Success -> {
+                    _statusOrder.postValue(Result.Success(result.data))
                 }
                 is Result.Error -> {
                     Log.e("FetchUser", "Failed to fetch user details: ${result.error}")

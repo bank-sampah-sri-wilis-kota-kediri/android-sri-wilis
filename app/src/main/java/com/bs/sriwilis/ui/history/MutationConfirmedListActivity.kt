@@ -30,7 +30,6 @@ class MutationConfirmedListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         binding = ActivityMutationConfirmedListBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -39,6 +38,10 @@ class MutationConfirmedListActivity : AppCompatActivity() {
 
         binding.apply {
             btnBack.setOnClickListener { finish() }
+
+            swipeRefreshLayout.setOnRefreshListener {
+                viewModel.getAllMutation()
+            }
         }
 
         setupRecyclerView()
@@ -58,6 +61,7 @@ class MutationConfirmedListActivity : AppCompatActivity() {
                 }
 
                 is Result.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
                     binding.progressBar.visibility = View.GONE
 
                     val dataMutation = result.data?.filter { it.statusPenarikan?.lowercase() == "gagal" || it.statusPenarikan?.lowercase() == "berhasil" }

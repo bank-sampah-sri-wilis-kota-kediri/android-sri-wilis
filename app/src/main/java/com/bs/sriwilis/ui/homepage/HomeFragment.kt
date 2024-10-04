@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.FragmentHomeBinding
 import com.bs.sriwilis.helper.Result
@@ -24,9 +25,12 @@ import com.bs.sriwilis.ui.settings.AdminViewModel
 import com.bs.sriwilis.ui.settings.ChangeProfileActivity
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.NumberFormat
+import java.util.Locale
 
 class HomeFragment : Fragment() {
 
@@ -68,9 +72,15 @@ class HomeFragment : Fragment() {
                 val intent = Intent(requireContext(), ManageCatalogActivity::class.java)
                 startActivity(intent)
             }
+
+            swipeRefreshLayout.setOnRefreshListener {
+                viewModel.fetchUserSaldo()
+                lifecycleScope.launch { viewModel.syncData() }
+            }
         }
 
         observeAdmin()
+        getSaldoNasabah()
         viewModel.fetchAdminDetails()
     }
 
@@ -136,9 +146,34 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun getSaldoNasabah() {
+        viewModel.userData.observe(viewLifecycleOwner, Observer { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.swipeRefreshLayout.isRefreshing = true
+                }
+                is Result.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    val userDetails = result.data
+
+                    val totalSaldo = userDetails.sumOf { it?.saldo_nasabah?.toDoubleOrNull() ?: 0.0 }
+
+                    val formattedSaldo = NumberFormat.getCurrencyInstance(Locale("in", "ID")).format(totalSaldo)
+                    binding.tvAccountBalanceAdmin.text = formattedSaldo.replace("Rp", "Rp ")
+
+                }
+                is Result.Error -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+                }
+            }
+        })
+    }
+
     override fun onResume() {
         super.onResume()
         viewModel.fetchAdminDetails()
+        viewModel.fetchUserSaldo()
     }
 
 }

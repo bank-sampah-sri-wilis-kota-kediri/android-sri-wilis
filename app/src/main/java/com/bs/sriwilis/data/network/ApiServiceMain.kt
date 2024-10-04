@@ -6,6 +6,7 @@ import com.bs.sriwilis.data.response.AddCatalogRequest
 import com.bs.sriwilis.data.response.AdminResponse
 import com.bs.sriwilis.data.response.CartTransactionRequest
 import com.bs.sriwilis.data.response.CatalogResponse
+import com.bs.sriwilis.data.response.CatalogResponseDTO
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.CategoryResponseDTO
 import com.bs.sriwilis.data.response.DataKeranjangItem
@@ -14,16 +15,18 @@ import com.bs.sriwilis.data.response.GetAdminByIdResponse
 import com.bs.sriwilis.data.response.GetCatalogByIdResponse
 import com.bs.sriwilis.data.response.GetCategoryByIdResponse
 import com.bs.sriwilis.data.response.GetUserByIdResponse
+import com.bs.sriwilis.data.response.KeranjangTransaksiResponseDTO
 import com.bs.sriwilis.data.response.NasabahResponseDTO
 import com.bs.sriwilis.data.response.OrderCartResponse
 import com.bs.sriwilis.data.response.PenarikanListResponse
 import com.bs.sriwilis.data.response.PenarikanResponse
 import com.bs.sriwilis.data.response.PesananSampahItem
+import com.bs.sriwilis.data.response.PesananSampahKeranjangDTO
 import com.bs.sriwilis.data.response.PesananSampahKeranjangResponse
+import com.bs.sriwilis.data.response.PesananSampahResponseDTO
 import com.bs.sriwilis.data.response.PesanananSampahItemResponse
 import com.bs.sriwilis.data.response.RegisterUserResponse
 import com.bs.sriwilis.data.response.SingleAdminResponse
-import com.bs.sriwilis.data.response.SingleCatalogResponse
 import com.bs.sriwilis.data.response.SingleCategoryResponse
 import com.bs.sriwilis.data.response.SinglePesananSampahResponse
 import com.bs.sriwilis.data.response.TransactionDataItem
@@ -95,7 +98,7 @@ interface ApiServiceMain {
         ): Response<RegisterUserResponse>
 
     @FormUrlEncoded
-    @PUT("nasabah/edit-by-id/{id}")
+    @PUT("nasabah/edit-by-phone/{id}")
     suspend fun editUser(
         @Path("id") userId: String,
         @Header("Authorization") token: String,
@@ -161,12 +164,12 @@ interface ApiServiceMain {
         @Field("no_wa") no_wa: String,
         @Field("shopee_link") shopee_link: String,
         @Field("gambar_katalog") gambar_katalog: String,
-    ): Response<SingleCatalogResponse>
+    ): Response<CatalogResponse>
 
     @GET("katalog/show-all")
     suspend fun getAllCatalog(
         @Header("Authorization") token: String,
-    ): Response<CatalogResponse>
+    ): Response<CatalogResponseDTO>
 
     @GET("katalog/{id}")
     suspend fun getCatalogById(
@@ -185,7 +188,7 @@ interface ApiServiceMain {
         @Field("no_wa") no_wa: String,
         @Field("shopee_link") shopee_link: String,
         @Field("gambar_katalog") gambar_katalog: String,
-    ): Response<SingleCatalogResponse>
+    ): Response<CatalogResponse>
 
     @DELETE("katalog/{id}")
     suspend fun deleteCatalog(
@@ -240,7 +243,7 @@ interface ApiServiceMain {
     @GET("transaksi/show-all")
     suspend fun getAllTransaction(
         @Header("Authorization") token: String,
-    ): Response<TransactionResponse>
+    ): Response<KeranjangTransaksiResponseDTO>
 
     // SCHEDULING CRUD
 
@@ -262,11 +265,10 @@ interface ApiServiceMain {
         @Path("id") id_nasabah: String,
     ): Response<DataKeranjangItemResponse>
 
-
     @GET("pesanan/show-all-pesanan-sampah-keranjang")
-    suspend fun getAllOrderSchedule(
+    suspend fun getAllPesananSampah(
         @Header("Authorization") token: String,
-    ): Response<PesananSampahKeranjangResponse>
+    ): Response<PesananSampahResponseDTO>
 
     @FormUrlEncoded
     @PUT("pesanan/update-tanggal-penjemputan/{id}")

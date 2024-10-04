@@ -66,7 +66,7 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
     fun editUser(userId: String, phone: String, name: String, address: String, balance: Double) {
         viewModelScope.launch {
             _users.value = Result.Loading
-            val result = repository.editUser(userId, phone, name, address, balance)
+            val result = repository.editUser(userId, name, phone, address, balance)
             _users.value = result
         }
     }

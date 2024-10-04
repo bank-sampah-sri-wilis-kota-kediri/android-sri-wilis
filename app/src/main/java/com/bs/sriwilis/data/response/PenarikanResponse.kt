@@ -20,7 +20,7 @@ data class PenarikanData(
 	val jenisBank: Any? = null,
 
 	@field:SerializedName("nomor_meteran")
-	val nomorMeteran: Int? = null,
+	val nomorMeteran: Long? = null,
 
 	@field:SerializedName("jenis_penarikan")
 	val jenisPenarikan: String? = null,

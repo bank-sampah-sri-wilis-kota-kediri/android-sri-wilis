@@ -15,7 +15,6 @@ import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageTransactionViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
 import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
-import com.bs.sriwilis.ui.scheduling.OrderUnschedulingViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
 import com.bs.sriwilis.ui.settings.AdminViewModel
 import com.bs.sriwilis.ui.settings.SettingViewModel
@@ -62,10 +61,6 @@ class ViewModelFactory private constructor(
             modelClass.isAssignableFrom(OrderSchedulingViewModel::class.java) -> {
                 val repository = InjectionMain.provideRepository(context)
                 OrderSchedulingViewModel(repository) as T
-            }
-            modelClass.isAssignableFrom(OrderUnschedulingViewModel::class.java) -> {
-                val repository = InjectionMain.provideRepository(context)
-                OrderUnschedulingViewModel(repository) as T
             }
             modelClass.isAssignableFrom(SchedulingDetailViewModel::class.java) -> {
                 val repository = InjectionMain.provideRepository(context)
