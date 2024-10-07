@@ -2,6 +2,7 @@ package com.bs.sriwilis.ui.homepage.operation
 
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -38,6 +39,8 @@ class EditUserActivity : AppCompatActivity() {
 
         val userId = intent.getStringExtra("userId") ?: throw IllegalArgumentException("ID Pengguna tidak ada")
         val phone = intent.getStringExtra("phone") ?: throw IllegalArgumentException("Nomor Pengguna tidak ada")
+
+        Log.d("phone cokkkk", "$phone")
 
         phone.let {
             viewModel.fetchUserDetails(it)
@@ -81,7 +84,7 @@ class EditUserActivity : AppCompatActivity() {
 
     private fun setupAction() {
         binding.btnChangeUsers.setOnClickListener {
-            val userId = intent.getStringExtra("userId") ?: throw IllegalArgumentException("ID Pengguna tidak ada")
+            val userId = intent.getStringExtra("phone") ?: throw IllegalArgumentException("ID Pengguna tidak ada")
             val phone = binding.edtEditUserPhone.text.toString()
             val name = binding.edtFullNameForm.text.toString()
             val address = binding.edtEditUserAddress.text.toString()

@@ -64,7 +64,7 @@ class MutationConfirmedListActivity : AppCompatActivity() {
                     binding.swipeRefreshLayout.isRefreshing = false
                     binding.progressBar.visibility = View.GONE
 
-                    val dataMutation = result.data?.filter { it.statusPenarikan?.lowercase() == "gagal" || it.statusPenarikan?.lowercase() == "berhasil" }
+                    val dataMutation = result.data?.filter { it?.status_penarikan == "Gagal" || it?.status_penarikan == "Berhasil" }
                     if (dataMutation != null) {
                         mutationAdapter.updateMutation(dataMutation)
                     }else {
@@ -83,8 +83,6 @@ class MutationConfirmedListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        lifecycleScope.launch {
-            viewModel.getAllMutation()
-        }
+        lifecycleScope.launch { viewModel.getAllMutation() }
     }
 }

@@ -4,9 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class AdminResponse(
 
-	@field:SerializedName("data")
-	val data: List<AdminData?>? = null,
-
 	@field:SerializedName("success")
 	val success: Boolean? = null,
 

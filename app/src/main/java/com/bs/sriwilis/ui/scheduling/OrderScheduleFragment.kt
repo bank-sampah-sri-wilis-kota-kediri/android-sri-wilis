@@ -51,7 +51,7 @@ class OrderScheduleFragment : Fragment() {
             setupUI()
         }
 
-        observeOrder()
+        lifecycleScope.launch { observeOrder() }
 
         binding.apply {
             cvUnscheduled.setOnClickListener {
@@ -76,12 +76,15 @@ class OrderScheduleFragment : Fragment() {
         viewModel.pesananSampahEntities.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
                     result.data.let { adapter.updateOrder(it) }
                 }
                 is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
                     Toast.makeText(requireContext(), "Gagal memuat data: ${result.error}", Toast.LENGTH_SHORT).show()
                 }
                 is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
                     Log.d("Loading", "Loading")
                 }
             }
@@ -102,7 +105,7 @@ class OrderScheduleFragment : Fragment() {
         _binding = null
     }
 
-    private fun observeOrder() {
+    private suspend fun observeOrder() {
         viewModel.pesananSampahEntities.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Success -> {
@@ -118,5 +121,6 @@ class OrderScheduleFragment : Fragment() {
                 }
             }
         }
+        viewModel.getPesananSampahKeranjangScheduled()
     }
 }

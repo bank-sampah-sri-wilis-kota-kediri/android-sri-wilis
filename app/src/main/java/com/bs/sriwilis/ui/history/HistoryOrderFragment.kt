@@ -106,11 +106,14 @@ class HistoryOrderFragment : Fragment() {
             binding.swipeRefreshLayout.isRefreshing = false
 
             if (historyList != null) {
+                viewModel.getCombinedTransaction()
                 adapter.updateOrder(historyList)
             } else {
                 Log.d("error", "error observe")
             }
         })
+        viewModel.getStatusOrderHistory()
+        viewModel.getCombinedTransaction()
     }
 
 

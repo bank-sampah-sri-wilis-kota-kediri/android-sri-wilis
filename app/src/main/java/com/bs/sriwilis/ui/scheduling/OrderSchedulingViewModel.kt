@@ -32,15 +32,6 @@ class OrderSchedulingViewModel(private val repository: MainRepository) : ViewMod
     private val _pesananSampahEntities = MutableLiveData<Result<List<CardPesanan>>>()
     val pesananSampahEntities: LiveData<Result<List<CardPesanan>>> = _pesananSampahEntities // ini untuk semuanya
 
-    // untuk list card di detail
-    fun getPesananSampah(idPesanan: String) {
-        viewModelScope.launch {
-            _pesananSampahDetail.postValue(Result.Loading)
-            val result = repository.getPesananSampahKeranjangDetailList(idPesanan)
-            _pesananSampahDetail.postValue(result)
-        }
-    }
-
     suspend fun getPesananSampahKeranjangUnscheduled() {
         viewModelScope.launch {
             _pesananSampahEntities.postValue(Result.Loading)

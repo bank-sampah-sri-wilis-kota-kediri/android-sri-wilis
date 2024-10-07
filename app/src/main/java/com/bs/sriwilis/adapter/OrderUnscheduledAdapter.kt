@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -40,6 +41,8 @@ import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class OrderUnscheduledAdapter(
     private var unscheduledOrder: List<CardPesanan?>,
@@ -54,8 +57,31 @@ class OrderUnscheduledAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(unscheduledOrder: CardPesanan?) {
             with(binding) {
+
+                when (unscheduledOrder?.status_pesanan) {
+                    "Pending" -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.pendingColor))
+                    "Confirmed" -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.confirmedColor))
+                    else -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.defaultColor))
+                }
+
                 tvNamaPesanan.text = unscheduledOrder?.nama_nasabah
-                tvTanggalPesanan.text = unscheduledOrder?.tanggal ?: "Belum Ditentukan"
+
+                val originalDate = unscheduledOrder?.tanggal
+                if (originalDate == "0001-01-01") {
+                    tvTanggalPesanan.text = "Belum Ditentukan"
+                } else {
+                    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale("id", "ID"))
+
+                    try {
+                        val date = inputFormat.parse(originalDate)
+                        val formattedDate = outputFormat.format(date)
+                        tvTanggalPesanan.text = formattedDate
+                    } catch (e: Exception) {
+                        tvTanggalPesanan.text = originalDate
+                    }
+                }
+
                 tvBeratTransaksi.text = unscheduledOrder?.total_berat.toString() + " kg"
 
                 itemView.setOnClickListener {

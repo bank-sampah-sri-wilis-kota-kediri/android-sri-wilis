@@ -55,6 +55,18 @@
             app:layout_constraintStart_toStartOf="@+id/tv_mutation_user_title"
             app:layout_constraintTop_toBottomOf="@+id/tv_mutation_user_title" />
 
+        <EditText
+            android:id="@+id/edt_text_input_token"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:hint="Masukkan Token Listrik Untuk Pengguna"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            android:inputType="number"
+            app:layout_constraintStart_toStartOf="@+id/tv_mutation_date"
+            app:layout_constraintTop_toBottomOf="@id/tv_mutation_date" />
+
         <TextView
             android:id="@+id/tv_mutation_nominal"
             android:layout_width="0dp"
@@ -72,21 +84,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/red_primary"
-            app:layout_constraintTop_toBottomOf="@id/tv_mutation_date"
-            android:layout_marginTop="8dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="Tolak Penarikan"
             app:cornerRadius="8dp"
-            android:text="Tolak Penarikan" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edt_text_input_token" />
 
         <Button
             android:id="@+id/btn_accept_mutation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:backgroundTint="@color/green_label"
             android:text="Terima Penarikan"
             app:cornerRadius="8dp"
             app:layout_constraintEnd_toEndOf="@+id/tv_mutation_nominal"
-            app:layout_constraintTop_toBottomOf="@id/tv_mutation_date" />
+            app:layout_constraintTop_toBottomOf="@+id/edt_text_input_token" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

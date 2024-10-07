@@ -140,7 +140,7 @@ class ManageTransactionViewModel(private val repository: MainRepository) : ViewM
     }
 
     suspend fun syncData(): Result<Unit> {
-        return repository.syncData()
+        return repository.syncTransaksi()
     }
 
 }
