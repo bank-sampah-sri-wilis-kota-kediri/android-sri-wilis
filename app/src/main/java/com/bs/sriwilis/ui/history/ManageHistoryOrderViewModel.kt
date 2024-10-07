@@ -113,7 +113,7 @@ class ManageHistoryOrderViewModel(private val repository: MainRepository) : View
 
     fun getCustomerName(userId: String, callback: (String) -> Unit) {
         viewModelScope.launch {
-            when (val result = repository.getUserById(userId)) {
+            when (val result = repository.getNasabahById(userId)) {
                 is Result.Success -> {
                     result.data.nama_nasabah?.let { callback(it) }
                 }

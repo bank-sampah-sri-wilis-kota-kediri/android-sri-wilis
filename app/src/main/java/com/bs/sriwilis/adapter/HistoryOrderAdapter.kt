@@ -24,6 +24,8 @@ import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilispetugas.data.repository.modelhelper.CardTransaksi
 import com.bumptech.glide.Glide
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class HistoryOrderAdapter(
     private var transaction: List<CardTransaksi?>,
@@ -61,7 +63,23 @@ class HistoryOrderAdapter(
 
 
                 tvNamaPesanan.text = transaction?.nama_nasabah
-                tvTanggalPesanan.text = transaction?.tanggal
+
+                val originalDate = transaction?.tanggal
+                if (originalDate == "0001-01-01") {
+                    tvTanggalPesanan.text = "Belum Ditentukan"
+                } else {
+                    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale("id", "ID"))
+
+                    try {
+                        val date = inputFormat.parse(originalDate)
+                        val formattedDate = outputFormat.format(date)
+                        tvTanggalPesanan.text = formattedDate
+                    } catch (e: Exception) {
+                        tvTanggalPesanan.text = originalDate
+                    }
+                }
+
                 tvBeratTransaksi.text = transaction?.total_berat?.toString() + " kg"
                 tvNomorWaPesanan.text = transaction?.no_hp_nasabah
 

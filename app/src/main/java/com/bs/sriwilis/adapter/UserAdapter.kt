@@ -53,17 +53,21 @@ class UserAdapter(
 
                 itemView.setOnClickListener {
                     users?.let { user ->
-                        user.no_hp_nasabah?.let { phone ->
-                            user.id?.let { userId ->
-                                onItemClick?.invoke(phone)
+                        val phone = user.no_hp_nasabah
+                        val userId = user.id
 
-                                val intent = Intent(itemView.context, EditUserActivity::class.java).apply {
+                        if (phone.isNotEmpty() && userId.isNotEmpty()) {
+                            onItemClick?.invoke(phone)
+
+                            val intent =
+                                Intent(itemView.context, EditUserActivity::class.java).apply {
                                     putExtra("phone", phone)
                                     putExtra("userId", userId)
                                 }
 
-                                itemView.context.startActivity(intent)
-                            }
+                            itemView.context.startActivity(intent)
+                        } else {
+                            Log.e("Error", "Phone or userId is null")
                         }
                     }
                 }

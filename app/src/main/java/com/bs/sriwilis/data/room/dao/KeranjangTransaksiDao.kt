@@ -81,4 +81,6 @@ interface KeranjangTransaksiDao {
         GROUP BY n.id, p.nominal_transaksi, p.tanggal
         """)
     suspend fun getCombinedTransaksiData(): List<CardTransaksi>
+
+
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,7 @@ import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
+import com.bs.sriwilis.data.repository.modelhelper.CardPenarikan
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.PenarikanData
 import com.bs.sriwilis.data.response.TransactionDataItem
@@ -30,36 +32,39 @@ import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
 import com.bumptech.glide.Glide
 
 class MutationNotConfirmedAdapter(
-    private var mutations: List<PenarikanData?>,
+    private var mutations: List<CardPenarikan?>,
     private val context: Context
 
 ) : RecyclerView.Adapter<MutationNotConfirmedAdapter.HistoryOrderViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
-    private var categorylist: List<String> = emptyList()
     private lateinit var viewModel: ManageHistoryMutationViewModel
-
 
     inner class HistoryOrderViewHolder(private val binding: CardMutationHistoryNotConfirmedBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(mutation: PenarikanData?) {
+        fun bind(mutation: CardPenarikan?) {
             with(binding) {
-                mutation?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerName(nasabahId.toString()) { customerName ->
+                mutation?.id_nasabah?.let { nasabahId ->
+                    viewModel.getCustomerName(nasabahId) { customerName ->
                         tvMutationUserTitle.text = customerName
                     }
                 }
+
                 tvMutationDate.text = mutation?.tanggal
                 tvMutationNominal.text = "Rp" + mutation?.nominal.toString()
 
-                when (mutation?.jenisPenarikan) {
+                when (mutation?.jenis_penarikan) {
                     "PLN" -> tvMutationStatus.text = "Token Listrik PLN"
                     "Tunai" -> tvMutationStatus.text = "Pencairan Tunai"
                     "Transfer" -> tvMutationStatus.text = "Pencairan Transfer"
                 }
 
-                mutation?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerPhone(nasabahId.toString()) { customerPhone ->
+                when (mutation?.jenis_penarikan) {
+                    "PLN" -> edtTextInputToken.visibility = View.VISIBLE
+                }
+
+                mutation?.id?.let { nasabahId ->
+                    viewModel.getCustomerPhone(nasabahId) { customerPhone ->
                         tvMutationUserTitle.text = customerPhone
                     }
                 }
@@ -69,10 +74,14 @@ class MutationNotConfirmedAdapter(
                         viewModel.updateStatus(mutationId, "Gagal")
                     }
                     btnAcceptMutation.setOnClickListener {
-                        Log.d("BTN NYA KESENTUH", "$mutationId")
-                        if (mutation.jenisPenarikan == "PLN"){
-                            viewModel.updateStatus(mutationId, "Berhasil", "8223")
-                        } else if (mutation.jenisPenarikan == "Tunai" || mutation.jenisPenarikan == "Transfer") {
+                        if (mutation.jenis_penarikan == "PLN") {
+                            val token = binding.edtTextInputToken.text.toString().trim()
+                            if (token.isNotEmpty() && token.length == 20) {
+                                viewModel.updateStatusPLN(mutationId, "Berhasil", token)
+                            } else {
+                                binding.edtTextInputToken.error = "Token tidak valid (harus 20 karakter)"
+                            }
+                        } else if (mutation.jenis_penarikan == "Tunai" || mutation.jenis_penarikan == "Transfer") {
                             viewModel.updateStatus(mutationId, "Berhasil")
                         }
                     }
@@ -98,7 +107,7 @@ class MutationNotConfirmedAdapter(
         holder.bind(mutations[position])
     }
 
-    fun updateMutation(newMutations: List<PenarikanData?>) {
+    fun updateMutation(newMutations: List<CardPenarikan?>) {
         this.mutations = newMutations
         notifyDataSetChanged()
     }

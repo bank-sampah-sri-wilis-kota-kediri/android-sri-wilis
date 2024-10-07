@@ -20,6 +20,7 @@ import com.bs.sriwilis.data.response.NasabahResponseDTO
 import com.bs.sriwilis.data.response.OrderCartResponse
 import com.bs.sriwilis.data.response.PenarikanListResponse
 import com.bs.sriwilis.data.response.PenarikanResponse
+import com.bs.sriwilis.data.response.PenarikanResponseDTO
 import com.bs.sriwilis.data.response.PesananSampahItem
 import com.bs.sriwilis.data.response.PesananSampahKeranjangDTO
 import com.bs.sriwilis.data.response.PesananSampahKeranjangResponse
@@ -98,9 +99,9 @@ interface ApiServiceMain {
         ): Response<RegisterUserResponse>
 
     @FormUrlEncoded
-    @PUT("nasabah/edit-by-phone/{id}")
+    @PUT("nasabah/edit-by-phone/{no_hp_nasabah}")
     suspend fun editUser(
-        @Path("id") userId: String,
+        @Path("no_hp_nasabah") userId: String,
         @Header("Authorization") token: String,
         @Field("nama_nasabah") nama_nasabah: String,
         @Field("no_hp_nasabah") no_hp_nasabah: String,
@@ -200,7 +201,7 @@ interface ApiServiceMain {
     @GET("penarikan/show-all")
     suspend fun getAllMutation(
         @Header("Authorization") token: String,
-    ): Response<PenarikanListResponse>
+    ): Response<PenarikanResponseDTO>
 
     @GET("penarikan/{id}")
     suspend fun getMutationById(
@@ -213,6 +214,7 @@ interface ApiServiceMain {
     suspend fun updateMutationStatus(
         @Path("id") catalogId: String,
         @Header("Authorization") token: String,
+        @Field("jenis_penarikan") jenis_penarikan: String = "PLN",
         @Field("status_penarikan") status_penarikan: String,
         @Field("nomor_token") nomor_token: String
     ): Response<PenarikanResponse>
@@ -300,4 +302,5 @@ interface ApiServiceMain {
     suspend fun getOrderScheduleById(
         @Header("Authorization") token: String,
     ): Response<PesananSampahKeranjangResponse>
+
 }

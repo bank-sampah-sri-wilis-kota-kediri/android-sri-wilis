@@ -90,6 +90,6 @@ class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel
     }
 
     suspend fun syncData(): Result<Unit> {
-        return repository.syncData()
+        return repository.syncCatalog()
     }
 }

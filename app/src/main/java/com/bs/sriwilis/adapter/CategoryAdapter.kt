@@ -64,6 +64,7 @@ class CategoryAdapter(
                         onItemClick?.invoke(id)
                         val intent = Intent(itemView.context, EditCategoryActivity::class.java)
                         intent.putExtra("id", id)
+                        Log.d("id adapter kategori bos", "$id",)
                         itemView.context.startActivity(intent)
                     }
                 }

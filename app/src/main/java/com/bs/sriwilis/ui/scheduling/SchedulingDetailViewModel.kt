@@ -93,35 +93,19 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
         }
     }
 
-
-
-    fun getCustomerName(userId: String, callback: (String) -> Unit) {
-        viewModelScope.launch {
-            when (val result = repository.getUserById(userId)) {
-                is Result.Success -> {
-                    result.data.nama_nasabah?.let { callback(it) }
-                }
-                is Result.Error -> {
-                    callback("Unknown Customer")
-                }
-                Result.Loading -> TODO()
-            }
-        }
-    }
-
     fun registerDate(orderId: String, date: String) {
         viewModelScope.launch {
-            _crudResponse.value = Result.Loading
+            _crudResponse.postValue(Result.Loading)
             val result = repository.registerDate(orderId, date)
-            _crudResponse.value = result
+            _crudResponse.postValue(result)
         }
     }
 
     fun updateFailed(orderId: String) {
         viewModelScope.launch {
-            _crudResponse.value = Result.Loading
+            _crudResponse.postValue(Result.Loading)
             val result = repository.updateOrderFailed(orderId)
-            _crudResponse.value = result
+            _crudResponse.postValue(result)
         }
     }
 

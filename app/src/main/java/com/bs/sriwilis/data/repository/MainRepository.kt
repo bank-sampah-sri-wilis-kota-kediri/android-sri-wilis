@@ -6,12 +6,14 @@ import com.bs.sriwilis.data.AppDatabase
 import com.bs.sriwilis.data.mapping.MappingKatalog
 import com.bs.sriwilis.data.mapping.MappingKategori
 import com.bs.sriwilis.data.mapping.MappingNasabah
+import com.bs.sriwilis.data.mapping.MappingPenarikan
 import com.bs.sriwilis.data.mapping.MappingSampah
 import com.bs.sriwilis.data.mapping.MappingTransaksi
 import com.bs.sriwilis.data.network.ApiServiceMain
 import com.bs.sriwilis.data.repository.modelhelper.CardCatalog
 import com.bs.sriwilis.data.repository.modelhelper.CardCategory
 import com.bs.sriwilis.data.repository.modelhelper.CardNasabah
+import com.bs.sriwilis.data.repository.modelhelper.CardPenarikan
 import com.bs.sriwilis.data.response.AdminData
 import com.bs.sriwilis.data.response.AdminResponse
 import com.bs.sriwilis.data.response.CartTransactionRequest
@@ -27,6 +29,7 @@ import com.bs.sriwilis.data.response.NasabahResponseDTO
 import com.bs.sriwilis.data.response.OrderCartResponse
 import com.bs.sriwilis.data.response.PenarikanListResponse
 import com.bs.sriwilis.data.response.PenarikanResponse
+import com.bs.sriwilis.data.response.PenarikanResponseDTO
 import com.bs.sriwilis.data.response.PesananSampahItem
 import com.bs.sriwilis.data.response.PesananSampahKeranjangResponse
 import com.bs.sriwilis.data.response.PesanananSampahItemResponse
@@ -44,6 +47,7 @@ import com.bs.sriwilis.data.room.entity.CatalogEntity
 import com.bs.sriwilis.data.room.entity.CategoryEntity
 import com.bs.sriwilis.data.room.entity.LoginResponseEntity
 import com.bs.sriwilis.data.room.entity.NasabahEntity
+import com.bs.sriwilis.data.room.entity.PenarikanEntity
 import com.bs.sriwilis.data.room.entity.PesananSampahKeranjangEntity
 import kotlinx.coroutines.flow.Flow
 import com.bs.sriwilis.helper.Result
@@ -70,6 +74,7 @@ class MainRepository(
     private val mappingKatalog = MappingKatalog()
     private val mappingSampah = MappingSampah()
     private val mappingTransaksi = MappingTransaksi()
+    private val mappingPenarikan = MappingPenarikan()
 
 
     suspend fun getToken(): String? {
@@ -178,32 +183,6 @@ class MainRepository(
         }
     }
 
-    suspend fun getUserById(userId: String): Result<UserItem> {
-        return try {
-            val token = getToken() ?: return Result.Error("Token is null")
-            val response = apiService.getUserById(userId, "Bearer $token")
-
-            if (response.isSuccessful) {
-                val userDetailsResponse = response.body()
-                if (userDetailsResponse != null) {
-                    val userItem = userDetailsResponse.data
-                    if (userItem != null) {
-                        Result.Success(userItem)
-                    } else {
-                        Result.Error("User not found")
-                    }
-                } else {
-                    Result.Error("Empty response body")
-                }
-            } else {
-                Result.Error("Failed to fetch user details: ${response.message()} (${response.code()})")
-            }
-        } catch (e: Exception) {
-            Log.e("GetUserDetails", "Error fetching user details", e)
-            Result.Error("Error fetching user details: ${e.message}")
-        }
-    }
-
     suspend fun editUser(userId: String, name: String, phone: String, address: String, balance: Double): Result<GetUserByIdResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
@@ -248,7 +227,7 @@ class MainRepository(
         }
     }
 
-    // untuk mengambil data
+    // Sinkronisasi Data
 
     suspend fun syncData(): Result<Unit>{
         return try {
@@ -257,6 +236,7 @@ class MainRepository(
             appDatabase.catalogDao().deleteAll()
             appDatabase.pesananSampahKeranjangDao().deleteAll()
             appDatabase.pesananSampahDao().deleteAll()
+            appDatabase.penarikanDao().deleteAllPenarikan()
 
             val nasabahResult = getAllNasabah()
             if (nasabahResult is Result.Error) {
@@ -283,27 +263,97 @@ class MainRepository(
                 return Result.Error("Failed to sync transaksi data sampah keranjang by id  ${transaksiDataResult.error}")
             }
 
+            val penarikanResult = getPenarikan()
+            if (penarikanResult is Result.Error) {
+                return Result.Error("Failed to sync transaksi data sampah keranjang by id  ${penarikanResult.error}")
+            }
+
+
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error("Error occured during synchronization: ${e.message}")
         }
     }
 
-    suspend fun syncDataCatalog(): Result<Unit> {
+    // Fungsi sinkronisasi Nasabah
+    suspend fun syncNasabah(): Result<Unit> {
         return try {
-            val catalogResult = getAllCatalog()
-            if (catalogResult is Result.Success) {
-                withContext(Dispatchers.IO) {
-                    appDatabase.catalogDao().insert(catalogResult.data)
-                }
-                Result.Success(Unit)
-            } else {
-                Result.Error("Failed to sync catalog")
+            val nasabahResult = getAllNasabah()
+            if (nasabahResult is Result.Error) {
+                return Result.Error("Failed to sync nasabah: ${nasabahResult.error}")
             }
+            Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error("Error occurred: ${e.message}")
+            Result.Error("Error syncing nasabah: ${e.message}")
         }
     }
+
+    // Fungsi sinkronisasi Kategori
+    suspend fun syncCategory(): Result<Unit> {
+        return try {
+            val categoryResult = getCategory()
+            if (categoryResult is Result.Error) {
+                return Result.Error("Failed to sync category: ${categoryResult.error}")
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error("Error syncing category: ${e.message}")
+        }
+    }
+
+    // Fungsi sinkronisasi Katalog
+    suspend fun syncCatalog(): Result<Unit> {
+        return try {
+            val catalogResult = getAllCatalog()
+            if (catalogResult is Result.Error) {
+                return Result.Error("Failed to sync catalog: ${catalogResult.error}")
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error("Error syncing catalog: ${e.message}")
+        }
+    }
+
+    // Fungsi sinkronisasi Pesanan Sampah Keranjang
+    suspend fun syncPesananSampahKeranjang(): Result<Unit> {
+        return try {
+            val pesananSampahKeranjangResult = getAllOrderWaste()
+            if (pesananSampahKeranjangResult is Result.Error) {
+                return Result.Error("Failed to sync pesanan sampah keranjang: ${pesananSampahKeranjangResult.error}")
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error("Error syncing pesanan sampah keranjang: ${e.message}")
+        }
+    }
+
+    // Fungsi sinkronisasi Transaksi
+    suspend fun syncTransaksi(): Result<Unit> {
+        return try {
+            val transaksiDataResult = getAllTransaksi()
+            if (transaksiDataResult is Result.Error) {
+                return Result.Error("Failed to sync transaksi data: ${transaksiDataResult.error}")
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error("Error syncing transaksi data: ${e.message}")
+        }
+    }
+
+    // Fungsi sinkronisasi Penarikan
+    suspend fun syncPenarikan(): Result<Unit> {
+        return try {
+            val penarikanResult = getPenarikan()
+            if (penarikanResult is Result.Error) {
+                return Result.Error("Failed to sync penarikan data: ${penarikanResult.error}")
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error("Error syncing penarikan data: ${e.message}")
+        }
+    }
+
+    // Penutup Sinkronisasi Data
 
 
     suspend fun getAllNasabah(): Result<List<NasabahEntity>> {
@@ -651,6 +701,38 @@ class MainRepository(
         }
     }
 
+    suspend fun getPenarikan(): Result<List<PenarikanEntity>> {
+        return try {
+            val token = getToken() ?: return Result.Error("Token is null")
+            val response = apiService.getAllMutation("Bearer $token")
+
+            if (response.isSuccessful) {
+                val responseBody = response.body() ?: return Result.Error("Response body is null")
+                Log.d("GetPenarikan", "Response body: $responseBody")
+
+                // Mapping dari DTO ke Entitas Room
+                val penarikanEntities = mappingPenarikan.mapPenarikanResponseDtoToEntity(responseBody)
+                Log.d("MappedEntities", penarikanEntities.toString())
+
+                // Simpan data ke database Room (opsional, jika perlu disimpan)
+                withContext(Dispatchers.IO) {
+                    try {
+                        appDatabase.penarikanDao().insert(penarikanEntities)
+                        Log.d("PenarikanInsertion", "Insertion successful")
+                    } catch (e: Exception) {
+                        Log.e("PenarikanInsertion", "Error inserting into DB: ${e.message}")
+                    }
+                }
+
+                Result.Success(penarikanEntities)
+            } else {
+                Result.Error("Failed to fetch data: ${response.message()} (${response.code()})")
+            }
+        } catch (e: Exception) {
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
+
     suspend fun getTransactionDataItem(idNasabah: String): Result<PesanananSampahItemResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
@@ -773,6 +855,28 @@ class MainRepository(
         }
     }
 
+    suspend fun getNasabahPhone(): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val nasabahData = appDatabase.nasabahDao().getNasabahByPhone()
+                Result.Success(nasabahData)
+            } catch (e: Exception) {
+                Result.Error("Error occured: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getNasabahById(userId: String): Result<CardNasabah> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val nasabahData = appDatabase.nasabahDao().getNasabahById(userId)
+                Result.Success(nasabahData)
+            } catch (e: Exception) {
+                Result.Error("Error occured: ${e.message}")
+            }
+        }
+    }
+
     suspend fun getNasabahByPhone(phone: String): Result<CardNasabah> {
         return withContext(Dispatchers.IO) {
             try {
@@ -814,15 +918,6 @@ class MainRepository(
             } catch (e: Exception) {
                 Result.Error("Error occured: ${e.message}")
             }
-        }
-    }
-
-    suspend fun getNasabahPhonesDao(): Result<List<String>> {
-        return try {
-            val phones = appDatabase.nasabahDao().getNasabahPhones()
-            Result.Success(phones)
-        } catch (e: Exception) {
-            Result.Error(e.message ?: "Error fetching phone numbers")
         }
     }
 
@@ -903,6 +998,17 @@ class MainRepository(
         }
     }
 
+    suspend fun getPenarikanDao(): Result<List<CardPenarikan>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val detailPesananSampahKeranjang = appDatabase.penarikanDao().getAllPenarikan()
+                Result.Success(detailPesananSampahKeranjang)
+            } catch (e: Exception) {
+                Result.Error("Error occurred: ${e.message}")
+            }
+        }
+    }
+
     // End Get locale from dao
 
     // Transaction CRUD
@@ -961,7 +1067,7 @@ class MainRepository(
             val token = getToken() ?: return Result.Error("Token is null")
 
             val response = if (nomorToken != null) {
-                apiService.updateMutationStatus(mutationId, "Bearer $token", statusPenarikan, nomorToken)
+                apiService.updateMutationStatus(mutationId, "Bearer $token", status_penarikan = statusPenarikan, nomor_token = nomorToken)
             } else {
                 apiService.updateMutationStatusWithoutToken(mutationId, "Bearer $token", statusPenarikan)
             }
@@ -978,29 +1084,6 @@ class MainRepository(
         } catch (e: Exception) {
             Log.e("EditUser", "Edit error", e)
             Result.Error("Edit error: ${e.message}")
-        }
-    }
-
-    // Mutation
-
-    suspend fun getAllMutation(): Result<PenarikanListResponse> {
-        return try {
-            val token = getToken() ?: return Result.Error("Token is null")
-            Log.d("tokenmainrepository", "$token")
-            val response = apiService.getAllMutation("Bearer $token")
-
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    Result.Success(body)
-                } else {
-                    Result.Error("Response body is null")
-                }
-            } else {
-                Result.Error("Failed to fetch saved news: ${response.message()} (${response.code()})")
-            }
-        } catch (e: Exception) {
-            Result.Error("Error occurred: ${e.message}")
         }
     }
 

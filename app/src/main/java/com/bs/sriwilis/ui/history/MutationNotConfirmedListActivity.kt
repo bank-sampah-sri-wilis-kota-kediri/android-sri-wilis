@@ -43,6 +43,7 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
             btnBack.setOnClickListener { finish() }
 
             swipeRefreshLayout.setOnRefreshListener {
+                Log.d("Swipe lah cuk", "dd")
                 viewModel.getAllMutation()
             }
         }
@@ -66,8 +67,9 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
 
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.swipeRefreshLayout.isRefreshing = false
 
-                    val dataMutation = result.data?.filter { it.statusPenarikan?.lowercase() == "diproses" }
+                    val dataMutation = result.data?.filter { it?.status_penarikan == "Diproses" }
                     if (dataMutation != null) {
                         mutationAdapter.updateMutation(dataMutation)
                     }else {
@@ -76,6 +78,7 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
                 }
 
                 is Result.Error -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
                     binding.progressBar.visibility = View.GONE
                 }
 
@@ -113,9 +116,6 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        lifecycleScope.launch {
-            viewModel.getAllMutation()
-        }
+        lifecycleScope.launch { viewModel.getAllMutation() }
     }
-
 }
