@@ -8,7 +8,7 @@
     tools:context=".ui.history.HistoryMutationFragment">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container_history_mutation"
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

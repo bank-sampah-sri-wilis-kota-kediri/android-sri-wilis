@@ -66,15 +66,17 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
     fun editUser(userId: String, phone: String, name: String, address: String, balance: Double) {
         viewModelScope.launch {
             _users.value = Result.Loading
-            val result = repository.editUser(userId, phone, name, address, balance)
+            val result = repository.editUser(userId, name, phone, address, balance)
             _users.value = result
         }
     }
 
     suspend fun getUsers() {
-        _nasabah.postValue(Result.Loading)
-        val result = repository.getAllNasabahDao()
-        _nasabah.postValue(result)
+        viewModelScope.launch {
+            _nasabah.postValue(Result.Loading)
+            val result = repository.getAllNasabahDao()
+            _nasabah.postValue(result)
+        }
     }
 
     fun fetchUserDetails(phone: String) {
@@ -95,7 +97,7 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
     }
 
     suspend fun syncData(): Result<Unit> {
-        return repository.syncData()
+        return repository.syncNasabah()
     }
 
 }

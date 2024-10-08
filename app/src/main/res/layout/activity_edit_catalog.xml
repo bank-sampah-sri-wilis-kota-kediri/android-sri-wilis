@@ -138,6 +138,7 @@
                     android:id="@+id/edt_catalog_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="number"
                     android:hint="Harga Katalog" />
             </com.google.android.material.textfield.TextInputLayout>
 

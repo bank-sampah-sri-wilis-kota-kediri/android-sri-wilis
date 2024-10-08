@@ -16,6 +16,8 @@ import com.bs.sriwilis.data.response.TransactionResponse
 import com.bs.sriwilis.data.response.TransaksiSampahItem
 import com.bs.sriwilis.data.response.UserItem
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardDetailPesanan
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardPesanan
 import kotlinx.coroutines.launch
 
 class SchedulingDetailViewModel(private val repository: MainRepository) : ViewModel() {
@@ -36,6 +38,15 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
 
     private val _dataKeranjangItem = MutableLiveData<Result<List<DataKeranjangItem>>>()
     val dataKeranjangItem: LiveData<Result<List<DataKeranjangItem>>> get() = _dataKeranjangItem
+
+    private val _pesananSampah = MutableLiveData<Result<CardPesanan>>()
+    val pesananSampah: LiveData<Result<CardPesanan>> = _pesananSampah
+
+    private val _pesananSampahEntities = MutableLiveData<Result<List<CardPesanan>>>()
+    val pesananSampahEntities: LiveData<Result<List<CardPesanan>>> = _pesananSampahEntities // ini untuk semuanya
+
+    private val _pesananSampahDetail = MutableLiveData<Result<List<CardDetailPesanan>>>()
+    val pesananSampahDetail: LiveData<Result<List<CardDetailPesanan>>> get() = _pesananSampahDetail // ini untuk card di detail
 
     fun fetchSchedule(id: String) {
         viewModelScope.launch {
@@ -82,71 +93,46 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
         }
     }
 
-
-
-    fun getCustomerName(userId: String, callback: (String) -> Unit) {
-        viewModelScope.launch {
-            when (val result = repository.getUserById(userId)) {
-                is Result.Success -> {
-                    result.data.nama_nasabah?.let { callback(it) }
-                }
-                is Result.Error -> {
-                    callback("Unknown Customer")
-                }
-                Result.Loading -> TODO()
-            }
-        }
-    }
-
-    fun getCustomerPhone(userId: String, callback: (String) -> Unit) {
-        viewModelScope.launch {
-            when (val result = repository.getUserById(userId)) {
-                is Result.Success -> {
-                    result.data.no_hp_nasabah?.let { callback(it) }
-                }
-                is Result.Error -> {
-                    callback("Unknown Customer")
-                }
-                Result.Loading -> TODO()
-            }
-        }
-    }
-
-    fun getCustomerAddress(userId: String, callback: (String) -> Unit) {
-        viewModelScope.launch {
-            when (val result = repository.getUserById(userId)) {
-                is Result.Success -> {
-                    result.data.alamat_nasabah?.let { callback(it) }
-                }
-                is Result.Error -> {
-                    callback("Unknown Customer")
-                }
-                Result.Loading -> TODO()
-            }
-        }
-    }
-
     fun registerDate(orderId: String, date: String) {
         viewModelScope.launch {
-            _crudResponse.value = Result.Loading
+            _crudResponse.postValue(Result.Loading)
             val result = repository.registerDate(orderId, date)
-            _crudResponse.value = result
-        }
-    }
-
-    fun updateSudahDijadwalkan(orderId: String) {
-        viewModelScope.launch {
-            _crudResponse.value = Result.Loading
-            val result = repository.updateSudahDijadwalkan(orderId)
-            _crudResponse.value = result
+            _crudResponse.postValue(result)
         }
     }
 
     fun updateFailed(orderId: String) {
         viewModelScope.launch {
-            _crudResponse.value = Result.Loading
+            _crudResponse.postValue(Result.Loading)
             val result = repository.updateOrderFailed(orderId)
-            _crudResponse.value = result
+            _crudResponse.postValue(result)
+        }
+    }
+
+    //untuk data list keranjang sampah
+    suspend fun getPesananSampahKeranjangList(orderId: String) {
+        viewModelScope.launch {
+            _pesananSampahDetail.postValue(Result.Loading)
+            val result = repository.getPesananSampahKeranjangDetailList(orderId)
+            _pesananSampahDetail.postValue(result)
+        }
+    }
+
+    // untuk data semuanya
+    suspend fun getPesananSampahKeranjang() {
+        viewModelScope.launch {
+            _pesananSampahEntities.postValue(Result.Loading)
+            val result = repository.getPesananSampahKeranjang()
+            _pesananSampahEntities.postValue(result)
+        }
+    }
+
+    // untuk data detail
+    fun getDataDetailPesananSampahKeranjang(idPesanan: String) {
+        viewModelScope.launch {
+            _pesananSampah.postValue(Result.Loading)
+            val result = repository.getPesananSampahKeranjangDetail(idPesanan)
+            _pesananSampah.postValue(result)
         }
     }
 

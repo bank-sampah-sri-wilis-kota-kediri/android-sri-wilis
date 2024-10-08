@@ -60,58 +60,6 @@ class ChangePasswordActivity : AppCompatActivity() {
         }
     }
 
-/*    private fun oldPassValidation() {
-        viewModel.adminData.observe(this, Observer { result ->
-            when (result) {
-                is Result.Loading -> { }
-                is Result.Success -> {
-                    val categoryDetails = result.data
-
-                    categoryDetails.gambarKategori?.let { gambarKategori ->
-                        if (gambarKategori.isNotEmpty()) {
-
-                            val imageBytes = Base64.decode(gambarKategori, Base64.DEFAULT)
-
-                            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            val tempFile = File(cacheDir, "api_image.jpg")
-                            val outStream = FileOutputStream(tempFile)
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
-                            outStream.flush()
-                            outStream.close()
-
-                            currentImageUri = tempFile.toUri()
-
-                            Glide.with(this@EditCategoryActivity)
-                                .load(imageBytes)
-                                .into(binding.ivCategoryListPreview)
-                        } else {
-                            binding.ivCategoryListPreview.setImageResource(R.drawable.iv_panduan2)
-                        }
-                    } ?: run {
-                        binding.ivCategoryListPreview.setImageResource(R.drawable.iv_panduan2)
-                    }
-
-                    binding.edtCategoryNameForm.text = categoryDetails.namaKategori.toEditable()
-                    binding.edtCategoryPriceForm.text = categoryDetails.hargaKategori.toString().toEditable()
-
-                    val spinnerAdapter = binding.spinnerWasteCategory.adapter
-                    val position = (0 until spinnerAdapter.count)
-                        .firstOrNull { spinnerAdapter.getItem(it).toString() == categoryDetails.jenisKategori.toString() }
-
-                    if (position != null) {
-                        binding.spinnerWasteCategory.setSelection(position)
-                    } else {
-                        binding.spinnerWasteCategory.setSelection(0)
-                    }
-                }
-                is Result.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    showToast("Failed to fetch user details: ${result.error}")
-                }
-            }
-        })
-    }*/
-
     private fun changePassword(adminId: String, newPassword: String) {
         binding.progressBar.visibility = View.VISIBLE
         viewModel.changePassword(adminId, newPassword)

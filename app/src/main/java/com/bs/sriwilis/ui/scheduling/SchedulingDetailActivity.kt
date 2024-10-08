@@ -10,11 +10,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bs.sriwilis.adapter.CartOrderAdapter
 import com.bs.sriwilis.databinding.ActivitySchedulingDetailBinding
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.utils.ViewModelFactory
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -54,11 +56,14 @@ class SchedulingDetailActivity : AppCompatActivity() {
         val orderId = intent.getStringExtra("id")
         val nasabahId = intent.getStringExtra("nasabahId")
 
-        nasabahId.let {
-            if (it != null) {
-                viewModel.fetchSchedule(it)
-                viewModel.fetchTransactionItemById(it)
-                viewModel.fetchDataKeranjangById(it)
+        orderId.let {
+            lifecycleScope.launch {
+                Log.d("jalan sampe sini ga diaaaaaa?", "tes tes")
+                viewModel.getPesananSampahKeranjang()
+                if (orderId != null) {
+                    viewModel.getDataDetailPesananSampahKeranjang(orderId)
+                    viewModel.getPesananSampahKeranjangList(orderId)
+                }
             }
         }
 
@@ -75,24 +80,40 @@ class SchedulingDetailActivity : AppCompatActivity() {
                 updateStatusFailed(orderId)
             }
         }
+
         observeViewModel()
 
+        viewModel.pesananSampahDetail.observe(this) { result ->
+            when (result) {
+                is Result.Success -> {
+                    result.data.let { orders ->
+                        if (orders.isEmpty()) {
+                            Log.e("Error", "Data order kosong")
+                        } else {
+                            Log.d("Order Size", "Jumlah order: ${orders.size}")
+                            adapter.updateOrder(orders)
+                        }
+                    }
+                }
+
+                is Result.Error -> {
+                    Toast.makeText(this, "Gagal memuat data: ${result.error}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is Result.Loading -> {
+                    Log.d("Loading", "Loading")
+                }
+            }
+        }
+
         Log.d("orderId cik", "$orderId")
+
 
         adapter = CartOrderAdapter(emptyList(), this)
 
         binding.rvPesanan.layoutManager = LinearLayoutManager(this)
         binding.rvPesanan.adapter = adapter
-
-        viewModel.cartOrderData.observe(this) { orders ->
-            val orderCart = orders?.flatMap { it.transaksiSampah!! } ?: emptyList()
-
-            if (orders != null) {
-                adapter.updateOrder(orderCart)
-            } else {
-                adapter.updateOrder(emptyList())
-            }
-        }
     }
 
  /*   private fun observeUser() {
@@ -198,7 +219,7 @@ class SchedulingDetailActivity : AppCompatActivity() {
     }
 
     private fun setupDataKeranjang() {
-        viewModel.dataKeranjangItem.observe(this, Observer { result ->
+        viewModel.pesananSampah.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -209,19 +230,10 @@ class SchedulingDetailActivity : AppCompatActivity() {
 
                     val dataKeranjang = result.data
 
-                    dataKeranjang?.forEach {
-                        it.idNasabah.let { nasabahId ->
-                            viewModel.getCustomerName(nasabahId) { customerName ->
-                                binding.tvNamaDetailPesanan.text = customerName
-                                viewModel.getCustomerPhone(nasabahId) { customerPhone ->
-                                    binding.tvNomorwaDetailPesanan.text = customerPhone
-                                    viewModel.getCustomerAddress(nasabahId) { customerAddress ->
-                                        binding.tvAlamatDetailPesanan.text = customerAddress
-                                    }
-                            }
-                        }
-                        }
-                    }
+                    binding.tvNamaDetailPesanan.text = dataKeranjang.nama_nasabah
+                    binding.tvNomorwaDetailPesanan.text = dataKeranjang.no_hp_nasabah
+                    binding.tvAlamatDetailPesanan.text = dataKeranjang.alamat_nasabah
+                    binding.tvBeratDetailPesanan.text = dataKeranjang.total_berat.toString() + "kg"
                 }
 
                 is Result.Error -> {
@@ -300,6 +312,7 @@ class SchedulingDetailActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                     val data = result.data
                     showToast("Update tanggal dan status pesanan sampah berhasil!")
+                    finish()
 
                 }
                 is Result.Error -> {
@@ -314,4 +327,5 @@ class SchedulingDetailActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+
 }

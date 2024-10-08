@@ -15,6 +15,12 @@ interface NasabahDao {
     @Query("SELECT * FROM nasabah_table")
     suspend fun getAllNasabah(): List<CardNasabah>
 
+    @Query("SELECT no_hp_nasabah FROM nasabah_table")
+    suspend fun getNasabahByPhone(): String
+
+    @Query("SELECT * FROM nasabah_table WHERE id = :id")
+    suspend fun getNasabahById(id: String): CardNasabah
+
     @Query("SELECT * FROM nasabah_table WHERE no_hp_nasabah = :phone")
     suspend fun getNasabahByPhone(phone: String): CardNasabah
 
@@ -24,7 +30,7 @@ interface NasabahDao {
     @Query("DELETE FROM nasabah_table WHERE no_hp_nasabah = :phone")
     suspend fun deleteUserByPhone(phone: String)
 
-    @Query("SELECT no_hp_nasabah FROM nasabah_table")
-    suspend fun getNasabahPhones(): List<String>
+    @Query("DELETE FROM nasabah_table")
+    suspend fun deleteAll()
 
 }

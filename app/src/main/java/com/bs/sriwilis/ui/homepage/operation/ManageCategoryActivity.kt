@@ -68,31 +68,6 @@ class ManageCategoryActivity : AppCompatActivity() {
         binding.rvCategory.adapter = categoryAdapter
     }
 
-    private suspend fun observeUser() {
-        viewModel.categories.observe(this) { result ->
-            when (result) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                is Result.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    val categoriesData = result.data
-                    lifecycleScope.launch {
-                        viewModel.syncData()
-                    }
-                    if (categoriesData != null) {
-                        categoryAdapter.updateCategory(categoriesData)
-                    }
-                }
-                is Result.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                }
-            }
-        }
-        viewModel.getCategory()
-    }
-
-
     private suspend fun observeCategory() {
         viewModel.categories.observe(this) { result ->
             when (result) {
@@ -119,8 +94,8 @@ class ManageCategoryActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch {
-            viewModel.getCategory()
             viewModel.syncData()
+            viewModel.getCategory()
         }
     }
 }

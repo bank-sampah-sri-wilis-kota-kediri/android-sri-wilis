@@ -10,15 +10,20 @@ import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
+import com.bs.sriwilis.data.model.Catalog
 import com.bs.sriwilis.data.repository.MainRepository
+import com.bs.sriwilis.data.repository.modelhelper.CardCatalog
 import com.bs.sriwilis.data.response.CatalogData
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.UserData
 import com.bs.sriwilis.data.response.UserItem
+import com.bs.sriwilis.data.room.entity.CatalogEntity
 import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardUserListBinding
 import com.bs.sriwilis.databinding.CardWasteCatalogBinding
@@ -35,7 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CatalogAdapter(
-    private var catalog: List<CatalogData?>,
+    private var catalog: List<CardCatalog?>,
     private val context: Context
 
 ) : RecyclerView.Adapter<CatalogAdapter.CatalogViewHolder>() {
@@ -46,9 +51,9 @@ class CatalogAdapter(
 
     inner class CatalogViewHolder(private val binding: CardWasteCatalogBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(catalog: CatalogData?) {
+        fun bind(catalog: CardCatalog?) {
             with(binding) {
-                catalog?.gambarKatalog?.let { gambarKategori ->
+                catalog?.gambar_katalog?.let { gambarKategori ->
                     val imageBytes = Base64.decode(gambarKategori, Base64.DEFAULT)
                     Glide.with(itemView.context)
                         .load(imageBytes)
@@ -57,10 +62,10 @@ class CatalogAdapter(
                     ivCategoryListPreview.setImageResource(R.drawable.iv_panduan2)
                 }
 
-                tvCatalogName.text = catalog?.judulKatalog
-                tvCatalogType?.text = catalog?.hargaKatalog.toString()
-                tvCatalogPrice?.text = catalog?.noWa
-                descCatalog.text = catalog?.deskripsiKatalog
+                tvCatalogName.text = catalog?.judul_katalog
+                tvCatalogType?.text = catalog?.harga_katalog.toString()
+                tvCatalogPrice?.text = catalog?.no_wa
+                descCatalog.text = catalog?.deskripsi_katalog
 
                 itemView.setOnClickListener {
                     catalog?.id?.let { id ->
@@ -73,7 +78,7 @@ class CatalogAdapter(
 
                 btnDelete.setOnClickListener {
                     catalog?.id?.let { id ->
-                        showDeleteConfirmationDialog(id)
+                        showDeleteConfirmationDialog(context, id)
                     }
                 }
             }
@@ -97,18 +102,22 @@ class CatalogAdapter(
         holder.bind(catalog[position])
     }
 
-    fun updateCatalog(newCatalog: List<CatalogData?>) {
+    fun updateCatalog(newCatalog: List<CardCatalog?>) {
         this.catalog = newCatalog
         notifyDataSetChanged()
     }
 
-    private fun showDeleteConfirmationDialog(catalogId: String) {
+    private fun showDeleteConfirmationDialog(context: Context, catalogId: String) {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
         dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini?")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
             viewModel.deleteCatalog(catalogId)
-            viewModel.getCatalog()
+
+            (context as? AppCompatActivity)?.lifecycleScope?.launch {
+                viewModel.getCatalog()
+                viewModel.syncData()
+            }
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()

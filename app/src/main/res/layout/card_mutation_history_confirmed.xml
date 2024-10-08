@@ -32,6 +32,7 @@
             android:id="@+id/tv_mutation_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
             android:ellipsize="end"
             android:fontFamily="@font/inter_extra_bold"
             android:maxLines="2"
@@ -39,7 +40,6 @@
             android:textColor="@android:color/black"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:layout_marginStart="6dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteY="9dp" />
@@ -53,18 +53,54 @@
             android:text="14 Maret 2024"
             android:textSize="13sp"
             app:layout_constraintStart_toStartOf="@+id/tv_mutation_user_title"
-            app:layout_constraintTop_toBottomOf="@+id/tv_mutation_user_title"/>
-        
+            app:layout_constraintTop_toBottomOf="@+id/tv_mutation_user_title" />
+
         <TextView
             android:id="@+id/tv_mutation_nominal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:fontFamily="@font/inter_bold"
+            android:text="+Rp75.000"
+            android:textSize="18sp"
+            android:textColor="@color/green_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_mutation_status" />
+
+        <TextView
+            android:id="@+id/tv_token"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+Rp75.000"
-            android:textColor="@color/green_label"
-            android:fontFamily="@font/inter_bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:text="Token: -"
+            android:fontFamily="@font/inter_regular"
+            android:background="@color/yellow_primary"
+            app:layout_constraintTop_toBottomOf="@id/tv_mutation_date"
+            app:layout_constraintStart_toStartOf="@id/tv_mutation_date"
+            android:visibility="gone"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_status_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="8dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="6dp"/>
+            app:layout_constraintEnd_toEndOf="@+id/tv_mutation_nominal"
+            app:layout_constraintStart_toStartOf="@+id/tv_token"
+            app:layout_constraintTop_toBottomOf="@+id/tv_token">
+
+            <TextView
+                android:id="@+id/tv_status_mutation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/inter_bold"
+                android:padding="8dp"
+                android:text="Status"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_mutation_date" />
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

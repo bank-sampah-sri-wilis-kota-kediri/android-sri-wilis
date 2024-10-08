@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -32,16 +33,19 @@ import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
 import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
-import com.bs.sriwilis.ui.scheduling.OrderUnschedulingViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailActivity
+import com.bs.sriwilis.ui.scheduling.SchedulingDetailDoneActivity
 import com.bs.sriwilis.utils.ViewModelFactory
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardPesanan
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class OrderScheduledAdapter(
-    private var scheduledOrder: List<DataKeranjangItem?>,
+    private var scheduledOrder: List<CardPesanan?>,
     private val context: Context,
     private var viewModel: OrderSchedulingViewModel
 ) : RecyclerView.Adapter<OrderScheduledAdapter.OrderScheduledViewHolder>() {
@@ -50,33 +54,48 @@ class OrderScheduledAdapter(
 
     inner class OrderScheduledViewHolder(private val binding: CardOrderSchedulingBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(scheduledOrder: DataKeranjangItem?) {
+        fun bind(scheduledOrder: CardPesanan?) {
             with(binding) {
-                scheduledOrder?.idNasabah?.let { nasabahId ->
-                    viewModel.getCustomerName(nasabahId) { customerName ->
-                        tvNamaPesanan.text = customerName
+
+                when (scheduledOrder?.status_pesanan) {
+                    "Sudah Dijadwalkan" -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.pendingColor))
+                    "Selesai diantar" -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.confirmedColor))
+                    else -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.defaultColor))
+                }
+
+                tvNamaPesanan.text = scheduledOrder?.nama_nasabah
+
+                val originalDate = scheduledOrder?.tanggal
+                if (originalDate == "0001-01-01") {
+                    tvTanggalPesanan.text = "Belum Ditentukan"
+                } else {
+                    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale("id", "ID"))
+
+                    try {
+                        val date = inputFormat.parse(originalDate)
+                        val formattedDate = outputFormat.format(date)
+                        tvTanggalPesanan.text = formattedDate
+                    } catch (e: Exception) {
+                        tvTanggalPesanan.text = originalDate
                     }
                 }
-                when(scheduledOrder?.statusPesanan?.lowercase()){
-                    "gagal" -> tvStatus.setBackgroundColor(context.getColor(R.color.red_primary))
-                    "sudah dijadwalkan" -> tvStatus.setBackgroundColor(context.getColor(R.color.yellow_primary))
-                    "selesai diantar" -> tvStatus.setBackgroundColor(context.getColor(R.color.green_label))
-                }
-                tvStatus.text = scheduledOrder?.statusPesanan
 
-                tvTanggalPesanan.text = scheduledOrder?.tanggal ?: "Belum Ditentukan"
-
-                val totalBerat = scheduledOrder?.pesananSampah?.sumOf { it?.beratPerkiraan ?: 0 } ?: 0
-                tvBeratTransaksi.text = "$totalBerat kg"
+                tvBeratTransaksi.text = scheduledOrder?.total_berat.toString() + " kg"
 
                 itemView.setOnClickListener {
-                    scheduledOrder?.idNasabah?.let { id ->
-                        onItemClick?.invoke(id)
-                        val intent = Intent(itemView.context, SchedulingDetailActivity::class.java)
-                        intent.putExtra("id", id)
+                    scheduledOrder?.let { order ->
+                        onItemClick?.invoke(order.id_pesanan)
+
+                        val intent = Intent(itemView.context, SchedulingDetailDoneActivity::class.java)
+                        intent.putExtra("id", order.id_pesanan)
+                        intent.putExtra("nasabahId", order.id_pesanan)
                         itemView.context.startActivity(intent)
                     }
                 }
+
+                tvNomorWaPesanan.text = scheduledOrder?.no_hp_nasabah.toString()
+                tvStatus.text = scheduledOrder?.status_pesanan
             }
         }
     }
@@ -98,7 +117,7 @@ class OrderScheduledAdapter(
         holder.bind(scheduledOrder[position])
     }
 
-    fun updateCatalog(filtererdOrder: List<DataKeranjangItem?>) {
+    fun updateOrder(filtererdOrder: List<CardPesanan?>) {
         Log.d("OrderScheduledAdapter", "Updating catalog with ${filtererdOrder.size} items")
         this.scheduledOrder = filtererdOrder
         notifyDataSetChanged()

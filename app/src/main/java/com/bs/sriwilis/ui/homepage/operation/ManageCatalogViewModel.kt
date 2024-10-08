@@ -5,22 +5,28 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bs.sriwilis.data.model.Catalog
 import com.bs.sriwilis.data.repository.MainRepository
+import com.bs.sriwilis.data.repository.modelhelper.CardCatalog
 import com.bs.sriwilis.data.response.CatalogData
 import com.bs.sriwilis.data.response.CatalogResponse
+import com.bs.sriwilis.data.response.CatalogResponseDTO
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
-import com.bs.sriwilis.data.response.SingleCatalogResponse
+import com.bs.sriwilis.data.room.entity.CatalogEntity
 import com.bs.sriwilis.helper.Result
 import kotlinx.coroutines.launch
 
 class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel() {
 
-    private val _addCatalogResult = MutableLiveData<Result<SingleCatalogResponse>>()
-    val addCatalogResult: LiveData<Result<SingleCatalogResponse>> = _addCatalogResult
+    private val _addCatalogResult = MutableLiveData<Result<CatalogResponse>>()
+    val addCatalogResult: LiveData<Result<CatalogResponse>> = _addCatalogResult
 
-    private val _catalog = MutableLiveData<Result<List<CatalogData>>>()
-    val catalog: LiveData<Result<List<CatalogData>>> get() = _catalog
+    private val _catalog = MutableLiveData<Result<List<CardCatalog?>>>()
+    val catalog: LiveData<Result<List<CardCatalog?>>> get() = _catalog
+
+    private val _catalogDetail = MutableLiveData<Result<CardCatalog?>>()
+    val catalogDetail: LiveData<Result<CardCatalog?>> get() = _catalogDetail
 
     private val _catalogData = MutableLiveData<Result<CatalogData>>()
     val catalogData: LiveData<Result<CatalogData>> get() = _catalogData
@@ -41,32 +47,21 @@ class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel
         }
     }
 
-    fun getCatalog() {
-        viewModelScope.launch {
-            _catalog.value = Result.Loading
-            val result = repository.getCatalog()
-            when (result) {
-                is Result.Success -> {
-                    _catalog.postValue(Result.Success(result.data.data ?: emptyList()))
-                }
-                is Result.Error -> {
-                    _catalog.postValue(Result.Error(result.error))
-                    Log.e("ManageCatalogViewModel", "Failed to fetch catalog: ${result.error}")
-                }
-                Result.Loading -> {}
-            }
-        }
+    suspend fun getCatalog() {
+        _catalog.postValue(Result.Loading)
+        val result = repository.getAllCatalogDao()
+        _catalog.postValue(result)
     }
 
     fun fetchCatalogDetails(id: String) {
         viewModelScope.launch {
-            _catalogData.value = Result.Loading
-            when (val result = repository.getCatalogById(id)) {
+            _catalogDetail.value = Result.Loading
+            when (val result = repository.getCatalogByIdDao(id)) {
                 is Result.Success -> {
-                    _catalogData.postValue(Result.Success(result.data))
+                    _catalogDetail.postValue(Result.Success(result.data))
                 }
                 is Result.Error -> {
-                    _catalogData.postValue(Result.Error(result.error))
+                    _catalogDetail.postValue(Result.Error(result.error))
                     Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
                 }
                 Result.Loading -> TODO()
@@ -92,5 +87,9 @@ class ManageCatalogViewModel(private val repository: MainRepository) : ViewModel
 
     suspend fun getToken(): String {
         return repository.getToken().toString()
+    }
+
+    suspend fun syncData(): Result<Unit> {
+        return repository.syncCatalog()
     }
 }

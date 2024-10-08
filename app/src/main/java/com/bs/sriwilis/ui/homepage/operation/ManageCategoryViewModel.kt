@@ -45,9 +45,11 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
     }
 
     suspend fun getCategory() {
-        _categories.postValue(Result.Loading)
-        val result = repository.getAllCategoriesDao()
-        _categories.postValue(result)
+        viewModelScope.launch {
+            _categories.postValue(Result.Loading)
+            val result = repository.getAllCategoriesDao()
+            _categories.postValue(result)
+        }
     }
 
     fun fetchCategoryDetails(id: String) {
@@ -56,10 +58,11 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
             when (val result = repository.getCategoryByIdDao(id)) {
                 is Result.Success -> {
                     _categoryData.postValue(Result.Success(result.data))
+                    Log.e("FetchCategory", "Failed to fetch user details: ${result.data}")
                 }
                 is Result.Error -> {
                     _categoryData.postValue(Result.Error(result.error))
-                    Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
+                    Log.e("FetchCategory", "Failed to fetch user details: ${result.error}")
                 }
 
                 Result.Loading -> TODO()
@@ -84,7 +87,7 @@ class ManageCategoryViewModel(private val repository: MainRepository) : ViewMode
     }
 
     suspend fun syncData(): Result<Unit> {
-        return repository.syncData()
+        return repository.syncCategory()
     }
 
 }
