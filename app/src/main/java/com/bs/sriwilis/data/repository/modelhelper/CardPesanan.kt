@@ -1,6 +1,7 @@
 package com.bs.sriwilispetugas.data.repository.modelhelper
 
 data class CardPesanan(
+    val id_nasabah: String,
     val id_pesanan: String,
     val nominal_transaksi: String,
     val tanggal: String,
@@ -20,7 +21,8 @@ data class CardTransaksi(
     val alamat_nasabah: String,
     val nama_nasabah: String,
     val no_hp_nasabah: String,
-    val total_berat: Double
+    val total_berat: Double,
+    val status_transaksi: String
 )
 
 data class CardStatus(

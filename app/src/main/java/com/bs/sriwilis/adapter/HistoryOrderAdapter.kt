@@ -19,9 +19,12 @@ import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardHistoryOrderBinding
 import com.bs.sriwilis.databinding.CardOrderBinding
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.ui.history.HistoryOrderDetailActivity
 import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
+import com.bs.sriwilis.ui.scheduling.SchedulingDetailActivity
+import com.bs.sriwilis.ui.scheduling.SchedulingDetailDoneActivity
 import com.bs.sriwilispetugas.data.repository.modelhelper.CardTransaksi
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
@@ -35,33 +38,17 @@ class HistoryOrderAdapter(
 
     var onItemClick: ((String) -> Unit)? = null
     private var categorylist: List<String> = emptyList()
-    private lateinit var viewModel: ManageHistoryOrderViewModel
 
     inner class HistoryOrderViewHolder(private val binding: CardHistoryOrderBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(transaction: CardTransaksi?) {
             with(binding) {
 
-                val lifecycleOwner = itemView.context as? AppCompatActivity
+                when (transaction?.status_transaksi) {
 
-
-                if (lifecycleOwner != null) {
-                    viewModel.statusOrder.observe(lifecycleOwner, Observer { result ->
-                        when (result) {
-                            is Result.Loading -> {}
-                            is Result.Success -> {
-
-                                val status = result.data
-
-                                binding.tvStatusHistoryOrder.text = status.status_transaksi
-                            }
-
-                            is Result.Error -> {}
-                        }
-                    })
                 }
 
-
+                binding.tvStatusHistoryOrder.text = transaction?.status_transaksi
                 tvNamaPesanan.text = transaction?.nama_nasabah
 
                 val originalDate = transaction?.tanggal
@@ -74,9 +61,9 @@ class HistoryOrderAdapter(
                     try {
                         val date = inputFormat.parse(originalDate)
                         val formattedDate = outputFormat.format(date)
-                        tvTanggalPesanan.text = formattedDate
+                        tvTanggalPesanan.text = convertDateToText(formattedDate)
                     } catch (e: Exception) {
-                        tvTanggalPesanan.text = originalDate
+                        tvTanggalPesanan.text = originalDate?.let { convertDateToText(it) }
                     }
                 }
 
@@ -85,10 +72,11 @@ class HistoryOrderAdapter(
 
 
 /*                itemView.setOnClickListener {
-                    category?.id?.let { id ->
-                        onItemClick?.invoke(id)
-                        val intent = Intent(itemView.context, EditCategoryActivity::class.java)
-                        intent.putExtra("id", id)
+                    Log.d("itemviewclicktest", "ItemView clicked")
+                    transaction?.let {
+                        onItemClick?.invoke(it.id)
+                        val intent = Intent(itemView.context, HistoryOrderDetailActivity::class.java)
+                        intent.putExtra("id", it.id)
                         itemView.context.startActivity(intent)
                     }
                 }*/
@@ -100,7 +88,6 @@ class HistoryOrderAdapter(
         val binding = CardHistoryOrderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         val activity = parent.context as AppCompatActivity
-        viewModel = ViewModelProvider(activity)[ManageHistoryOrderViewModel::class]
 
         return HistoryOrderViewHolder(binding)
     }
@@ -111,24 +98,47 @@ class HistoryOrderAdapter(
 
     override fun onBindViewHolder(holder: HistoryOrderViewHolder, position: Int) {
         holder.bind(transaction[position])
+        holder.itemView.setOnClickListener {
+            transaction[position]?.let {
+                val intent = Intent(holder.itemView.context, HistoryOrderDetailActivity::class.java)
+                intent.putExtra("id", it.id)
+                holder.itemView.context.startActivity(intent)
+            }
+        }
     }
+
 
     fun updateOrder(newOrders: List<CardTransaksi?>) {
         this.transaction = newOrders
         notifyDataSetChanged()
     }
+//
+//    private fun showDeleteConfirmationDialog(catalogId: String) {
+//        val dialogBuilder = AlertDialog.Builder(context)
+//        dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
+//        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
+//        dialogBuilder.setPositiveButton("Ya") { _, _ ->
+//            viewModel.deleteCategory(catalogId)
+//        }
+//        dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
+//            dialog.dismiss()
+//        }
+//        val alertDialog = dialogBuilder.create()
+//        alertDialog.show()
+//    }
 
-    private fun showDeleteConfirmationDialog(catalogId: String) {
-        val dialogBuilder = AlertDialog.Builder(context)
-        dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
-        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
-        dialogBuilder.setPositiveButton("Ya") { _, _ ->
-            viewModel.deleteCategory(catalogId)
-        }
-        dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
-            dialog.dismiss()
-        }
-        val alertDialog = dialogBuilder.create()
-        alertDialog.show()
+    private fun convertDateToText(date: String): String {
+        val months = arrayOf(
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
+            "September", "Oktober", "November", "Desember"
+        )
+
+        val parts = date.split("-")
+        val day = parts[0]
+        val month = months[parts[1].toInt() - 1]
+        val year = parts[2]
+
+        return "$day $month $year"
     }
+
 }

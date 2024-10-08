@@ -9,11 +9,15 @@ import com.bs.sriwilis.data.room.entity.CategoryEntity
 import com.bs.sriwilis.data.room.entity.NasabahEntity
 import com.bs.sriwilis.data.room.entity.PesananSampahEntity
 import com.bs.sriwilis.data.room.entity.PesananSampahKeranjangEntity
+import com.bs.sriwilispetugas.data.room.TransaksiSampahEntity
 
 @Dao
 interface PesananSampahDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(pesananSampah: List<PesananSampahEntity>)
+    suspend fun insert(pesananSampah: PesananSampahEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(pesananSampah: List<PesananSampahEntity>)
 
     @Query("SELECT * FROM pesanan_sampah_table")
     suspend fun getAllPesananSampah(): List<PesananSampahEntity>

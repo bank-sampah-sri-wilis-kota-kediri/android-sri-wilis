@@ -64,8 +64,6 @@ class OrderUnscheduledFragment : Fragment() {
                 replaceFragment(OrderScheduleFragment())
             }
         }
-
-
     }
 
     private suspend fun setupUI() {

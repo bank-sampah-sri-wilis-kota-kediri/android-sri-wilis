@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.bs.sriwilis.data.repository.MainRepository
 import com.bs.sriwilis.data.response.AdminData
 import com.bs.sriwilis.data.response.AdminResponse
+import com.bs.sriwilis.data.response.ChangePasswordResponse
 import com.bs.sriwilis.data.response.SingleAdminResponse
 import com.bs.sriwilis.helper.Result
 import kotlinx.coroutines.launch
@@ -15,6 +16,9 @@ import kotlinx.coroutines.launch
 class AdminViewModel(private val repository: MainRepository): ViewModel() {
     private val _changeResult = MutableLiveData<Result<SingleAdminResponse>>()
     val changeResult: LiveData<Result<SingleAdminResponse>> = _changeResult
+
+    private val _changePassword = MutableLiveData<Result<ChangePasswordResponse>>()
+    val changePassword: LiveData<Result<ChangePasswordResponse>> = _changePassword
 
     private val _changeResultPassword = MutableLiveData<Result<AdminResponse>>()
     val changeResultPassword: LiveData<Result<AdminResponse>> = _changeResultPassword
@@ -52,9 +56,9 @@ class AdminViewModel(private val repository: MainRepository): ViewModel() {
 
     fun changePassword(adminId: String, password: String) {
         viewModelScope.launch {
-            _changeResultPassword.value = Result.Loading
+            _changePassword.value = Result.Loading
             val result = repository.changePasswordAdmin(adminId, password)
-            _changeResultPassword.value = result
+            _changePassword.value = result
         }
     }
     

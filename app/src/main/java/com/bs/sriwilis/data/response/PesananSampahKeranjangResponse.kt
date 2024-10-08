@@ -49,6 +49,14 @@ data class SinglePesananSampahResponse(
 	val message: String? = null
 )
 
+data class ChangeResultResponse(
+	@field:SerializedName("success")
+	val success: Boolean? = null,
+
+	@field:SerializedName("message")
+	val message: String? = null
+)
+
 data class DataKeranjangItemResponse(
 	val status: String,
 	val data: List<DataKeranjangItem>

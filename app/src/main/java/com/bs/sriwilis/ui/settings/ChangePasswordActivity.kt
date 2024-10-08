@@ -69,7 +69,7 @@ class ChangePasswordActivity : AppCompatActivity() {
 
 
     private fun observeViewModel() {
-        viewModel.changeResult.observe(this, Observer { result ->
+        viewModel.changePassword.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE

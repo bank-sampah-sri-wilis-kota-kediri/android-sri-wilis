@@ -26,7 +26,6 @@ class MappingSampah {
 
             keranjang.pesanan_sampah.forEach { sampah ->
                 val sampahEntity = PesananSampahEntity(
-                    id = keranjang.id,
                     id_pesanan_sampah_keranjang = keranjang.id_pesanan,
                     kategori = sampah.kategori,
                     berat_perkiraan = sampah.berat_perkiraan,

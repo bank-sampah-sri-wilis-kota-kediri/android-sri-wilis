@@ -20,8 +20,9 @@ import kotlinx.coroutines.launch
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.model.CartTransaction
 import com.bs.sriwilispetugas.data.repository.modelhelper.CardDetailPesanan
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardPesanan
 
-class ManageTransactionViewModel(private val repository: MainRepository) : ViewModel() {
+class ManageTransactionAutomateViewModel(private val repository: MainRepository) : ViewModel() {
 
     private val _nasabah = MutableLiveData<Result<List<String>>>()
     val nasabah: LiveData<Result<List<String>>> get() = _nasabah
@@ -44,10 +45,33 @@ class ManageTransactionViewModel(private val repository: MainRepository) : ViewM
     private val _categoryNames = MutableLiveData<Result<List<String>>>()
     val categoryNames: LiveData<Result<List<String>>> get() = _categoryNames
 
+    private val _pesananSampahEntities = MutableLiveData<Result<List<CardPesanan>>>()
+    val pesananSampahEntities: LiveData<Result<List<CardPesanan>>> = _pesananSampahEntities // ini untuk semuanya
+
     private val _transactionResult = MutableLiveData<Result<TransaksiSampahItemResponse?>>()
     val transactionResult: LiveData<Result<TransaksiSampahItemResponse?>> = _transactionResult
 
+    private val _pesananSampahDetail = MutableLiveData<Result<List<CardDetailPesanan>>>()
+    val pesananSampahDetail: LiveData<Result<List<CardDetailPesanan>>> get() = _pesananSampahDetail // ini untuk card di detail
+
     data class Category(val name: String, val basePrice: Float)
+
+    private val _transaksiSampahDetailList = MutableLiveData<Result<List<CardDetailPesanan>>>()
+    val transaksiSampahDetailList: LiveData<Result<List<CardDetailPesanan>>> = _transaksiSampahDetailList
+
+    suspend fun getPesananSampahKeranjangScheduled() {
+        viewModelScope.launch {
+            _pesananSampahEntities.postValue(Result.Loading)
+            val result = repository.getPesananSampahKeranjang()
+
+            if (result is Result.Success) {
+                val filteredData = result.data.filter { it.status_pesanan == "Selesai diantar"}
+                _pesananSampahEntities.postValue(Result.Success(filteredData))
+            } else {
+                _pesananSampahEntities.postValue(result)
+            }
+        }
+    }
 
     fun getUserId() {
         viewModelScope.launch {
@@ -137,6 +161,14 @@ class ManageTransactionViewModel(private val repository: MainRepository) : ViewM
             _transactionResult.value = Result.Loading
             val result = repository.addCartTransaction(idNasabah, tanggal, transaksi_sampah)
             _transactionResult.value = result
+        }
+    }
+
+    fun getTransaksiListDetailById(idPesanan: String) {
+        viewModelScope.launch {
+            _transaksiSampahDetailList.postValue(Result.Loading)
+            val result = repository.getTransaksiDetailListById(idPesanan)
+            _transaksiSampahDetailList.postValue(result)
         }
     }
 

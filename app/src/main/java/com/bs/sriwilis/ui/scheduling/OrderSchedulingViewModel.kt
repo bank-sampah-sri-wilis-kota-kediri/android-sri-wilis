@@ -38,7 +38,7 @@ class OrderSchedulingViewModel(private val repository: MainRepository) : ViewMod
             val result = repository.getPesananSampahKeranjang()
 
             if (result is Result.Success) {
-                // Filter data berdasarkan status_pesanan == "Pending"
+                // Filter data berdasarkan status_pesanan == "Pending" dan "Gagal"
                 val filteredData = result.data.filter { it.status_pesanan == "Pending" || it.status_pesanan == "Gagal" }
                 _pesananSampahEntities.postValue(Result.Success(filteredData))
             } else {
@@ -61,7 +61,6 @@ class OrderSchedulingViewModel(private val repository: MainRepository) : ViewMod
             }
         }
     }
-
 
     // untuk data detail
     fun getDataDetailPesananSampahKeranjang(idPesanan: String) {

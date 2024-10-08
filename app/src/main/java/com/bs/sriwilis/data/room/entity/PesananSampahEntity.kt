@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
     )]
 )
 data class PesananSampahEntity(
-    @PrimaryKey val id: String,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val id_pesanan_sampah_keranjang: String,
     val kategori: String,
     val berat_perkiraan: String,
