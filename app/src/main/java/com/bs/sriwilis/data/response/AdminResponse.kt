@@ -22,6 +22,14 @@ data class SingleAdminResponse(
 	val message: String? = null
 )
 
+data class ChangePasswordResponse(
+	@field:SerializedName("success")
+	val success: Boolean? = null,
+
+	@field:SerializedName("message")
+	val message: String? = null
+)
+
 data class AdminData(
 
 	@field:SerializedName("jenis_admin")

@@ -15,6 +15,18 @@
         android:theme="@style/Theme.BankSampahSriWilis"
         tools:targetApi="31">
         <activity
+            android:name=".ui.homepage.operation.AutomatedTransactionListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.AddTransactionAutomateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.history.HistoryOrderDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.operation.AddTransactionMethodActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.scheduling.SchedulingDetailDoneActivity"
             android:exported="false" />
         <activity

@@ -26,11 +26,13 @@ import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardOrderSchedulingBinding
 import com.bs.sriwilis.databinding.CardUserListBinding
 import com.bs.sriwilis.databinding.CardWasteCatalogBinding
+import com.bs.sriwilis.ui.homepage.operation.AddTransactionAutomateActivity
 import com.bs.sriwilis.ui.homepage.operation.EditCatalogActivity
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.EditUserActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
+import com.bs.sriwilis.ui.homepage.operation.ManageTransactionAutomateViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
 import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailActivity
@@ -44,11 +46,11 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class OrderScheduledAdapter(
+class OrderAutomatedAdapter(
     private var scheduledOrder: List<CardPesanan?>,
     private val context: Context,
-    private var viewModel: OrderSchedulingViewModel
-) : RecyclerView.Adapter<OrderScheduledAdapter.OrderScheduledViewHolder>() {
+    private var viewModel: ManageTransactionAutomateViewModel
+) : RecyclerView.Adapter<OrderAutomatedAdapter.OrderScheduledViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
 
@@ -58,7 +60,6 @@ class OrderScheduledAdapter(
             with(binding) {
 
                 when (scheduledOrder?.status_pesanan) {
-                    "Sudah Dijadwalkan" -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.pendingColor))
                     "Selesai diantar" -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.confirmedColor))
                     else -> tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.defaultColor))
                 }
@@ -87,9 +88,9 @@ class OrderScheduledAdapter(
                     scheduledOrder?.let { order ->
                         onItemClick?.invoke(order.id_pesanan)
 
-                        val intent = Intent(itemView.context, SchedulingDetailDoneActivity::class.java)
+                        val intent = Intent(itemView.context, AddTransactionAutomateActivity::class.java)
                         intent.putExtra("id", order.id_pesanan)
-                        intent.putExtra("nasabahId", order.id_pesanan)
+                        intent.putExtra("id_nasabah", order.id_nasabah)
                         itemView.context.startActivity(intent)
                     }
                 }
@@ -104,7 +105,7 @@ class OrderScheduledAdapter(
         val binding = CardOrderSchedulingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         val activity = parent.context as AppCompatActivity
-        viewModel = ViewModelProvider(activity)[OrderSchedulingViewModel::class.java]
+        viewModel = ViewModelProvider(activity)[ManageTransactionAutomateViewModel::class.java]
 
         return OrderScheduledViewHolder(binding)
     }

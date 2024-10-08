@@ -173,9 +173,12 @@ class AddTransaction : AppCompatActivity() {
                         showToast(getString(R.string.tv_on_process))
                     }
                     is Result.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        showToast(getString(R.string.tv_transaction_success))
-                        finish()
+                        lifecycleScope.launch {
+                            viewModel.syncDataTransaction()
+                            binding.progressBar.visibility = View.GONE
+                            showToast(getString(R.string.tv_transaction_success))
+                            finish()
+                        }
                     }
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE

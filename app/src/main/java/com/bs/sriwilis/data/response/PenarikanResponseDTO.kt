@@ -15,7 +15,7 @@ data class Penarikan(
     val nominal: Long,
     val tanggal: String,
     val nomor_meteran: Long?,
-    val nomor_token: Long?,
+    val nomor_token: String?,
     val nomor_rekening: Long?,
     val jenis_bank: String?,
     val status_penarikan: String

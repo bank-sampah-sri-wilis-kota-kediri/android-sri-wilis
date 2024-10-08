@@ -29,6 +29,8 @@ import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
 import com.bumptech.glide.Glide
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class MutationConfirmedAdapter(
     private var mutations: List<CardPenarikan?>,
@@ -50,7 +52,23 @@ class MutationConfirmedAdapter(
                         tvMutationUserTitle.text = customerName
                     }
                 }
-                tvMutationDate.text = mutation?.tanggal
+
+                val originalDate = mutation?.tanggal
+                if (originalDate == "0001-01-01") {
+                    binding.tvMutationDate.text = "Belum Ditentukan"
+                } else {
+                    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale("id", "ID"))
+
+                    try {
+                        val date = inputFormat.parse(originalDate)
+                        val formattedDate = outputFormat.format(date)
+                        binding.tvMutationDate.text = convertDateToText(formattedDate)
+                    } catch (e: Exception) {
+                        binding.tvMutationDate.text = originalDate?.let { convertDateToText(it) }
+                    }
+                }
+
                 tvMutationNominal.text = "Rp" + mutation?.nominal.toString()
 
                 when (mutation?.jenis_penarikan) {
@@ -61,6 +79,7 @@ class MutationConfirmedAdapter(
 
                 when (mutation?.jenis_penarikan) {
                     "PLN" -> tvToken.visibility = View.VISIBLE
+                    else -> tvToken.visibility = View.GONE
                 }
 
                 when (mutation?.status_penarikan) {
@@ -147,4 +166,19 @@ class MutationConfirmedAdapter(
         // Show a toast to inform the user that the token has been copied
         android.widget.Toast.makeText(context, "Nomor token copied to clipboard", android.widget.Toast.LENGTH_SHORT).show()
     }
+
+    private fun convertDateToText(date: String): String {
+        val months = arrayOf(
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
+            "September", "Oktober", "November", "Desember"
+        )
+
+        val parts = date.split("-")
+        val day = parts[0]
+        val month = months[parts[1].toInt() - 1]
+        val year = parts[2]
+
+        return "$day $month $year"
+    }
+
 }

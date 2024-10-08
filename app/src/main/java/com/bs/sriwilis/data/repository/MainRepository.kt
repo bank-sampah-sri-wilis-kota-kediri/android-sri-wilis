@@ -21,6 +21,8 @@ import com.bs.sriwilis.data.response.CatalogData
 import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
+import com.bs.sriwilis.data.response.ChangePasswordResponse
+import com.bs.sriwilis.data.response.ChangeResultResponse
 import com.bs.sriwilis.data.response.DataKeranjangItemResponse
 import com.bs.sriwilis.data.response.GetAdminByIdResponse
 import com.bs.sriwilis.data.response.GetUserByIdResponse
@@ -139,11 +141,11 @@ class MainRepository(
         }
     }
 
-    suspend fun changePasswordAdmin(adminId: String, password: String): Result<AdminResponse> {
+    suspend fun changePasswordAdmin(adminId: String, password: String): Result<ChangePasswordResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.changePasswordAdmin(adminId, token, password)
+            val response = apiService.changePasswordAdmin(adminId, "Bearer $token", password)
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -183,11 +185,11 @@ class MainRepository(
         }
     }
 
-    suspend fun editUser(userId: String, name: String, phone: String, address: String, balance: Double): Result<GetUserByIdResponse> {
+    suspend fun editUser(phone: String, name: String , address: String, balance: Double): Result<GetUserByIdResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.editUser(phone, "Bearer $token", name, phone, address, balance.toString())
+            val response = apiService.editUser("Bearer $token", phone, name, address, balance.toString())
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -229,6 +231,7 @@ class MainRepository(
 
     // Sinkronisasi Data
 
+
     suspend fun syncData(): Result<Unit>{
         return try {
             appDatabase.nasabahDao().deleteAll()
@@ -237,6 +240,7 @@ class MainRepository(
             appDatabase.pesananSampahKeranjangDao().deleteAll()
             appDatabase.pesananSampahDao().deleteAll()
             appDatabase.penarikanDao().deleteAllPenarikan()
+            appDatabase.keranjangTransaksiDao().deleteAllKeranjangTransaksi()
 
             val nasabahResult = getAllNasabah()
             if (nasabahResult is Result.Error) {
@@ -641,9 +645,11 @@ class MainRepository(
 
                 // Simpan data ke database Room (opsional, jika perlu disimpan)
                 withContext(Dispatchers.IO) {
-                    appDatabase.pesananSampahKeranjangDao().insert(orderEntities)
-                    appDatabase.pesananSampahDao().insert(wasteEntities)
+                    appDatabase.pesananSampahKeranjangDao().insertAll(orderEntities)
+                    appDatabase.pesananSampahDao().insertAll(wasteEntities)
                 }
+
+                Log.d("infokan saja deh", wasteEntities.toString())
 
                 Result.Success(orderEntities)
             } else {
@@ -679,6 +685,7 @@ class MainRepository(
 
     suspend fun getAllTransaksi(): Result<List<KeranjangTransaksiEntity>> {
         return try {
+            Log.d("tes error catch", "dipanggil")
             val token = getToken() ?: return Result.Error("Token is null")
             val response = apiService.getAllTransaction("Bearer $token")
             if (response.isSuccessful) {
@@ -697,22 +704,24 @@ class MainRepository(
                 Result.Error("Failed to fetch data: ${response.message()} (${response.code()})")
             }
         } catch (e: Exception) {
+            Log.d("tes error catch", e.message.toString())
             Result.Error("Error occurred: ${e.message}")
         }
     }
 
     suspend fun getPenarikan(): Result<List<PenarikanEntity>> {
         return try {
+            Log.d("tesin penarikan", "tes")
             val token = getToken() ?: return Result.Error("Token is null")
             val response = apiService.getAllMutation("Bearer $token")
 
             if (response.isSuccessful) {
+                Log.d("tesin penarikan sukses", "tes")
                 val responseBody = response.body() ?: return Result.Error("Response body is null")
                 Log.d("GetPenarikan", "Response body: $responseBody")
 
                 // Mapping dari DTO ke Entitas Room
                 val penarikanEntities = mappingPenarikan.mapPenarikanResponseDtoToEntity(responseBody)
-                Log.d("MappedEntities", penarikanEntities.toString())
 
                 // Simpan data ke database Room (opsional, jika perlu disimpan)
                 withContext(Dispatchers.IO) {
@@ -729,6 +738,7 @@ class MainRepository(
                 Result.Error("Failed to fetch data: ${response.message()} (${response.code()})")
             }
         } catch (e: Exception) {
+            Log.d("di luar gagal", e.message.toString())
             Result.Error("Error occurred: ${e.message}")
         }
     }
@@ -825,7 +835,7 @@ class MainRepository(
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.updateStatusGagal(orderId, token)
+            val response = apiService.updateStatusGagal(orderId, "Bearer $token")
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -987,10 +997,10 @@ class MainRepository(
         }
     }
 
-    suspend fun getStatusOrderHistory(): Result<CardStatus> {
+    suspend fun getPenarikanDao(): Result<List<CardPenarikan>> {
         return withContext(Dispatchers.IO) {
             try {
-                val detailPesananSampahKeranjang = appDatabase.keranjangTransaksiDao().getStatusKeranjangTransaksi()
+                val detailPesananSampahKeranjang = appDatabase.penarikanDao().getAllPenarikan()
                 Result.Success(detailPesananSampahKeranjang)
             } catch (e: Exception) {
                 Result.Error("Error occurred: ${e.message}")
@@ -998,10 +1008,10 @@ class MainRepository(
         }
     }
 
-    suspend fun getPenarikanDao(): Result<List<CardPenarikan>> {
+    suspend fun getTransaksiDetailListById(idPesanan: String): Result<List<CardDetailPesanan>> {
         return withContext(Dispatchers.IO) {
             try {
-                val detailPesananSampahKeranjang = appDatabase.penarikanDao().getAllPenarikan()
+                val detailPesananSampahKeranjang = appDatabase.transaksiSampahDao().getTransaksiSampahKeranjangDetailList(idPesanan)
                 Result.Success(detailPesananSampahKeranjang)
             } catch (e: Exception) {
                 Result.Error("Error occurred: ${e.message}")

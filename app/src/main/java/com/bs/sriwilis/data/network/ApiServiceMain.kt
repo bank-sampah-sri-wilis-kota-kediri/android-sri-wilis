@@ -9,6 +9,7 @@ import com.bs.sriwilis.data.response.CatalogResponse
 import com.bs.sriwilis.data.response.CatalogResponseDTO
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.CategoryResponseDTO
+import com.bs.sriwilis.data.response.ChangePasswordResponse
 import com.bs.sriwilis.data.response.DataKeranjangItem
 import com.bs.sriwilis.data.response.DataKeranjangItemResponse
 import com.bs.sriwilis.data.response.GetAdminByIdResponse
@@ -73,7 +74,7 @@ interface ApiServiceMain {
         @Path("id") adminId: String,
         @Header("Authorization") token: String,
         @Field("password_admin") password_admin: String,
-    ): Response<AdminResponse>
+    ): Response<ChangePasswordResponse>
 
     // USER CRUD
     @GET("nasabah/show-all")
@@ -101,12 +102,11 @@ interface ApiServiceMain {
     @FormUrlEncoded
     @PUT("nasabah/edit-by-phone/{no_hp_nasabah}")
     suspend fun editUser(
-        @Path("no_hp_nasabah") userId: String,
         @Header("Authorization") token: String,
+        @Path("no_hp_nasabah") no_hp_nasabah: String,
         @Field("nama_nasabah") nama_nasabah: String,
-        @Field("no_hp_nasabah") no_hp_nasabah: String,
         @Field("alamat_nasabah") alamat_nasabah: String,
-        @Field("gambar_nasabah") gambar_nasabah: String,
+        @Field("saldo_nasabah") saldo_nasabah: String
     ): Response<GetUserByIdResponse>
 
     @DELETE("nasabah/{no_hp_nasabah}")

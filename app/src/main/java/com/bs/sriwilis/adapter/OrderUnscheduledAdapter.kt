@@ -76,9 +76,9 @@ class OrderUnscheduledAdapter(
                     try {
                         val date = inputFormat.parse(originalDate)
                         val formattedDate = outputFormat.format(date)
-                        tvTanggalPesanan.text = formattedDate
+                        tvTanggalPesanan.text = convertDateToText(formattedDate)
                     } catch (e: Exception) {
-                        tvTanggalPesanan.text = originalDate
+                        tvTanggalPesanan.text = originalDate?.let { convertDateToText(it) }
                     }
                 }
 
@@ -121,6 +121,20 @@ class OrderUnscheduledAdapter(
         Log.d("OrderScheduledAdapter", "Updating catalog with ${filtererdOrder.size} items")
         this.unscheduledOrder = filtererdOrder
         notifyDataSetChanged()
+    }
+
+    private fun convertDateToText(date: String): String {
+        val months = arrayOf(
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
+            "September", "Oktober", "November", "Desember"
+        )
+
+        val parts = date.split("-")
+        val day = parts[0]
+        val month = months[parts[1].toInt() - 1]
+        val year = parts[2]
+
+        return "$day $month $year"
     }
 
 }

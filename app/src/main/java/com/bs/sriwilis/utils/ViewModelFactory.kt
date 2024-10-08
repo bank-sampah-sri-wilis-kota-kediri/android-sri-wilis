@@ -12,6 +12,7 @@ import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
 import com.bs.sriwilis.ui.homepage.HomeViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
+import com.bs.sriwilis.ui.homepage.operation.ManageTransactionAutomateViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageTransactionViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageUserViewModel
 import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
@@ -77,6 +78,10 @@ class ViewModelFactory private constructor(
             modelClass.isAssignableFrom(ManageHistoryMutationViewModel::class.java) -> {
                 val repository = InjectionMain.provideRepository(context)
                 ManageHistoryMutationViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(ManageTransactionAutomateViewModel::class.java) -> {
+                val repository = InjectionMain.provideRepository(context)
+                ManageTransactionAutomateViewModel(repository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

@@ -1,4 +1,4 @@
-package com.bs.sriwilis.ui.scheduling
+package com.bs.sriwilis.ui.history
 
 import android.os.Bundle
 import android.util.Log
@@ -16,20 +16,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bs.sriwilis.R
 import com.bs.sriwilis.adapter.CartOrderAdapter
-import com.bs.sriwilis.databinding.ActivitySchedulingDetailBinding
-import com.bs.sriwilis.databinding.ActivitySchedulingDetailDoneBinding
+import com.bs.sriwilis.databinding.ActivityHistoryOrderDetailBinding
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
 import com.bs.sriwilis.utils.ViewModelFactory
 import kotlinx.coroutines.launch
 
-class SchedulingDetailDoneActivity : AppCompatActivity() {
+class HistoryOrderDetailActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivitySchedulingDetailDoneBinding
-    private lateinit var dateTextView: TextView
-    private lateinit var selectDateButton: Button
     private lateinit var adapter: CartOrderAdapter
-    private var selectedDate: String? = null
-
+    private lateinit var binding: ActivityHistoryOrderDetailBinding
 
     private val viewModel by viewModels<SchedulingDetailViewModel> {
         ViewModelFactory.getInstance(this)
@@ -37,29 +33,28 @@ class SchedulingDetailDoneActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySchedulingDetailDoneBinding.inflate(layoutInflater)
+        binding = ActivityHistoryOrderDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.apply {
             btnBack.setOnClickListener { finish() }
         }
 
-        val orderId = intent.getStringExtra("id")
+        val transactionId = intent.getStringExtra("id")
 
-        orderId.let {
+        Log.d("transactionId", "$transactionId")
+
+        transactionId.let {
             lifecycleScope.launch {
                 Log.d("jalan sampe sini ga diaaaaaa?", "tes tes")
                 viewModel.getPesananSampahKeranjang()
-                if (orderId != null) {
-                    viewModel.getDataDetailPesananSampahKeranjang(orderId)
-                    viewModel.getPesananSampahKeranjangList(orderId)
+                if (transactionId != null) {
+                    viewModel.getTransaksiListDetailById(transactionId)
                 }
             }
         }
 
-        setupDataKeranjang()
-
-        viewModel.pesananSampahDetail.observe(this) { result ->
+        viewModel.transaksiSampahDetailList.observe(this) { result ->
             when (result) {
                 is Result.Success -> {
                     result.data.let { orders ->
@@ -83,8 +78,6 @@ class SchedulingDetailDoneActivity : AppCompatActivity() {
             }
         }
 
-        Log.d("orderId cik", "$orderId")
-
 
         adapter = CartOrderAdapter(emptyList(), this)
 
@@ -92,8 +85,8 @@ class SchedulingDetailDoneActivity : AppCompatActivity() {
         binding.rvPesanan.adapter = adapter
     }
 
-    private fun setupDataKeranjang() {
-        viewModel.pesananSampah.observe(this, Observer { result ->
+/*    private fun setupDataKeranjang() {
+        viewModel.transaksiSampah.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -104,11 +97,11 @@ class SchedulingDetailDoneActivity : AppCompatActivity() {
 
                     val dataKeranjang = result.data
 
-                    binding.tvNamaDetailPesanan.text = dataKeranjang.nama_nasabah
-                    binding.tvNomorwaDetailPesanan.text = dataKeranjang.no_hp_nasabah
-                    binding.tvAlamatDetailPesanan.text = dataKeranjang.alamat_nasabah
-                    binding.tvDateResult.text = dataKeranjang.tanggal
-                    binding.tvBeratDetailPesanan.text = dataKeranjang.total_berat.toString() + " kg"
+                        binding.tvNamaDetailPesanan.text = dataKeranjang.nama_nasabah
+                        binding.tvNomorwaDetailPesanan.text = transaksi.no_hp_nasabah
+                        binding.tvAlamatDetailPesanan.text = transaksi.alamat_nasabah
+                        binding.tvDateResult.text = transaksi.tanggal
+                        binding.tvBeratDetailPesanan.text = transaksi.total_berat.toString() + " kg"
                 }
 
                 is Result.Error -> {
@@ -118,5 +111,5 @@ class SchedulingDetailDoneActivity : AppCompatActivity() {
                 else -> {}
             }
         })
-    }
+    }*/
 }

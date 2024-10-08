@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.bs.sriwilispetugas.data.repository.modelhelper.CardTransaksi
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardDetailPesanan
 import com.bs.sriwilispetugas.data.room.TransaksiSampahEntity
 
 @Dao
@@ -20,9 +20,12 @@ interface TransaksiSampahDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllTransaksiSampah(pesananSampahList: List<TransaksiSampahEntity>)
 
-    // Get all TransaksiSampah for a specific DataKeranjang (by id_pesanan_keranjang)
-    @Query("SELECT * FROM transaksi_sampah_table WHERE id_keranjang_transaksi = :idPesananKeranjang")
-    suspend fun getTransaksiSampahByKeranjangId(idPesananKeranjang: String): List<TransaksiSampahEntity>
+    @Query("""
+    SELECT kategori as nama_kategori, berat as berat
+    FROM transaksi_sampah_table
+    WHERE id_keranjang_transaksi = :idPesanan
+    """)
+    suspend fun getTransaksiSampahKeranjangDetailList(idPesanan: String): List<CardDetailPesanan>
 
     // Update a TransaksiSampah
     @Update

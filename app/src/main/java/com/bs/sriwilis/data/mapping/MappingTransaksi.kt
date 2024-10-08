@@ -1,9 +1,6 @@
 package com.bs.sriwilis.data.mapping
 
 import com.bs.sriwilis.data.response.KeranjangTransaksiResponseDTO
-import com.bs.sriwilis.data.response.PesananSampahResponseDTO
-import com.bs.sriwilis.data.room.entity.PesananSampahEntity
-import com.bs.sriwilis.data.room.entity.PesananSampahKeranjangEntity
 import com.bs.sriwilispetugas.data.room.KeranjangTransaksiEntity
 import com.bs.sriwilispetugas.data.room.TransaksiSampahEntity
 
@@ -26,7 +23,6 @@ class MappingTransaksi {
 
             keranjang.transaksi_sampah?.forEach { sampah ->
                 val sampahEntity = TransaksiSampahEntity(
-                    id = sampah.id,
                     id_keranjang_transaksi = sampah.id_keranjang_transaksi,
                     kategori = sampah.kategori,
                     berat = sampah.berat,
