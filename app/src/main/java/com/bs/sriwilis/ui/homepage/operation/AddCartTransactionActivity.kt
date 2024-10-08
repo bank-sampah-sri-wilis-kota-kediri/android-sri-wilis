@@ -108,7 +108,7 @@ class AddCartTransactionActivity : AppCompatActivity() {
 
         // Calculate total weight and price
         val totalWeight = cartTransactions.sumOf { it.berat }
-        val totalPrice = cartTransactions.sumOf { it.harga.toDouble() }
+        val totalPrice = cartTransactions.sumOf { it.harga!!.toDouble() }
 
         Log.d("CartTransaction", "Added: $cartTransaction")
 

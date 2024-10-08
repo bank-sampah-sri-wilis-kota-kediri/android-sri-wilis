@@ -1072,14 +1072,15 @@ class MainRepository(
         }
     }
 
-    suspend fun updateStatus(mutationId: String, statusPenarikan: String, nomorToken: String? = null): Result<PenarikanResponse> {
+    suspend fun updateStatus(mutationId: String, statusPenarikan: String, nomorToken: String? = null, alasanPenolakan: String = ""): Result<PenarikanResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
             val response = if (nomorToken != null) {
                 apiService.updateMutationStatus(mutationId, "Bearer $token", status_penarikan = statusPenarikan, nomor_token = nomorToken)
             } else {
-                apiService.updateMutationStatusWithoutToken(mutationId, "Bearer $token", statusPenarikan)
+                apiService.updateMutationStatusWithoutToken(mutationId, "Bearer $token", statusPenarikan, alasan_penolakan = alasanPenolakan)
+
             }
             if (response.isSuccessful) {
                 val editResponse = response.body()

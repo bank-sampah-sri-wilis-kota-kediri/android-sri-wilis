@@ -82,8 +82,30 @@ class MutationNotConfirmedAdapter(
 
                 mutation?.id?.let { mutationId ->
                     btnRefuseMutation.setOnClickListener {
-                        viewModel.updateStatus(mutationId, "Gagal")
+                        val builder = AlertDialog.Builder(context)
+                        builder.setTitle("Alasan Penolakan")
+
+                        val input = android.widget.EditText(context)
+                        input.hint = "Masukkan alasan penolakan"
+                        builder.setView(input)
+
+                        builder.setPositiveButton("Tolak") { dialog, _ ->
+                            val alasanPenolakan = input.text.toString().trim()
+                            if (alasanPenolakan.isNotEmpty()) {
+                                viewModel.updateStatus(mutationId, "Gagal", alasanPenolakan = alasanPenolakan)
+                            } else {
+                                input.error = "Alasan penolakan harus diisi"
+                            }
+                            dialog.dismiss()
+                        }
+
+                        builder.setNegativeButton("Batal") { dialog, _ ->
+                            dialog.cancel()
+                        }
+
+                        builder.show()
                     }
+
                     btnAcceptMutation.setOnClickListener {
                         if (mutation.jenis_penarikan == "PLN") {
                             val token = binding.edtTextInputToken.text.toString().trim()

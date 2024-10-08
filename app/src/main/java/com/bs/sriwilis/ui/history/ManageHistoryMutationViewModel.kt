@@ -27,19 +27,18 @@ class ManageHistoryMutationViewModel(private val repository: MainRepository) : V
     private val _editMutationResult = MutableLiveData<Result<PenarikanResponse>>()
     val editCategoryResult: LiveData<Result<PenarikanResponse>> = _editMutationResult
 
-    fun updateStatus(mutationId: String, statusPenarikan: String, nomorToken: String? = null) {
+    fun updateStatus(mutationId: String, statusPenarikan: String, nomorToken: String? = null, alasanPenolakan: String = "") {
         viewModelScope.launch {
             _editMutationResult.value = Result.Loading
-            val result = repository.updateStatus(mutationId, statusPenarikan, nomorToken)
-            Log.d("update status penarikan",result.toString())
+            val result = repository.updateStatus(mutationId, statusPenarikan, nomorToken, alasanPenolakan)
             _editMutationResult.value = result
         }
     }
 
-    fun updateStatusPLN(mutationId: String, statusPenarikan: String, nomorToken: String) {
+    fun updateStatusPLN(mutationId: String, statusPenarikan: String, nomorToken: String, alasanPenolakan : String = "") {
         viewModelScope.launch {
             _editMutationResult.value = Result.Loading
-            val result = repository.updateStatus(mutationId, statusPenarikan, nomorToken)
+            val result = repository.updateStatus(mutationId, statusPenarikan, nomorToken, alasanPenolakan)
             _editMutationResult.value = result
         }
     }

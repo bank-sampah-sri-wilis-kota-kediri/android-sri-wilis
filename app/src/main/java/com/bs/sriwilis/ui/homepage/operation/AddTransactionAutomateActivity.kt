@@ -51,9 +51,9 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
             btnBack.setOnClickListener { finish() }
         }
 
-        binding.btnSave.setOnClickListener {
-            submitTransaction()
-        }
+//        binding.btnSave.setOnClickListener {
+//            submitTransaction()
+//        }
 
         val orderId = intent.getStringExtra("id")
         val nasabahId = intent.getStringExtra("id_nasabah")
