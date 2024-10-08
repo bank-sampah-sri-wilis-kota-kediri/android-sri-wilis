@@ -1,6 +1,7 @@
 package com.bs.sriwilis.ui.history
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -21,6 +22,7 @@ import com.bs.sriwilis.databinding.FragmentHistoryOrderBinding
 import com.bs.sriwilis.databinding.FragmentHomeBinding
 import com.bs.sriwilis.helper.InjectionMain
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.ui.homepage.HomeViewModel
 import com.bs.sriwilis.ui.homepage.operation.ManageCatalogViewModel
 import com.bs.sriwilis.ui.scheduling.OrderSchedulingViewModel
 import com.bs.sriwilis.utils.HistoryViewModelFactory
@@ -34,28 +36,16 @@ class HistoryOrderFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: ManageHistoryOrderViewModel
     private lateinit var adapter: HistoryOrderAdapter
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentHistoryOrderBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        val factory = ViewModelFactory.getInstance(requireContext())
+        viewModel = ViewModelProvider(this, factory)[ManageHistoryOrderViewModel::class.java]
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            val repository = InjectionMain.provideRepository(requireContext())
-            viewModel =
-                ViewModelProvider(requireActivity(), HistoryViewModelFactory(repository))[ManageHistoryOrderViewModel::class.java]
-
-            viewModel.getStatusOrderHistory()
-            setupUI()
-
-        }
-
+        setupUI()
+        viewModel.getCombinedTransaction()
         observeOrder()
 
         binding.apply {
@@ -63,11 +53,20 @@ class HistoryOrderFragment : Fragment() {
                 replaceFragment(HistoryMutationFragment())
             }
         }
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.getStatusOrderHistory()
-            viewModel.getCombinedTransaction()
+            lifecycleScope.launch {
+                viewModel.syncDataTransaction()
+                viewModel.getCombinedTransaction()
+                observeOrder()
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
         }
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
     private fun setupUI() {
@@ -76,17 +75,6 @@ class HistoryOrderFragment : Fragment() {
         binding.rvOrder.layoutManager = LinearLayoutManager(requireContext())
         binding.rvOrder.adapter = adapter
 
-        viewModel.historyOrders.observe(viewLifecycleOwner) { orders ->
-            if (isAdded) {
-                if (orders != null) {
-                    adapter.updateOrder(orders)
-                } else {
-                    adapter.updateOrder(emptyList())
-                }
-            }
-        }
-
-        viewModel.getCombinedTransaction()
     }
 
     override fun onDestroyView() {
@@ -102,19 +90,25 @@ class HistoryOrderFragment : Fragment() {
     }
 
     private fun observeOrder() {
-        viewModel.historyOrders.observe(viewLifecycleOwner, Observer { historyList ->
-            binding.swipeRefreshLayout.isRefreshing = false
+        viewModel.historyOrders.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    val categoryDetails = result.data
+                    if (categoryDetails != null) {
+                        adapter.updateOrder(categoryDetails)
+                    }
+                }
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                }
 
-            if (historyList != null) {
-                viewModel.getCombinedTransaction()
-                adapter.updateOrder(historyList)
-            } else {
-                Log.d("error", "error observe")
+                else -> {}
             }
-        })
-        viewModel.getStatusOrderHistory()
-        viewModel.getCombinedTransaction()
+            viewModel.getCombinedTransaction()
+        }
     }
-
-
 }

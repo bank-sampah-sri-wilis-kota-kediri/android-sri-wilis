@@ -21,8 +21,8 @@ import com.bs.sriwilispetugas.data.repository.modelhelper.CardTransaksi
 class ManageHistoryOrderViewModel(private val repository: MainRepository) : ViewModel() {
 
 
-    private val _historyOrders = MutableLiveData<List<CardTransaksi>?>()
-    val historyOrders: LiveData<List<CardTransaksi>?> get() = _historyOrders
+    private val _historyOrders = MutableLiveData<Result<List<CardTransaksi>?>>()
+    val historyOrders: LiveData<Result<List<CardTransaksi>?>> get() = _historyOrders
 
     private val _resultHistoryOrders = MutableLiveData<Result<List<CardTransaksi>?>>()
     val resultHistoryOrders: LiveData<Result<List<CardTransaksi>?>> get() = _resultHistoryOrders
@@ -52,22 +52,7 @@ class ManageHistoryOrderViewModel(private val repository: MainRepository) : View
         viewModelScope.launch {
             when (val result = repository.getCombinedTransaksiData()) {
                 is Result.Success -> {
-                    _historyOrders.postValue(result.data)
-                }
-                is Result.Error -> {
-                    Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
-                }
-
-                Result.Loading -> TODO()
-            }
-        }
-    }
-
-    fun getStatusOrderHistory() {
-        viewModelScope.launch {
-            when (val result = repository.getStatusOrderHistory()) {
-                is Result.Success -> {
-                    _statusOrder.postValue(Result.Success(result.data))
+                    _historyOrders.postValue(Result.Success(result.data))
                 }
                 is Result.Error -> {
                     Log.e("FetchUser", "Failed to fetch user details: ${result.error}")
@@ -128,6 +113,10 @@ class ManageHistoryOrderViewModel(private val repository: MainRepository) : View
 
     suspend fun syncData(): Result<Unit> {
         return repository.syncData()
+    }
+
+    suspend fun syncDataTransaction(): Result<Unit> {
+        return repository.syncTransaksi()
     }
 
 }

@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bs.sriwilis.data.repository.MainRepository
+import com.bs.sriwilis.data.response.CartTransactionRequest
+import com.bs.sriwilis.data.response.ChangeResultResponse
 import com.bs.sriwilis.data.response.DataKeranjangItem
 import com.bs.sriwilis.data.response.GetOrderScheduleByIdResponse
 import com.bs.sriwilis.data.response.PesananSampahItem
@@ -14,10 +16,13 @@ import com.bs.sriwilis.data.response.SinglePesananSampahResponse
 import com.bs.sriwilis.data.response.TransactionDataItem
 import com.bs.sriwilis.data.response.TransactionResponse
 import com.bs.sriwilis.data.response.TransaksiSampahItem
+import com.bs.sriwilis.data.response.TransaksiSampahItemResponse
 import com.bs.sriwilis.data.response.UserItem
 import com.bs.sriwilis.helper.Result
+import com.bs.sriwilis.model.CartTransaction
 import com.bs.sriwilispetugas.data.repository.modelhelper.CardDetailPesanan
 import com.bs.sriwilispetugas.data.repository.modelhelper.CardPesanan
+import com.bs.sriwilispetugas.data.repository.modelhelper.CardTransaksi
 import kotlinx.coroutines.launch
 
 class SchedulingDetailViewModel(private val repository: MainRepository) : ViewModel() {
@@ -26,6 +31,12 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
 
     private val _crudResponse = MutableLiveData<Result<SinglePesananSampahResponse>>()
     val crudResponse: LiveData<Result<SinglePesananSampahResponse>> = _crudResponse
+
+    private val _changeResult = MutableLiveData<Result<ChangeResultResponse>>()
+    val changeResult: LiveData<Result<ChangeResultResponse>> = _changeResult
+
+    private val _transactionResult = MutableLiveData<Result<TransaksiSampahItemResponse?>>()
+    val transactionResult: LiveData<Result<TransaksiSampahItemResponse?>> = _transactionResult
 
     private val _pesananSampahData = MutableLiveData<List<DataKeranjangItem>>()
     val pesananSampahData: LiveData<List<DataKeranjangItem>> get() = _pesananSampahData
@@ -41,6 +52,9 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
 
     private val _pesananSampah = MutableLiveData<Result<CardPesanan>>()
     val pesananSampah: LiveData<Result<CardPesanan>> = _pesananSampah
+
+    private val _transaksiSampahDetailList = MutableLiveData<Result<List<CardDetailPesanan>>>()
+    val transaksiSampahDetailList: LiveData<Result<List<CardDetailPesanan>>> = _transaksiSampahDetailList
 
     private val _pesananSampahEntities = MutableLiveData<Result<List<CardPesanan>>>()
     val pesananSampahEntities: LiveData<Result<List<CardPesanan>>> = _pesananSampahEntities // ini untuk semuanya
@@ -134,6 +148,32 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
             val result = repository.getPesananSampahKeranjangDetail(idPesanan)
             _pesananSampah.postValue(result)
         }
+    }
+
+    fun getTransaksiListDetailById(idPesanan: String) {
+        viewModelScope.launch {
+            _transaksiSampahDetailList.postValue(Result.Loading)
+            val result = repository.getTransaksiDetailListById(idPesanan)
+            _transaksiSampahDetailList.postValue(result)
+        }
+    }
+
+    fun addCartTransaction(
+        idNasabah: String,
+        tanggal: String,
+        cartTransactionList: List<CartTransaction>
+    ) {
+        viewModelScope.launch {
+            _transactionResult.value = Result.Loading
+
+            val result = repository.addCartTransaction(idNasabah, tanggal, cartTransactionList)
+            _transactionResult.value = result
+        }
+    }
+
+
+    suspend fun syncDataTransaction(): Result<Unit> {
+        return repository.syncTransaksi()
     }
 
 }

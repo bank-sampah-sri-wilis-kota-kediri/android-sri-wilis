@@ -8,6 +8,7 @@ import com.bs.sriwilis.R
 import com.bs.sriwilis.databinding.ActivityHomepageBinding
 import com.bs.sriwilis.ui.history.HistoryOrderFragment
 import com.bs.sriwilis.ui.homepage.operation.AddTransaction
+import com.bs.sriwilis.ui.homepage.operation.AddTransactionMethodActivity
 import com.bs.sriwilis.ui.scheduling.OrderScheduleFragment
 import com.bs.sriwilis.ui.scheduling.OrderUnscheduledFragment
 import com.bs.sriwilis.ui.settings.SettingsFragment
@@ -57,7 +58,7 @@ class HomepageActivity : AppCompatActivity() {
         }
 
         binding.fabAddOrder.setOnClickListener {
-            val intent = Intent(this, AddTransaction::class.java)
+            val intent = Intent(this, AddTransactionMethodActivity::class.java)
             startActivity(intent)
 
         }

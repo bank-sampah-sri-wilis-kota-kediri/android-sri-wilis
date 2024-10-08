@@ -40,7 +40,10 @@ class MutationConfirmedListActivity : AppCompatActivity() {
             btnBack.setOnClickListener { finish() }
 
             swipeRefreshLayout.setOnRefreshListener {
-                viewModel.getAllMutation()
+                lifecycleScope.launch {
+                    viewModel.syncData()
+                    viewModel.getAllMutation()
+                }
             }
         }
 

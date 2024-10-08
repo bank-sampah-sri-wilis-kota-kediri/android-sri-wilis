@@ -43,8 +43,10 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
             btnBack.setOnClickListener { finish() }
 
             swipeRefreshLayout.setOnRefreshListener {
-                Log.d("Swipe lah cuk", "dd")
-                viewModel.getAllMutation()
+                lifecycleScope.launch {
+                    viewModel.syncData()
+                    viewModel.getAllMutation()
+                }
             }
         }
 
@@ -118,4 +120,5 @@ class MutationNotConfirmedListActivity : AppCompatActivity() {
         super.onResume()
         lifecycleScope.launch { viewModel.getAllMutation() }
     }
+
 }

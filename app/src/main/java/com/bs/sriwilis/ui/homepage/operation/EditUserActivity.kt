@@ -84,20 +84,19 @@ class EditUserActivity : AppCompatActivity() {
 
     private fun setupAction() {
         binding.btnChangeUsers.setOnClickListener {
-            val userId = intent.getStringExtra("phone") ?: throw IllegalArgumentException("ID Pengguna tidak ada")
             val phone = binding.edtEditUserPhone.text.toString()
             val name = binding.edtFullNameForm.text.toString()
             val address = binding.edtEditUserAddress.text.toString()
             val balanceString = binding.edtEditUserAccountBalance.text.toString()
             val balance = balanceString.toDoubleOrNull() ?: throw IllegalArgumentException("Saldo tidak valid")
 
-            editUser(userId, phone, name, address, balance)
+            editUser(phone, name, address, balance)
         }
     }
 
-    private fun editUser(userId: String, phone: String, name: String, address: String, balance: Double) {
+    private fun editUser(phone: String, name: String, address: String, balance: Double) {
         binding.progressBar.visibility = View.VISIBLE
-        viewModel.editUser(userId, phone, name, address, balance)
+        viewModel.editUser(phone, name, address, balance)
     }
 
     fun String?.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)

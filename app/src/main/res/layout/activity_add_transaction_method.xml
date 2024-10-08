@@ -5,13 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.history.HistoryMutationFragment">
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    tools:context=".ui.homepage.operation.AddTransactionMethodActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_appbar"
@@ -22,77 +16,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/baseline_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/change_profile_title"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
+            android:id="@+id/change_profile_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tv_history_title"
-            android:textSize="25sp"
-            android:fontFamily="@font/inter_extra_bold"
+            android:text="Metode Input Transaksi"
             android:textColor="@color/white"
+            android:textSize="18sp"
+            android:fontFamily="@font/inter_extra_bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="25dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginHorizontal="40dp"
-        app:layout_constraintTop_toBottomOf="@id/cl_appbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cv_status_order"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            android:layout_marginStart="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tv_status_process"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="25dp"
-                android:fontFamily="@font/inter_extra_bold"
-                android:padding="3dp"
-                android:text="Transaksi"
-                android:textColor="@color/black"
-                android:textSize="17sp" />
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cv_status_mutation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            android:layout_marginEnd="12dp"
-            android:backgroundTint="@color/blue_calm"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tv_status_success"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="25dp"
-                android:fontFamily="@font/inter_extra_bold"
-                android:padding="3dp"
-                android:text="@string/tv_history_mutation_card_title"
-                android:textColor="@color/black"
-                android:textSize="17sp" />
-        </androidx.cardview.widget.CardView>
-
+            android:layout_marginStart="55dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cv_not_confirm"
+        android:id="@+id/cv_input_automate"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginHorizontal="14dp"
@@ -100,7 +49,7 @@
         app:cardCornerRadius="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_status">
+        app:layout_constraintTop_toBottomOf="@id/cl_appbar">
 
         <ImageView
             android:layout_width="89dp"
@@ -108,7 +57,7 @@
             android:layout_gravity="center|end"
             android:layout_marginEnd="40dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/iv_panduan" />
+            android:src="@drawable/iv_mutation_automate" />
 
         <View
             android:layout_width="60dp"
@@ -128,13 +77,13 @@
             android:layout_gravity="center|start"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/inter_bold"
-            android:text="Belum Terkonfirmasi"
+            android:text="Input Otomatis"
             android:textColor="@color/white"
             android:textSize="20sp" />
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cv_confirm"
+        android:id="@+id/cv_input_manual"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginHorizontal="14dp"
@@ -143,14 +92,14 @@
         app:cardCornerRadius="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cv_not_confirm">
+        app:layout_constraintTop_toBottomOf="@id/cv_input_automate">
 
         <ImageView
             android:layout_width="95dp"
             android:layout_height="95dp"
             android:layout_gravity="center|end"
             android:layout_marginEnd="40dp"
-            android:src="@drawable/iv_panduan"
+            android:src="@drawable/iv_mutation_manual"
             android:scaleType="centerCrop"/>
 
         <View
@@ -171,10 +120,10 @@
             android:layout_gravity="center|start"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/inter_bold"
-            android:text="Sudah Terkonfirmasi"
+            android:text="Input
+            Manual"
             android:textColor="@color/white"
             android:textSize="20sp" />
     </androidx.cardview.widget.CardView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
