@@ -151,7 +151,7 @@ class AddTransaction : AppCompatActivity() {
 
     private fun calculateTotal(cartTransactions: List<CartTransaction>) {
         totalWeight = cartTransactions.sumOf { it.berat }
-        totalPrice = cartTransactions.sumOf { it.harga.toDouble() }.toFloat()
+        totalPrice = cartTransactions.sumOf { it.harga?.toDouble() ?: 0.0 }.toFloat()
 
         Log.d("TotalCalculation", "Total weight: $totalWeight kg, Total price: Rp $totalPrice")
 

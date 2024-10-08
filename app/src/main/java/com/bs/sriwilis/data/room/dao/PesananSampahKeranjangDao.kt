@@ -37,7 +37,7 @@ interface PesananSampahKeranjangDao {
         SELECT n.nama_nasabah, 
        n.no_hp_nasabah as no_hp_nasabah,
        p.id_nasabah,
-       p.nominal_transaksi, 
+       p.nominal_transaksi,
        p.tanggal, 
        p.lat, 
        p.lng, 
