@@ -53,6 +53,9 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
     private val _pesananSampah = MutableLiveData<Result<CardPesanan>>()
     val pesananSampah: LiveData<Result<CardPesanan>> = _pesananSampah
 
+    private val _transaksiSampah = MutableLiveData<Result<CardTransaksi>>()
+    val transaksiSampah: LiveData<Result<CardTransaksi>> = _transaksiSampah
+
     private val _transaksiSampahDetailList = MutableLiveData<Result<List<CardDetailPesanan>>>()
     val transaksiSampahDetailList: LiveData<Result<List<CardDetailPesanan>>> = _transaksiSampahDetailList
 
@@ -147,6 +150,14 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
             _pesananSampah.postValue(Result.Loading)
             val result = repository.getPesananSampahKeranjangDetail(idPesanan)
             _pesananSampah.postValue(result)
+        }
+    }
+
+    fun getDataDetailTransaksiSampahKeranjang(idPesanan: String) {
+        viewModelScope.launch {
+            _transaksiSampah.postValue(Result.Loading)
+            val result = repository.getTransaksiSampahKeranjangDetail(idPesanan)
+            _transaksiSampah.postValue(result)
         }
     }
 

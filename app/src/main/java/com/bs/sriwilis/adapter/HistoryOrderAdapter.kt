@@ -44,10 +44,6 @@ class HistoryOrderAdapter(
         fun bind(transaction: CardTransaksi?) {
             with(binding) {
 
-                when (transaction?.status_transaksi) {
-
-                }
-
                 binding.tvStatusHistoryOrder.text = transaction?.status_transaksi
                 tvNamaPesanan.text = transaction?.nama_nasabah
 
@@ -71,15 +67,15 @@ class HistoryOrderAdapter(
                 tvNomorWaPesanan.text = transaction?.no_hp_nasabah
 
 
-/*                itemView.setOnClickListener {
+                itemView.setOnClickListener {
                     Log.d("itemviewclicktest", "ItemView clicked")
                     transaction?.let {
-                        onItemClick?.invoke(it.id)
+                        onItemClick?.invoke(it.id_keranjang_transaksi)
                         val intent = Intent(itemView.context, HistoryOrderDetailActivity::class.java)
-                        intent.putExtra("id", it.id)
+                        intent.putExtra("id", it.id_keranjang_transaksi)
                         itemView.context.startActivity(intent)
                     }
-                }*/
+                }
             }
         }
     }
@@ -98,13 +94,6 @@ class HistoryOrderAdapter(
 
     override fun onBindViewHolder(holder: HistoryOrderViewHolder, position: Int) {
         holder.bind(transaction[position])
-        holder.itemView.setOnClickListener {
-            transaction[position]?.let {
-                val intent = Intent(holder.itemView.context, HistoryOrderDetailActivity::class.java)
-                intent.putExtra("id", it.id)
-                holder.itemView.context.startActivity(intent)
-            }
-        }
     }
 
 

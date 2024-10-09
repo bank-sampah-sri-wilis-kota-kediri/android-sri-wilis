@@ -104,6 +104,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
             tools:listitem="@layout/card_order_scheduling"
+            android:layout_marginBottom="160dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

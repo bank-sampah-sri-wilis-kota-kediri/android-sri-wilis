@@ -18,6 +18,10 @@ class CartTransactionAdapter(private val cartItems: MutableList<CartTransaction>
         private val tvWeight: TextView = itemView.findViewById(R.id.tv_weight_order_cart)
 
         fun bind(cartTransaction: CartTransaction) {
+            Glide.with(itemView.context)
+                .load(cartTransaction.gambar)
+                .into(ivCartOrderPreview)
+
             tvOrderName.text = cartTransaction.kategori
             tvWeight.text = cartTransaction.berat.toString() + " kg"
         }

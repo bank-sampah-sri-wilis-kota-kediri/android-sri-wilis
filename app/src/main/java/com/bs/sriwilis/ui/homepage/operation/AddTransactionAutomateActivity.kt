@@ -68,25 +68,20 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
                 if (orderId != null) {
                     viewModel.getDataDetailPesananSampahKeranjang(orderId)
                     viewModelTransaction.getPesananSampahKeranjangScheduled()
+                    viewModel.getTransaksiListDetailById(orderId)
                     observeTransaction()
-                    observeCartDetails(orderId)
+                    observeCartDetails()
                 }
             }
         }
 
-        keranjangId.let {
-            if (keranjangId != null) {
-                viewModelTransaction.getTransaksiListDetailById(keranjangId)
-            }
-        }
+
 
         binding.btnSave.setOnClickListener {
             if (nasabahId != null) {
                 selectedDate?.let { date -> submitTransaction(nasabahId, date) }
             }
         }
-
-        Log.d("cart cart cart", "$cartItems")
 
     }
 
@@ -118,8 +113,8 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeCartDetails(orderId: String) {
-        viewModelTransaction.transaksiSampahDetailList.observe(this) { result ->
+    private fun observeCartDetails() {
+        viewModel.transaksiSampahDetailList.observe(this) { result ->
             when (result) {
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
@@ -129,6 +124,9 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
                     cartItems.addAll(cartDetails)
 
                     adapter.updateOrder(cartItems)
+
+                    calculateTotal(cartItems.map { mapCardDetailToCartTransaction(it) })
+                    Log.d("cart cart cart", "$cartItems")
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -143,7 +141,7 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
 
     private fun submitTransaction(nasabahId: String, selectedDate: String) {
         val idNasabah = nasabahId
-        val tanggal = selectedDate
+        val tanggal = formatDate(selectedDate)
 
         if (idNasabah != null && tanggal != null && cartItems.isNotEmpty()) {
             val mappedCartItems = cartItems.map { mapCardDetailToCartTransaction(it) }
@@ -183,6 +181,27 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
             kategori = cardDetail.nama_kategori,
             harga = cardDetail.harga ?: 0.0f
         )
+    }
+
+    private fun formatDate(date: String): String {
+        val parts = date.split("-")
+
+        return if (parts.size == 3) {
+            "${parts[2]}-${parts[1]}-${parts[0]}"
+        } else {
+            Log.e("formatDate", "Invalid date format: $date")
+            date
+        }
+    }
+
+    private fun calculateTotal(cartTransactions: List<CartTransaction>) {
+        totalWeight = cartTransactions.sumOf { it.berat }
+        totalPrice = cartTransactions.sumOf { it.harga?.toDouble() ?: 0.0 }.toFloat()
+
+        Log.d("TotalCalculation", "Total weight: $totalWeight kg, Total price: Rp $totalPrice")
+
+        binding.tvWeightEstimation.text = "$totalWeight kg"
+        binding.tvPriceEstimation.text = "Rp $totalPrice"
     }
 
     fun String?.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)

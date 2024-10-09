@@ -91,7 +91,6 @@ class OrderAutomatedAdapter(
                         val intent = Intent(itemView.context, AddTransactionAutomateActivity::class.java)
                         intent.putExtra("id", order.id_pesanan)
                         intent.putExtra("id_nasabah", order.id_nasabah)
-                        intent.putExtra("id_keranjang_transaksi", order.id_keranjang_transaksi)
                         itemView.context.startActivity(intent)
                     }
                 }

@@ -55,7 +55,7 @@ class AddTransaction : AppCompatActivity() {
         spinner = binding.spinnerNasabahChoose
 
         val recyclerView: RecyclerView = findViewById(R.id.rv_transaction_cart)
-        val cartItems = mutableListOf<CartTransaction>()
+        val cartItems = mutableListOf<CartTransaction>() // pesanansampah
 
         val currentDate = Calendar.getInstance().time
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

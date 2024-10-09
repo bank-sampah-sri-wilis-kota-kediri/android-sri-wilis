@@ -225,6 +225,7 @@ interface ApiServiceMain {
         @Path("id") catalogId: String,
         @Header("Authorization") token: String,
         @Field("status_penarikan") status_penarikan: String,
+        @Field("keterangan") alasan_penolakan: String
     ): Response<PenarikanResponse>
 
     @DELETE("penarikan/{id}")
