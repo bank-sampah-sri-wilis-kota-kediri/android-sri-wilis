@@ -34,7 +34,7 @@ class HistoryOrderDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryOrderDetailBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
 
         binding.apply {
             btnBack.setOnClickListener { finish() }
@@ -49,11 +49,12 @@ class HistoryOrderDetailActivity : AppCompatActivity() {
                 Log.d("jalan sampe sini ga diaaaaaa?", "tes tes")
                 viewModel.getPesananSampahKeranjang()
                 if (transactionId != null) {
+                    viewModel.getDataDetailTransaksiSampahKeranjang(transactionId)
                     viewModel.getTransaksiListDetailById(transactionId)
                 }
             }
         }
-
+        setupDataKeranjang()
         viewModel.transaksiSampahDetailList.observe(this) { result ->
             when (result) {
                 is Result.Success -> {
@@ -83,9 +84,11 @@ class HistoryOrderDetailActivity : AppCompatActivity() {
 
         binding.rvPesanan.layoutManager = LinearLayoutManager(this)
         binding.rvPesanan.adapter = adapter
+
+        setContentView(binding.root)
     }
 
-/*    private fun setupDataKeranjang() {
+    private fun setupDataKeranjang() {
         viewModel.transaksiSampah.observe(this, Observer { result ->
             when (result) {
                 is Result.Loading -> {
@@ -98,10 +101,10 @@ class HistoryOrderDetailActivity : AppCompatActivity() {
                     val dataKeranjang = result.data
 
                         binding.tvNamaDetailPesanan.text = dataKeranjang.nama_nasabah
-                        binding.tvNomorwaDetailPesanan.text = transaksi.no_hp_nasabah
-                        binding.tvAlamatDetailPesanan.text = transaksi.alamat_nasabah
-                        binding.tvDateResult.text = transaksi.tanggal
-                        binding.tvBeratDetailPesanan.text = transaksi.total_berat.toString() + " kg"
+                        binding.tvNomorwaDetailPesanan.text = dataKeranjang.no_hp_nasabah
+                        binding.tvAlamatDetailPesanan.text = dataKeranjang.alamat_nasabah
+                        binding.tvDateResult.text = dataKeranjang.tanggal
+                        binding.tvBeratDetailPesanan.text = dataKeranjang.total_berat.toString() + " kg"
                 }
 
                 is Result.Error -> {
@@ -111,5 +114,5 @@ class HistoryOrderDetailActivity : AppCompatActivity() {
                 else -> {}
             }
         })
-    }*/
+    }
 }

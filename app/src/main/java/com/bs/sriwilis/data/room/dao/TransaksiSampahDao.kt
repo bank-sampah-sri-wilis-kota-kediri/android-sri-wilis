@@ -21,7 +21,7 @@ interface TransaksiSampahDao {
     suspend fun insertAllTransaksiSampah(pesananSampahList: List<TransaksiSampahEntity>)
 
     @Query("""
-    SELECT kategori as nama_kategori, berat as berat
+    SELECT id_keranjang_transaksi, kategori as nama_kategori, berat as berat, harga as harga
     FROM transaksi_sampah_table
     WHERE id_keranjang_transaksi = :idPesanan
     """)

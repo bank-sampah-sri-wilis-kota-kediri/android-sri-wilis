@@ -986,6 +986,17 @@ class MainRepository(
         }
     }
 
+    suspend fun getTransaksiSampahKeranjangDetail(idPesanan: String): Result<CardTransaksi> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val detailPesananSampahKeranjang = appDatabase.keranjangTransaksiDao().getDataDetailKeranjangTransaksi(idPesanan)
+                Result.Success(detailPesananSampahKeranjang)
+            } catch (e: Exception) {
+                Result.Error("Error occurred: ${e.message}")
+            }
+        }
+    }
+
     suspend fun getCombinedTransaksiData(): Result<List<CardTransaksi>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -1011,7 +1022,7 @@ class MainRepository(
     suspend fun getTransaksiDetailListById(idPesanan: String): Result<List<CardDetailPesanan>> {
         return withContext(Dispatchers.IO) {
             try {
-                val detailPesananSampahKeranjang = appDatabase.transaksiSampahDao().getTransaksiSampahKeranjangDetailList(idPesanan)
+                val detailPesananSampahKeranjang = appDatabase.pesananSampahDao().getPesananSampahKeranjangDetailList(idPesanan)
                 Result.Success(detailPesananSampahKeranjang)
             } catch (e: Exception) {
                 Result.Error("Error occurred: ${e.message}")

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bs.sriwilis.R
 import com.bs.sriwilis.adapter.CartOrderAdapter
 import com.bs.sriwilis.databinding.ActivityAddTransactionAutomateBinding
@@ -41,22 +42,24 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
     private var totalWeight: Int = 0
     private var totalPrice: Float = 0.0f
     private var cartItems = mutableListOf<CardDetailPesanan>()
+    private var idKeranjang: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddTransactionAutomateBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        adapter = CartOrderAdapter(emptyList(), this)
+
+        setupAdapter()
+
         binding.apply {
             btnBack.setOnClickListener { finish() }
         }
 
-//        binding.btnSave.setOnClickListener {
-//            submitTransaction()
-//        }
-
         val orderId = intent.getStringExtra("id")
         val nasabahId = intent.getStringExtra("id_nasabah")
+        val keranjangId = intent.getStringExtra("id_keranjang_transaksi")
 
         orderId.let {
             lifecycleScope.launch {
@@ -65,11 +68,26 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
                 if (orderId != null) {
                     viewModel.getDataDetailPesananSampahKeranjang(orderId)
                     viewModelTransaction.getPesananSampahKeranjangScheduled()
+                    viewModel.getTransaksiListDetailById(orderId)
                     observeTransaction()
-                    observeCartDetails(orderId)
+                    observeCartDetails()
                 }
             }
         }
+
+
+
+        binding.btnSave.setOnClickListener {
+            if (nasabahId != null) {
+                selectedDate?.let { date -> submitTransaction(nasabahId, date) }
+            }
+        }
+
+    }
+
+    private fun setupAdapter() {
+        binding.rvTransactionCart.layoutManager = LinearLayoutManager(this)
+        binding.rvTransactionCart.adapter = adapter
     }
 
     private fun observeTransaction() {
@@ -95,11 +113,8 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeCartDetails(orderId: String) {
-        viewModelTransaction.getTransaksiListDetailById(orderId)
-
-        // Observe the LiveData holding the cart details
-        viewModelTransaction.transaksiSampahDetailList.observe(this) { result ->
+    private fun observeCartDetails() {
+        viewModel.transaksiSampahDetailList.observe(this) { result ->
             when (result) {
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
@@ -107,6 +122,11 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
                     val cartDetails = result.data
                     cartItems.clear()
                     cartItems.addAll(cartDetails)
+
+                    adapter.updateOrder(cartItems)
+
+                    calculateTotal(cartItems.map { mapCardDetailToCartTransaction(it) })
+                    Log.d("cart cart cart", "$cartItems")
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -121,7 +141,7 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
 
     private fun submitTransaction(nasabahId: String, selectedDate: String) {
         val idNasabah = nasabahId
-        val tanggal = selectedDate
+        val tanggal = formatDate(selectedDate)
 
         if (idNasabah != null && tanggal != null && cartItems.isNotEmpty()) {
             val mappedCartItems = cartItems.map { mapCardDetailToCartTransaction(it) }
@@ -136,7 +156,6 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
                     }
                     is Result.Success -> {
                         lifecycleScope.launch {
-                            // Sync the data and show success
                             viewModel.syncDataTransaction()
                             binding.progressBar.visibility = View.GONE
                             showToast(getString(R.string.tv_transaction_success))
@@ -162,6 +181,27 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
             kategori = cardDetail.nama_kategori,
             harga = cardDetail.harga ?: 0.0f
         )
+    }
+
+    private fun formatDate(date: String): String {
+        val parts = date.split("-")
+
+        return if (parts.size == 3) {
+            "${parts[2]}-${parts[1]}-${parts[0]}"
+        } else {
+            Log.e("formatDate", "Invalid date format: $date")
+            date
+        }
+    }
+
+    private fun calculateTotal(cartTransactions: List<CartTransaction>) {
+        totalWeight = cartTransactions.sumOf { it.berat }
+        totalPrice = cartTransactions.sumOf { it.harga?.toDouble() ?: 0.0 }.toFloat()
+
+        Log.d("TotalCalculation", "Total weight: $totalWeight kg, Total price: Rp $totalPrice")
+
+        binding.tvWeightEstimation.text = "$totalWeight kg"
+        binding.tvPriceEstimation.text = "Rp $totalPrice"
     }
 
     fun String?.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)

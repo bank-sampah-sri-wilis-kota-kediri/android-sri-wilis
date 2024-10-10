@@ -16,6 +16,7 @@ data class CardPesanan(
 
 data class CardTransaksi(
     val id: String,
+    val id_keranjang_transaksi: String,
     val nominal_transaksi: String,
     val tanggal: String,
     val alamat_nasabah: String,

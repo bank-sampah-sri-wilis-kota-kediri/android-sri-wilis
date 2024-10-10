@@ -55,7 +55,7 @@ class AddTransaction : AppCompatActivity() {
         spinner = binding.spinnerNasabahChoose
 
         val recyclerView: RecyclerView = findViewById(R.id.rv_transaction_cart)
-        val cartItems = mutableListOf<CartTransaction>()
+        val cartItems = mutableListOf<CartTransaction>() // pesanansampah
 
         val currentDate = Calendar.getInstance().time
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -151,7 +151,7 @@ class AddTransaction : AppCompatActivity() {
 
     private fun calculateTotal(cartTransactions: List<CartTransaction>) {
         totalWeight = cartTransactions.sumOf { it.berat }
-        totalPrice = cartTransactions.sumOf { it.harga!!.toDouble() }.toFloat()
+        totalPrice = cartTransactions.sumOf { it.harga?.toDouble() ?: 0.0 }.toFloat()
 
         Log.d("TotalCalculation", "Total weight: $totalWeight kg, Total price: Rp $totalPrice")
 

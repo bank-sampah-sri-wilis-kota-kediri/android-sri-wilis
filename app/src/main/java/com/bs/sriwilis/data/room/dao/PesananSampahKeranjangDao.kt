@@ -27,7 +27,7 @@ interface PesananSampahKeranjangDao {
     suspend fun deleteAll()
 
     @Query("""
-    SELECT kategori as nama_kategori, berat_perkiraan as berat
+    SELECT kategori as nama_kategori, berat_perkiraan as berat, harga_perkiraan as harga
     FROM pesanan_sampah_table
     WHERE id_pesanan_sampah_keranjang = :idPesanan
     """)
@@ -37,7 +37,7 @@ interface PesananSampahKeranjangDao {
         SELECT n.nama_nasabah, 
        n.no_hp_nasabah as no_hp_nasabah,
        p.id_nasabah,
-       p.nominal_transaksi, 
+       p.nominal_transaksi,
        p.tanggal, 
        p.lat, 
        p.lng, 

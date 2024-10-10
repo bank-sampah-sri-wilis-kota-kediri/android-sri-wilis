@@ -33,10 +33,11 @@ interface KeranjangTransaksiDao {
     // Get a single KeranjangTransaksi by its ID
     @Query("""    
         SELECT n.nama_nasabah, 
-       n.no_hp_nasabah as no_hp_nasabah, 
+       n.no_hp_nasabah, 
        p.nominal_transaksi, 
        p.tanggal, 
        p.id,
+       ts.id_keranjang_transaksi,
        p.status_transaksi,
        n.alamat_nasabah, 
        SUM(ts.berat) AS total_berat
@@ -74,6 +75,7 @@ interface KeranjangTransaksiDao {
        p.nominal_transaksi, 
        p.tanggal, 
        p.id,
+       ts.id_keranjang_transaksi,
        p.status_transaksi,
        n.alamat_nasabah,
        SUM(ts.berat) AS total_berat
