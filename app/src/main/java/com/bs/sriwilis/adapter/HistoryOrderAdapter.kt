@@ -67,13 +67,13 @@ class HistoryOrderAdapter(
                 tvNomorWaPesanan.text = transaction?.no_hp_nasabah
 
 
-                itemView.setOnClickListener {
+                root.setOnClickListener {
                     Log.d("itemviewclicktest", "ItemView clicked")
                     transaction?.let {
                         onItemClick?.invoke(it.id_keranjang_transaksi)
-                        val intent = Intent(itemView.context, HistoryOrderDetailActivity::class.java)
+                        val intent = Intent(root.context, HistoryOrderDetailActivity::class.java)
                         intent.putExtra("id", it.id_keranjang_transaksi)
-                        itemView.context.startActivity(intent)
+                        root.context.startActivity(intent)
                     }
                 }
             }

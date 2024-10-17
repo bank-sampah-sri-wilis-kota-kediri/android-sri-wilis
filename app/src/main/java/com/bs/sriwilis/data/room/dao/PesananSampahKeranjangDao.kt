@@ -34,7 +34,7 @@ interface PesananSampahKeranjangDao {
     suspend fun getPesananSampahKeranjangDetailList(idPesanan: String): List<CardDetailPesanan>
 
     @Query("""    
-        SELECT n.nama_nasabah, 
+        SELECT n.nama_nasabah,
        n.no_hp_nasabah as no_hp_nasabah,
        p.id_nasabah,
        p.nominal_transaksi,
@@ -52,6 +52,26 @@ interface PesananSampahKeranjangDao {
         ORDER BY p.tanggal DESC
         """)
     suspend fun getPesananSampahKeranjang(): List<CardPesanan>
+
+    @Query("""    
+        SELECT n.nama_nasabah, 
+               n.no_hp_nasabah AS no_hp_nasabah,
+               p.id_nasabah,
+               p.nominal_transaksi,
+               p.tanggal, 
+               p.lat, 
+               p.lng, 
+               p.id_pesanan,
+               p.status_pesanan,
+               n.alamat_nasabah, 
+               SUM(ps.berat_perkiraan) AS total_berat
+        FROM pesanan_sampah_keranjang_table AS p
+        JOIN nasabah_table AS n ON p.id_nasabah = n.id
+        JOIN pesanan_sampah_table AS ps ON p.id_pesanan = ps.id_pesanan_sampah_keranjang
+        GROUP BY p.id_pesanan, p.tanggal, p.status_pesanan
+        ORDER BY p.tanggal DESC     
+        """)
+    suspend fun getPesananSampahKeranjangBelumTerjadwal(): List<CardPesanan>
 
     @Query("""    
         SELECT n.nama_nasabah, 

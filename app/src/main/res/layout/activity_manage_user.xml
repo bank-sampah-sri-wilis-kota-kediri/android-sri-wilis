@@ -63,6 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp"
+                android:paddingBottom="40dp"
                 android:layout_marginHorizontal="12dp"
                 tools:listitem="@layout/card_user_list"
                 tools:itemCount="3"

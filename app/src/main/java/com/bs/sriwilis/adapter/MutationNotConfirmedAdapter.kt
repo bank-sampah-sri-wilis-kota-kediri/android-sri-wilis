@@ -1,35 +1,17 @@
 package com.bs.sriwilis.adapter
 
 import android.content.Context
-import android.content.Intent
-import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.bs.sriwilis.R
 import com.bs.sriwilis.data.repository.modelhelper.CardPenarikan
-import com.bs.sriwilis.data.response.CategoryData
-import com.bs.sriwilis.data.response.PenarikanData
-import com.bs.sriwilis.data.response.TransactionDataItem
-import com.bs.sriwilis.data.response.TransaksiSampahItem
-import com.bs.sriwilis.databinding.ActivityMutationConfirmedListBinding
-import com.bs.sriwilis.databinding.CardCategoryListBinding
-import com.bs.sriwilis.databinding.CardHistoryOrderBinding
 import com.bs.sriwilis.databinding.CardMutationHistoryNotConfirmedBinding
-import com.bs.sriwilis.databinding.CardOrderBinding
-import com.bs.sriwilis.databinding.CardOrderSchedulingDetailListBinding
 import com.bs.sriwilis.ui.history.ManageHistoryMutationViewModel
-import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
-import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
-import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
-import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
-import com.bumptech.glide.Glide
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -68,7 +50,9 @@ class MutationNotConfirmedAdapter(
                     }
                 }
 
-                tvMutationNominal.text = "Rp" + mutation?.nominal.toString()
+                val nominal = mutation?.nominal?.toDoubleOrNull() ?: 0.0
+                val formattedNominal = NumberFormat.getNumberInstance(Locale("id", "ID")).format(nominal)
+                tvMutationNominal.text = "Rp" + formattedNominal
 
                 when (mutation?.jenis_penarikan) {
                     "PLN" -> tvMutationStatus.text = "Token Listrik PLN"

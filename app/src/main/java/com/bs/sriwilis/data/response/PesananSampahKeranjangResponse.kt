@@ -73,6 +73,9 @@ data class DataKeranjangItem(
 	@field:SerializedName("id_nasabah")
 	val idNasabah: String,
 
+	@field:SerializedName("keterangan")
+	val keterangan: String,
+
 	@field:SerializedName("updated_at")
 	val updatedAt: Any? = null,
 
@@ -93,6 +96,8 @@ data class DataKeranjangItem(
 
 	@field:SerializedName("lat")
 	val lat: String? = null,
+
+
 
 	@field:SerializedName("long")
 	val jsonMemberLong: String? = null,

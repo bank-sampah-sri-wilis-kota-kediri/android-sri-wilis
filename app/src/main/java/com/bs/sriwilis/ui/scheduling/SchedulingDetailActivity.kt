@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -77,7 +78,28 @@ class SchedulingDetailActivity : AppCompatActivity() {
         } }
         binding.btnCancelPesanan.setOnClickListener {
             if (orderId != null) {
-                updateStatusFailed(orderId)
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Alasan Penolakan")
+
+                val input = android.widget.EditText(this)
+                input.hint = "Masukkan alasan penolakan"
+                builder.setView(input)
+
+                builder.setPositiveButton("Tolak") { dialog, _ ->
+                    val alasanPenolakan = input.text.toString().trim()
+                    if (alasanPenolakan.isNotEmpty()) {
+                        updateStatusFailed(orderId, alasanPenolakan = alasanPenolakan)
+                    } else {
+                        input.error = "Alasan penolakan harus diisi"
+                    }
+                    dialog.dismiss()
+                }
+
+                builder.setNegativeButton("Batal") { dialog, _ ->
+                    dialog.cancel()
+                }
+
+                builder.show()
             }
         }
 
@@ -296,9 +318,9 @@ class SchedulingDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateStatusFailed(orderId: String) {
+    private fun updateStatusFailed(orderId: String, alasanPenolakan: String = "") {
         orderId.let {
-            viewModel.updateFailed(orderId)
+            viewModel.updateFailed(orderId, alasanPenolakan = alasanPenolakan)
         }
     }
 

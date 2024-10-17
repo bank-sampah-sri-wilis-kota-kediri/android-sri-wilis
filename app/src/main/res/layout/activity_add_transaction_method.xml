@@ -30,7 +30,7 @@
             android:id="@+id/change_profile_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Metode Input Transaksi"
+            android:text="Metode Transaksi"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:fontFamily="@font/inter_extra_bold"
@@ -77,7 +77,7 @@
             android:layout_gravity="center|start"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/inter_bold"
-            android:text="Input Otomatis"
+            android:text="Transaksi Petugas"
             android:textColor="@color/white"
             android:textSize="20sp" />
     </androidx.cardview.widget.CardView>
@@ -120,8 +120,7 @@
             android:layout_gravity="center|start"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/inter_bold"
-            android:text="Input
-            Manual"
+            android:text="Transaksi Nasabah"
             android:textColor="@color/white"
             android:textSize="20sp" />
     </androidx.cardview.widget.CardView>

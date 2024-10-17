@@ -7,7 +7,7 @@ data class CardPenarikan(
     val nominal: String,
     val tanggal: String,
     val nomor_meteran: String?,
-    val nomor_token: Long?,
+    val nomor_token: String?,
     val nomor_rekening: String?,
     val jenis_bank: String?,
     val status_penarikan: String

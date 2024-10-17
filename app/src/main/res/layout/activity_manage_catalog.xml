@@ -56,6 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
+            android:paddingBottom="60dp"
             tools:listitem="@layout/card_waste_catalog"
             tools:itemCount="6" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
