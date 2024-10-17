@@ -3,6 +3,7 @@ package com.bs.sriwilis.adapter
 import android.content.Context
 import android.content.Intent
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
 import com.bumptech.glide.Glide
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -69,7 +71,9 @@ class MutationConfirmedAdapter(
                     }
                 }
 
-                tvMutationNominal.text = "Rp" + mutation?.nominal.toString()
+                val nominal = mutation?.nominal?.toDoubleOrNull() ?: 0.0
+                val formattedNominal = NumberFormat.getNumberInstance(Locale("id", "ID")).format(nominal)
+                tvMutationNominal.text = "Rp" + formattedNominal
 
                 when (mutation?.jenis_penarikan) {
                     "PLN" -> tvMutationStatus.text = "Token Listrik PLN"
@@ -90,15 +94,16 @@ class MutationConfirmedAdapter(
 
                 tvStatusMutation.text = mutation?.status_penarikan
 
-                tvToken.text = "No Token: " + mutation?.nomor_token
+                if (mutation != null) {
+                    Log.d("Token", "Token number: ${mutation.nomor_token}")
+                    tvToken.text = "No Token: " + mutation.nomor_token
+                }
 
                 itemView.setOnClickListener {
                     showMutationDetails(mutation)
                 }
             }
         }
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryOrderViewHolder {

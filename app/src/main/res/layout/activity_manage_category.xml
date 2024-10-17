@@ -54,6 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
             android:layout_marginHorizontal="12dp"
+            android:paddingBottom="80dp"
             tools:listitem="@layout/card_category_list"
             tools:itemCount="10" />
     </ScrollView>

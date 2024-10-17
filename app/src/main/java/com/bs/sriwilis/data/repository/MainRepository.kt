@@ -386,27 +386,6 @@ class MainRepository(
         }
     }
 
-    /*suspend fun getUser(): Result<GetAllUserResponse> {
-        return try {
-            val token = getToken() ?: return Result.Error("Token is null")
-            Log.d("tokenmainrepository", "$token")
-            val response = apiService.getAllUser("Bearer $token")
-
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    Result.Success(body)
-                } else {
-                    Result.Error("Response body is null")
-                }
-            } else {
-                Result.Error("Failed to fetch saved news: ${response.message()} (${response.code()})")
-            }
-        } catch (e: Exception) {
-            Result.Error("Error occurred: ${e.message}")
-        }
-    }*/
-
     //CRUD Categories
     suspend fun addCategory(
         name: String,
@@ -649,8 +628,6 @@ class MainRepository(
                     appDatabase.pesananSampahDao().insertAll(wasteEntities)
                 }
 
-                Log.d("infokan saja deh", wasteEntities.toString())
-
                 Result.Success(orderEntities)
             } else {
                 Result.Error("Failed to fetch data: ${response.message()} (${response.code()})")
@@ -831,11 +808,11 @@ class MainRepository(
         }
     }
 
-    suspend fun updateOrderFailed(orderId: String): Result<SinglePesananSampahResponse> {
+    suspend fun updateOrderFailed(orderId: String, alasanPenolakan: String = ""): Result<SinglePesananSampahResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
 
-            val response = apiService.updateStatusGagal(orderId, "Bearer $token")
+            val response = apiService.updateStatusGagal(orderId, "Bearer $token", alasan_penolakan = alasanPenolakan)
             if (response.isSuccessful) {
                 val editResponse = response.body()
                 if (editResponse != null) {
@@ -968,6 +945,17 @@ class MainRepository(
         return withContext(Dispatchers.IO) {
             try {
                 val pesananSampahKeranjang = appDatabase.pesananSampahKeranjangDao().getPesananSampahKeranjang()
+                Result.Success(pesananSampahKeranjang)
+            } catch (e: Exception) {
+                Result.Error("Error occurred: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getPesananSampahKeranjangBelumTerjadwal(): Result<List<CardPesanan>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val pesananSampahKeranjang = appDatabase.pesananSampahKeranjangDao().getPesananSampahKeranjangBelumTerjadwal()
                 Result.Success(pesananSampahKeranjang)
             } catch (e: Exception) {
                 Result.Error("Error occurred: ${e.message}")

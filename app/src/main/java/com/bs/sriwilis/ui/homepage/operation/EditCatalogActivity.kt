@@ -124,22 +124,27 @@ class EditCatalogActivity : AppCompatActivity() {
                         if (gambarKatalog.isNotEmpty()) {
                             val imageBytes = Base64.decode(gambarKatalog, Base64.DEFAULT)
 
-                            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            val tempFile = File(cacheDir, "api_image.jpg")
-                            val outStream = FileOutputStream(tempFile)
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
-                            outStream.flush()
-                            outStream.close()
+                            val bitmap =
+                                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            if (bitmap != null) {
+                                val tempFile = File(cacheDir, "api_image.jpg")
+                                val outStream = FileOutputStream(tempFile)
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
+                                outStream.flush()
+                                outStream.close()
 
-                            currentImageUri = tempFile.toUri()
+                                currentImageUri = tempFile.toUri()
 
-                             Glide.with(this@EditCatalogActivity)
-                                .load(currentImageUri)
-                                .into(binding.ivCatalogPreview)
-                        } else {
-                            binding.ivCatalogPreview.setImageResource(R.drawable.iv_panduan2)
+                                Glide.with(this@EditCatalogActivity)
+                                    .load(currentImageUri)
+                                    .into(binding.ivCatalogPreview)
+                            } else {
+                                // If bitmap is null, set a default image or handle it accordingly
+                                Log.e("EditCatalog", "Failed to decode image.")
+                                binding.ivCatalogPreview.setImageResource(R.drawable.iv_panduan2)
+                            }
                         }
-                    } ?: run {
+                        } ?: run {
                         binding.ivCatalogPreview.setImageResource(R.drawable.iv_panduan2)
                     }
 
@@ -201,15 +206,21 @@ class EditCatalogActivity : AppCompatActivity() {
     private fun uriToBase64(uri: Uri): String {
         return try {
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-            val byteArray = byteArrayOutputStream.toByteArray()
-            Base64.encodeToString(byteArray, Base64.DEFAULT).trim()
+            if (bitmap != null) {
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                val byteArray = byteArrayOutputStream.toByteArray()
+                Base64.encodeToString(byteArray, Base64.DEFAULT).trim()
+            } else {
+                Log.e("EditCatalog", "Failed to convert URI to bitmap")
+                ""
+            }
         } catch (e: IOException) {
             e.printStackTrace()
             ""
         }
     }
+
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

@@ -26,6 +26,7 @@ import com.bs.sriwilis.ui.settings.AdminViewModel
 import com.bs.sriwilis.ui.settings.ChangeProfileActivity
 import com.bs.sriwilis.utils.ViewModelFactory
 import com.bumptech.glide.Glide
+import com.bumptech.glide.signature.ObjectKey
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -104,11 +105,10 @@ class HomeFragment : Fragment() {
                             if (bitmap != null) {
                                 val tempFile = saveBitmapToFile(bitmap)
                                 if (tempFile != null) {
-                                    Glide.with(requireContext())
-                                        .clear(binding.icProfile)
-
-                                    Glide.with(requireContext())
+                                    Glide.with(this).clear(binding.icProfile)
+                                    Glide.with(this)
                                         .load(tempFile)
+                                        .signature(ObjectKey(System.currentTimeMillis()))
                                         .into(binding.icProfile)
                                 } else {
                                     binding.icProfile.setImageResource(R.drawable.ic_profile)

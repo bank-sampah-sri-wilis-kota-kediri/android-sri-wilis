@@ -118,10 +118,10 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
         }
     }
 
-    fun updateFailed(orderId: String) {
+    fun updateFailed(orderId: String, alasanPenolakan: String = "") {
         viewModelScope.launch {
             _crudResponse.postValue(Result.Loading)
-            val result = repository.updateOrderFailed(orderId)
+            val result = repository.updateOrderFailed(orderId, alasanPenolakan = alasanPenolakan)
             _crudResponse.postValue(result)
         }
     }

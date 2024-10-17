@@ -35,7 +35,7 @@ class OrderSchedulingViewModel(private val repository: MainRepository) : ViewMod
     suspend fun getPesananSampahKeranjangUnscheduled() {
         viewModelScope.launch {
             _pesananSampahEntities.postValue(Result.Loading)
-            val result = repository.getPesananSampahKeranjang()
+            val result = repository.getPesananSampahKeranjangBelumTerjadwal()
 
             if (result is Result.Success) {
                 // Filter data berdasarkan status_pesanan == "Pending" dan "Gagal"

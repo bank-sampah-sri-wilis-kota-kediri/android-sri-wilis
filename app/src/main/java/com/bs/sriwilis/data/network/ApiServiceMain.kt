@@ -293,10 +293,12 @@ interface ApiServiceMain {
         @Header("Authorization") token: String,
     ): Response<SinglePesananSampahResponse>
 
+    @FormUrlEncoded
     @PUT("pesanan/update-status-gagal/{id}")
     suspend fun updateStatusGagal(
         @Path("id") orderId: String,
         @Header("Authorization") token: String,
+        @Field("keterangan") alasan_penolakan: String
     ): Response<SinglePesananSampahResponse>
 
     @GET("pesanan/selesai-diantar/{id}")
