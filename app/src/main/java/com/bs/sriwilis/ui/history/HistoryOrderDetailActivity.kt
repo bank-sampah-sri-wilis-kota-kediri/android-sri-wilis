@@ -104,7 +104,8 @@ class HistoryOrderDetailActivity : AppCompatActivity() {
                         binding.tvNomorwaDetailPesanan.text = dataKeranjang.no_hp_nasabah
                         binding.tvAlamatDetailPesanan.text = dataKeranjang.alamat_nasabah
                         binding.tvDateResult.text = dataKeranjang.tanggal
-                        binding.tvBeratDetailPesanan.text = dataKeranjang.total_berat.toString() + " kg"
+                        binding.tvBeratDetailPesanan.text = String.format("%.2f kg", dataKeranjang?.total_berat ?: 0.0)
+
                 }
 
                 is Result.Error -> {

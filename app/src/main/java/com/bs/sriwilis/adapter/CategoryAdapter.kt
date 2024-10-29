@@ -103,7 +103,7 @@ class CategoryAdapter(
     private fun showDeleteConfirmationDialog(itemView: View, categoryId: String) {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
-        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
+        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini?")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
 
             val activity = itemView.context as AppCompatActivity

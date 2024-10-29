@@ -2,6 +2,8 @@ package com.bs.sriwilis.ui.homepage.operation
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
@@ -10,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bs.sriwilis.R
@@ -56,6 +59,7 @@ class ManageUserActivity : AppCompatActivity() {
             observeUser()
         }
         setupRecyclerView()
+        setupSearchBar()
     }
 
     private fun setupRecyclerView() {
@@ -73,7 +77,6 @@ class ManageUserActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                     binding.swipeRefreshLayout.isRefreshing = false
                     val userData = result.data
-                    Log.d("cek nasabah", userData.toString())
                         lifecycleScope.launch {
                             viewModel.syncData()
                         }
@@ -85,6 +88,41 @@ class ManageUserActivity : AppCompatActivity() {
                 }
             }
         }
+
+        viewModel.searchResults.observe(this, Observer { searchResult ->
+            userAdapter.updateUsers(searchResult)
+        })
+
         viewModel.getUsers()
     }
+
+    private fun setupSearchBar() {
+        binding.searchBar.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                s?.let {
+                    if (it.toString().isEmpty()) {
+                        lifecycleScope.launch {
+                            viewModel.getUsers()
+                        }
+                    } else {
+                        searchNasabahByName(it.toString())
+                    }
+                }
+            }
+
+        })
+    }
+
+    private fun searchNasabahByName(name: String) {
+        lifecycleScope.launch {
+            viewModel.searchUsers(name = name)
+        }
+    }
+
+
 }
+

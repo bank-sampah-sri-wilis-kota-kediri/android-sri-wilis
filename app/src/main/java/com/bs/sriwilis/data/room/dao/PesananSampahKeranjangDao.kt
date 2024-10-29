@@ -27,11 +27,22 @@ interface PesananSampahKeranjangDao {
     suspend fun deleteAll()
 
     @Query("""
-    SELECT kategori as nama_kategori, berat_perkiraan as berat, harga_perkiraan as harga
-    FROM pesanan_sampah_table
-    WHERE id_pesanan_sampah_keranjang = :idPesanan
-    """)
+    SELECT 
+        ps.id, 
+        ps.id_pesanan_sampah_keranjang, 
+        ps.kategori AS nama_kategori, 
+        ps.berat_perkiraan AS berat, 
+        ps.harga_perkiraan AS harga,
+        k.harga_kategori AS harga_kategori
+    FROM 
+        pesanan_sampah_table ps
+    JOIN 
+        category_table k ON ps.kategori = k.nama_kategori
+    WHERE 
+        ps.id_pesanan_sampah_keranjang = :idPesanan
+""")
     suspend fun getPesananSampahKeranjangDetailList(idPesanan: String): List<CardDetailPesanan>
+
 
     @Query("""    
         SELECT n.nama_nasabah,
@@ -48,7 +59,7 @@ interface PesananSampahKeranjangDao {
         FROM pesanan_sampah_keranjang_table AS p
         JOIN nasabah_table AS n ON p.id_nasabah = n.id
         JOIN pesanan_sampah_table AS ps ON p.id_pesanan = ps.id_pesanan_sampah_keranjang
-        GROUP BY n.id, p.status_pesanan
+        GROUP BY n.id, p.status_pesanan, p.id_pesanan
         ORDER BY p.tanggal DESC
         """)
     suspend fun getPesananSampahKeranjang(): List<CardPesanan>

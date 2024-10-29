@@ -31,6 +31,9 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
     private val _deleteResult = MutableLiveData<Result<Boolean>>()
     val deleteResult: LiveData<Result<Boolean>> get() = _deleteResult
 
+    private val _searchResults = MutableLiveData<List<CardNasabah>>()
+    val searchResults: LiveData<List<CardNasabah>> get() = _searchResults
+
     fun deleteUser(userPhone: String) {
         viewModelScope.launch {
             _deleteResult.postValue(Result.Loading)
@@ -76,6 +79,17 @@ class ManageUserViewModel(private val repository: MainRepository) : ViewModel() 
             _nasabah.postValue(Result.Loading)
             val result = repository.getAllNasabahDao()
             _nasabah.postValue(result)
+        }
+    }
+
+    fun searchUsers(name: String) {
+        viewModelScope.launch {
+            val result = repository.searchNasabahDao(name)
+            if (result is Result.Success) {
+                _searchResults.value = result.data
+            } else {
+                _searchResults.value = emptyList()
+            }
         }
     }
 

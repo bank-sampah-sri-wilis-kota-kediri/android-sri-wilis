@@ -15,6 +15,9 @@ interface NasabahDao {
     @Query("SELECT * FROM nasabah_table")
     suspend fun getAllNasabah(): List<CardNasabah>
 
+    @Query("SELECT * FROM nasabah_table WHERE nama_nasabah LIKE '%' || :name || '%'")
+    suspend fun searchNasabahByName(name: String): List<CardNasabah>
+
     @Query("SELECT no_hp_nasabah FROM nasabah_table")
     suspend fun getNasabahByPhone(): String
 

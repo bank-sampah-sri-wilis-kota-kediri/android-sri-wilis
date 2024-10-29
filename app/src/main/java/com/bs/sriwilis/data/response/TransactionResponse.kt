@@ -63,7 +63,7 @@ data class TransaksiSampahItemResponse(
 data class TransaksiSampahItem(
 
 	@field:SerializedName("berat")
-	val berat: Int? = null,
+	val berat: Float? = null,
 
 	@field:SerializedName("kategori")
 	val kategori: String? = null,

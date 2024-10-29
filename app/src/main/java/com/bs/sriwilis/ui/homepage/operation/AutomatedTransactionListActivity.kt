@@ -37,8 +37,15 @@ class AutomatedTransactionListActivity : AppCompatActivity() {
         binding = ActivityAutomatedTransactionListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        observeOrder()
+
+        binding.bindingSwipe.setOnRefreshListener {
+            lifecycleScope.launch {
+                viewModel.syncDataTransaction()
+            }
+        }
+
         lifecycleScope.launch {
-            observeOrder()
             setupUI()
         }
 
@@ -69,7 +76,7 @@ class AutomatedTransactionListActivity : AppCompatActivity() {
         viewModel.getPesananSampahKeranjangScheduled()
     }
 
-    private suspend fun observeOrder() {
+    private fun observeOrder() {
         viewModel.pesananSampahEntities.observe(this) { result ->
             when (result) {
                 is Result.Success -> {

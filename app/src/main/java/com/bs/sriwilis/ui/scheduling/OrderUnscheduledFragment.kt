@@ -1,5 +1,6 @@
 package com.bs.sriwilis.ui.scheduling
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -21,6 +22,9 @@ import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.utils.OrderSchedulingViewModelFactory
 import com.bs.sriwilis.utils.ViewModelFactory
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class OrderUnscheduledFragment : Fragment() {
 
@@ -29,6 +33,7 @@ class OrderUnscheduledFragment : Fragment() {
 
     private lateinit var adapter: OrderUnscheduledAdapter
     private lateinit var viewModel: OrderSchedulingViewModel
+    private val calendar = Calendar.getInstance()
 
 
     override fun onCreateView(
@@ -50,7 +55,6 @@ class OrderUnscheduledFragment : Fragment() {
         }
 
         lifecycleScope.launch { observeOrder() }
-
         binding.bindingSwipe.setOnRefreshListener {
             lifecycleScope.launch {
                 viewModel.syncData()
@@ -64,6 +68,11 @@ class OrderUnscheduledFragment : Fragment() {
                 replaceFragment(OrderScheduleFragment())
             }
         }
+
+        binding.tvSelectDate.setOnClickListener {
+            showDatePicker()
+        }
+
     }
 
     private suspend fun setupUI() {
@@ -122,4 +131,45 @@ class OrderUnscheduledFragment : Fragment() {
         }
         viewModel.getPesananSampahKeranjangUnscheduled()
     }
+
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(requireContext(),
+            { _, selectedYear, selectedMonth, selectedDay ->
+                val selectedDate = "$selectedDay-${selectedMonth + 1}-$selectedYear"
+                binding.tvSelectDate.text = selectedDate
+                filterByDate(selectedDate)
+            }, year, month, day)
+
+        datePickerDialog.show()
+    }
+
+    private fun filterByDate(selectedDate: String) {
+        val inputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        try {
+            val parsedSelectedDate = inputFormat.parse(selectedDate)
+            val formattedSelectedDate = outputFormat.format(parsedSelectedDate)
+
+            viewModel.pesananSampahEntities.observe(viewLifecycleOwner) { result ->
+                if (result is Result.Success) {
+                    val filteredData = result.data.filter { order ->
+                        val orderDate = order.tanggal
+                        orderDate == formattedSelectedDate
+                    }
+                    adapter.updateOrder(filteredData)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "Tanggal tidak valid", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
 }

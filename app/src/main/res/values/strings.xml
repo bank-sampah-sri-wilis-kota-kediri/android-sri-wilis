@@ -209,5 +209,7 @@
     <string name="tv_transaction_success">Transaksi Berhasil</string>
     <string name="btn_add_transaction">Tambah</string>
     <string name="tv_status_history_order">STATUS</string>
+    <string name="tv_find_users_hint">Cari Nasabah</string>
+    <string name="tv_list_users">Daftar Nasabah</string>
 
 </resources>

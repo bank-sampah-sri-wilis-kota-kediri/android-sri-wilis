@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.util.Base64
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
 import com.bs.sriwilis.data.response.CategoryData
@@ -17,14 +19,16 @@ import com.bs.sriwilis.databinding.CardCategoryListBinding
 import com.bs.sriwilis.databinding.CardHistoryOrderBinding
 import com.bs.sriwilis.databinding.CardOrderBinding
 import com.bs.sriwilis.databinding.CardOrderSchedulingDetailListBinding
+import com.bs.sriwilis.databinding.CardTransactionCartBinding
 import com.bs.sriwilis.ui.history.ManageHistoryOrderViewModel
 import com.bs.sriwilis.ui.homepage.operation.EditCategoryActivity
 import com.bs.sriwilis.ui.homepage.operation.ManageCategoryViewModel
 import com.bs.sriwilis.ui.scheduling.SchedulingDetailViewModel
 import com.bs.sriwilispetugas.data.repository.modelhelper.CardDetailPesanan
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
 
-class CartOrderAdapter(
+class  CartOrderAdapter(
     private var transaction: List<CardDetailPesanan?>,
     private val context: Context
 
@@ -39,7 +43,7 @@ class CartOrderAdapter(
 
         fun bind(transaction: CardDetailPesanan?) {
             with(binding) {
-                tvBeratPesanan.text = transaction?.berat.toString() + " kg"
+                tvBeratPesanan.text = String.format("%.2f kg", transaction?.berat ?: 0.0)
                 tvKategoriPesanan.text = transaction?.nama_kategori
             }
         }
@@ -67,16 +71,22 @@ class CartOrderAdapter(
         notifyDataSetChanged()
     }
 
-/*    private fun showDeleteConfirmationDialog(catalogId: String) {
+/*    private fun showDeleteConfirmationDialog(itemView: View, userPhone: String) {
         val dialogBuilder = AlertDialog.Builder(context)
-        dialogBuilder.setTitle("Konfirmasi Penghapusan Kategori")
-        dialogBuilder.setMessage("Anda yakin ingin menghapus kategori ini??")
+        dialogBuilder.setTitle("Konfirmasi Penghapusan Item Keranjang")
+        dialogBuilder.setMessage("Anda yakin ingin menghapus item ini??")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
-            viewModel.deleteCategory(catalogId)
+            val activity = itemView.context as AppCompatActivity
+            activity.lifecycleScope.launch {
+                viewModel.deleteUser(userPhone)
+                viewModel.syncData()
+                viewModel.getUsers()
+            }
         }
         dialogBuilder.setNegativeButton("Tidak") { dialog, _ ->
             dialog.dismiss()
         }
+
         val alertDialog = dialogBuilder.create()
         alertDialog.show()
     }*/

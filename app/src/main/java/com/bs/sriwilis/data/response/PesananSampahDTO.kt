@@ -12,7 +12,7 @@ data class PesananSampahData(
     val id: String,
     val id_pesanan_sampah_keranjang: String,
     val kategori: String,
-    val berat_perkiraan: String,
+    val berat_perkiraan: Float,
     val harga_perkiraan: String?,
     val gambar: String?,
 )
