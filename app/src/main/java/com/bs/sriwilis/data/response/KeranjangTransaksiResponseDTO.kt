@@ -20,7 +20,7 @@ data class Sampah(
     val id: Int,
     val id_keranjang_transaksi: Int,
     val kategori: String,
-    val berat: Int,
+    val berat: Float,
     val harga: String,
     val gambar: String?,
     val created_at: String?,

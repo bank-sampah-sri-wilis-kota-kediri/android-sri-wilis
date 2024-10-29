@@ -25,6 +25,7 @@ import com.bs.sriwilis.utils.ViewModelFactory
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.model.CartTransaction
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -40,7 +41,7 @@ class AddTransaction : AppCompatActivity() {
     private var selectedId: String? = null
     private var selectedDate: String? = null
 
-    private var totalWeight: Int = 0
+    private var totalWeight: Float = 0.0f
     private var totalPrice: Float = 0.0f
     private var cartItems = mutableListOf<CartTransaction>()
 
@@ -61,7 +62,7 @@ class AddTransaction : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         binding.tvSelectedDate.text = dateFormat.format(currentDate)
 
-        adapter = CartTransactionAdapter(cartItems)
+        adapter = CartTransactionAdapter(cartItems, this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -150,13 +151,15 @@ class AddTransaction : AppCompatActivity() {
     }
 
     private fun calculateTotal(cartTransactions: List<CartTransaction>) {
-        totalWeight = cartTransactions.sumOf { it.berat }
+        totalWeight = cartTransactions.map { it.berat }.sum()
         totalPrice = cartTransactions.sumOf { it.harga?.toDouble() ?: 0.0 }.toFloat()
 
         Log.d("TotalCalculation", "Total weight: $totalWeight kg, Total price: Rp $totalPrice")
 
-        binding.tvWeightEstimation.text = "$totalWeight kg"
-        binding.tvPriceEstimation.text = "Rp $totalPrice"
+        binding.tvWeightEstimation.text = String.format("%.2f kg", totalWeight)
+        val formattedPrice = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(totalPrice)
+        binding.tvPriceEstimation.text = formattedPrice
+
     }
 
     private fun submitTransaction() {
@@ -164,7 +167,6 @@ class AddTransaction : AppCompatActivity() {
         val tanggal = selectedDate
 
         if (idNasabah != null && tanggal != null && cartItems.isNotEmpty()) {
-            // Trigger the transaction
             viewModel.addCartTransaction(idNasabah, tanggal, cartItems)
             viewModel.transactionResult.observe(this) { result ->
                 when (result) {
@@ -187,7 +189,7 @@ class AddTransaction : AppCompatActivity() {
                 }
             }
         } else {
-            showToast("Please select a user, date, and add items to the cart")
+            showToast("Tolong pilih pengguna, tanggal, dan item untuk ditambahkan")
         }
     }
 

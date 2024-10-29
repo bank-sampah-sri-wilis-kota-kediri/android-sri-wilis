@@ -107,7 +107,7 @@ class UserAdapter(
     private fun showDeleteConfirmationDialog(itemView: View, userPhone: String) {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle("Konfirmasi Penghapusan Akun")
-        dialogBuilder.setMessage("Anda yakin ingin menghapus akun ini??")
+        dialogBuilder.setMessage("Anda yakin ingin menghapus akun ini?")
         dialogBuilder.setPositiveButton("Ya") { _, _ ->
             val activity = itemView.context as AppCompatActivity
             activity.lifecycleScope.launch {

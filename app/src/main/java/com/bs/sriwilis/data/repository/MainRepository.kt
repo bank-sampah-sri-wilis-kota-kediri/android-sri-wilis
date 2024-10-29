@@ -23,6 +23,7 @@ import com.bs.sriwilis.data.response.CategoryData
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.ChangePasswordResponse
 import com.bs.sriwilis.data.response.ChangeResultResponse
+import com.bs.sriwilis.data.response.ChangeStatusPesananSampahResponse
 import com.bs.sriwilis.data.response.DataKeranjangItemResponse
 import com.bs.sriwilis.data.response.GetAdminByIdResponse
 import com.bs.sriwilis.data.response.GetUserByIdResponse
@@ -686,6 +687,31 @@ class MainRepository(
         }
     }
 
+    suspend fun deleteItemKeranjangById(keranjangId: String): Result<Boolean> {
+        return try {
+            val token = getToken() ?: return Result.Error("Token is null")
+            val response = apiService.deleteKeranjangById("Bearer $token", keranjangId)
+
+            if (response.isSuccessful) {
+
+                withContext(Dispatchers.IO) {
+                    keranjangId.let {
+                        appDatabase.nasabahDao().deleteUserByPhone(keranjangId)
+                    }
+                }
+
+                Result.Success(true)
+            } else {
+                Result.Error("Failed to remove nasabah: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            Log.e("MainRepository", "Exception occurred: ${e.message}")
+            Result.Error("Error occurred: ${e.message}")
+        }
+    }
+
+
+
     suspend fun getPenarikan(): Result<List<PenarikanEntity>> {
         return try {
             Log.d("tesin penarikan", "tes")
@@ -766,6 +792,8 @@ class MainRepository(
         }
     }
 
+
+
     suspend fun registerDate(orderId: String, date: String): Result<SinglePesananSampahResponse> {
         return try {
             val token = getToken() ?: return Result.Error("Token is null")
@@ -835,6 +863,17 @@ class MainRepository(
         return withContext(Dispatchers.IO) {
             try {
                 val nasabahData = appDatabase.nasabahDao().getAllNasabah()
+                Result.Success(nasabahData)
+            } catch (e: Exception) {
+                Result.Error("Error occured: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun searchNasabahDao(name: String): Result<List<CardNasabah>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val nasabahData = appDatabase.nasabahDao().searchNasabahByName(name = name)
                 Result.Success(nasabahData)
             } catch (e: Exception) {
                 Result.Error("Error occured: ${e.message}")
@@ -915,17 +954,6 @@ class MainRepository(
                 Result.Success(catalogData)
             } catch (e: Exception) {
                 Result.Error("Error occured: ${e.message}")
-            }
-        }
-    }
-
-    suspend fun getPerkiraanById(orderId: String): Result<String?> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val beratPerkiraan = appDatabase.pesananSampahDao().getBeratPerkiraanById(orderId)
-                Result.Success(beratPerkiraan)
-            } catch (e: Exception) {
-                Result.Error("Error occurred: ${e.message}")
             }
         }
     }
@@ -1029,7 +1057,6 @@ class MainRepository(
 
         val token = getToken() ?: return Result.Error("Token is null")
         return try {
-            // Prepare the transaction items for the request
             val transaksiSampahItems = transaksi_sampah.map { cartTransaction ->
                 TransaksiSampahItem(
                     gambar = cartTransaction.gambar ?: null,
@@ -1038,21 +1065,18 @@ class MainRepository(
                 )
             }
 
-            // Create the request body
             val cartTransactionRequest = CartTransactionRequest(
                 idNasabah = idNasabah,
                 tanggal = tanggal,
                 transaksiSampah = transaksiSampahItems
             )
 
-            // Make the API request
             val response = apiService.addCartTransaction("Bearer $token", cartTransactionRequest)
             Log.i("infokan", cartTransactionRequest.toString())
 
             if (response.isSuccessful) {
                 Result.Success(response.body())
             } else {
-                // Log the status code and the error body (if available)
                 val statusCode = response.code()
                 val errorBody = response.errorBody()?.string()
 
@@ -1063,10 +1087,8 @@ class MainRepository(
             }
 
         } catch (e: Exception) {
-            // Log the exception with the full stack trace
             Log.e("AddCartTransactionError", "Error adding cart transaction", e)
 
-            // Return the error message and the exception as a string
             Result.Error(e.toString())
         }
     }
@@ -1096,6 +1118,27 @@ class MainRepository(
             Result.Error("Edit error: ${e.message}")
         }
     }
+
+    suspend fun updateCartById(id: String, berat: Float): Result<ChangeStatusPesananSampahResponse> {
+        return try {
+            val token = getToken() ?: return Result.Error("Token is null")
+
+            val response = apiService.updateItemKeranjang(id, "Bearer $token", berat)
+            if (response.isSuccessful) {
+                val editResponse = response.body()
+                if (editResponse != null) {
+                    Result.Success(editResponse)
+                } else {
+                    Result.Error("Empty response body")
+                }
+            } else {
+                Result.Error("Failed to edit: ${response.code()} - ${response.message()}")
+            }
+        } catch (e: Exception) {
+            Result.Error("Edit error: ${e.message}")
+        }
+    }
+
 
     companion object {
         @Volatile

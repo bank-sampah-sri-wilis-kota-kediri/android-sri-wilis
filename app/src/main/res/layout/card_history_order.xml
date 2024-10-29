@@ -98,7 +98,7 @@
             android:fontFamily="@font/inter_bold"
             android:textColor="@color/blue_primary"
             android:textSize="16sp"
-            android:text="Harga:"
+            android:text="No WA:"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_label_berat_transaksi"
             android:layout_marginTop="2dp" />

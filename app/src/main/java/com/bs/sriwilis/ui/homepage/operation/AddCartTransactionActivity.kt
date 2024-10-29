@@ -38,9 +38,6 @@ class AddCartTransactionActivity : AppCompatActivity() {
     private var cartImage: Bitmap? = null
     private var basePrice: Float = 0.0f
 
-    private var totalWeight: Int = 0
-    private var totalPrice: Float = 0.0f
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddCartTransaction2Binding.inflate(layoutInflater)
@@ -86,7 +83,7 @@ class AddCartTransactionActivity : AppCompatActivity() {
 
     private fun saveCartTransaction() {
         val selectedCategory = binding.spinnerWasteCategory.selectedItem.toString()
-        val weight = binding.edtWasteWeight.text.toString().toIntOrNull() ?: 0
+        val weight = binding.edtWasteWeight.text.toString().toFloatOrNull() ?: 0.0f
         val price = binding.edtWastePrice.text.toString().toFloatOrNull() ?: 0.0f
         val encodedImage = cartImage?.let { encodeImageToBase64(it) }
 
@@ -105,17 +102,15 @@ class AddCartTransactionActivity : AppCompatActivity() {
 
         cartTransactions.add(cartTransaction)
 
-
-        // Calculate total weight and price
-        val totalWeight = cartTransactions.sumOf { it.berat }
+        val totalWeight = cartTransactions.map { it.berat }.sum()
         val totalPrice = cartTransactions.sumOf { it.harga?.toDouble() ?: 0.0 }
 
         Log.d("CartTransaction", "Added: $cartTransaction")
 
         val intent = Intent().apply {
             putParcelableArrayListExtra("transaksi_sampah", ArrayList(cartTransactions))
-            putExtra("total_weight", totalWeight) // Pass total weight
-            putExtra("total_price", totalPrice.toFloat())   // Pass total price
+            putExtra("total_weight", totalWeight)
+            putExtra("total_price", totalPrice.toFloat())
         }
         setResult(Activity.RESULT_OK, intent)
         finish()
@@ -145,9 +140,9 @@ class AddCartTransactionActivity : AppCompatActivity() {
                             position: Int,
                             id: Long
                         ) {
-                            selectedCategory = categoryNames[position] // This should now be just the name
-                            val categoryItem = viewModel.getCategoryByPosition(position) // Retrieve full object
-                            basePrice = categoryItem?.basePrice ?: 0.0f // Now retrieve base price if needed
+                            selectedCategory = categoryNames[position]
+                            val categoryItem = viewModel.getCategoryByPosition(position)
+                            basePrice = categoryItem?.basePrice ?: 0.0f
                             Log.d("SelectedCategory", "Category: $selectedCategory, Base Price: $basePrice")
 
                             updatePrice()
@@ -161,9 +156,7 @@ class AddCartTransactionActivity : AppCompatActivity() {
                     Log.e("Spinner", "Error loading categories: ${result.error}")
                 }
 
-                Result.Loading -> {
-                    // Show loading indicator
-                }
+                Result.Loading -> {}
             }
         }
         viewModel.getCategoryDetails()

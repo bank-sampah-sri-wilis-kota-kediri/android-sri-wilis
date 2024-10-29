@@ -1,16 +1,24 @@
 package com.bs.sriwilis.adapter
 
+import android.app.AlertDialog
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bs.sriwilis.R
 import com.bs.sriwilis.model.CartTransaction
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
 
-class CartTransactionAdapter(private val cartItems: MutableList<CartTransaction>) : RecyclerView.Adapter<CartTransactionAdapter.CartViewHolder>() {
+class CartTransactionAdapter(
+    private val cartItems: MutableList<CartTransaction>,
+    private val context: Context
+) : RecyclerView.Adapter<CartTransactionAdapter.CartViewHolder>() {
 
     inner class CartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivCartOrderPreview: ImageView = itemView.findViewById(R.id.iv_cart_order_preview)

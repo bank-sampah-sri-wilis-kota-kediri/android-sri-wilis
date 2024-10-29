@@ -21,10 +21,20 @@ interface PesananSampahDao {
     suspend fun insertAll(pesananSampah: List<PesananSampahEntity>)
 
     @Query("""
-    SELECT id_pesanan_sampah_keranjang, kategori as nama_kategori, berat_perkiraan as berat, harga_perkiraan as harga
-    FROM pesanan_sampah_table
-    WHERE id_pesanan_sampah_keranjang = :idPesanan
-    """)
+    SELECT 
+        ps.id, 
+        ps.id_pesanan_sampah_keranjang, 
+        ps.kategori AS nama_kategori, 
+        ps.berat_perkiraan AS berat, 
+        ps.harga_perkiraan AS harga,
+        k.harga_kategori AS harga_kategori
+    FROM 
+        pesanan_sampah_table ps
+    JOIN 
+        category_table k ON ps.kategori = k.nama_kategori
+    WHERE 
+        ps.id_pesanan_sampah_keranjang = :idPesanan
+""")
     suspend fun getPesananSampahKeranjangDetailList(idPesanan: String): List<CardDetailPesanan>
 
     @Query("SELECT * FROM pesanan_sampah_table")
@@ -32,7 +42,4 @@ interface PesananSampahDao {
 
     @Query("DELETE FROM pesanan_sampah_table")
     suspend fun deleteAll()
-
-    @Query("SELECT berat_perkiraan FROM pesanan_sampah_table WHERE id_pesanan_sampah_keranjang = :idKeranjang")
-    suspend fun getBeratPerkiraanById(idKeranjang: String): String?
 }

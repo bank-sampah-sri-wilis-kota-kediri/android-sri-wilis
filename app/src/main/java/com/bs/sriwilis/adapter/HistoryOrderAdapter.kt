@@ -63,7 +63,7 @@ class HistoryOrderAdapter(
                     }
                 }
 
-                tvBeratTransaksi.text = transaction?.total_berat?.toString() + " kg"
+                tvBeratTransaksi.text = String.format("%.2f kg", transaction?.total_berat ?: 0.0)
                 tvNomorWaPesanan.text = transaction?.no_hp_nasabah
 
 

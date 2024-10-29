@@ -10,6 +10,7 @@ import com.bs.sriwilis.data.response.CatalogResponseDTO
 import com.bs.sriwilis.data.response.CategoryResponse
 import com.bs.sriwilis.data.response.CategoryResponseDTO
 import com.bs.sriwilis.data.response.ChangePasswordResponse
+import com.bs.sriwilis.data.response.ChangeStatusPesananSampahResponse
 import com.bs.sriwilis.data.response.DataKeranjangItem
 import com.bs.sriwilis.data.response.DataKeranjangItemResponse
 import com.bs.sriwilis.data.response.GetAdminByIdResponse
@@ -80,6 +81,12 @@ interface ApiServiceMain {
     @GET("nasabah/show-all")
     suspend fun getAllNasabah(
         @Header("Authorization") token: String,
+    ): Response<NasabahResponseDTO>
+
+    @GET("nasabah/search-by-nama/{nama_nasabah}")
+    suspend fun searchNasabah(
+        @Header("Authorization") token: String,
+        @Path("nama_nasabah") nama_nasabah: String,
     ): Response<NasabahResponseDTO>
 
     @GET("nasabah/{no_hp_admin}")
@@ -248,6 +255,12 @@ interface ApiServiceMain {
         @Header("Authorization") token: String,
     ): Response<KeranjangTransaksiResponseDTO>
 
+    @DELETE("pesanan/{id}")
+    suspend fun deleteKeranjangById(
+        @Header("Authorization") token: String,
+        @Path("id") id: String
+    ): Response<KeranjangTransaksiResponseDTO>
+
     // SCHEDULING CRUD
 
     @GET("transaksi/nasabah/{id}")
@@ -305,5 +318,12 @@ interface ApiServiceMain {
     suspend fun getOrderScheduleById(
         @Header("Authorization") token: String,
     ): Response<PesananSampahKeranjangResponse>
+
+    @PUT("pesanan/update-item-keranjang/{id}")
+    suspend fun updateItemKeranjang(
+        @Path("id") keranjangId: String,
+        @Header("Authorization") token: String,
+        @Field("berat_perkiraan") berat_perkiraan: Float,
+    ): Response<ChangeStatusPesananSampahResponse>
 
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.bs.sriwilis.data.repository.MainRepository
 import com.bs.sriwilis.data.response.CartTransactionRequest
 import com.bs.sriwilis.data.response.ChangeResultResponse
+import com.bs.sriwilis.data.response.ChangeStatusPesananSampahResponse
 import com.bs.sriwilis.data.response.DataKeranjangItem
 import com.bs.sriwilis.data.response.GetOrderScheduleByIdResponse
 import com.bs.sriwilis.data.response.PesananSampahItem
@@ -64,6 +65,14 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
 
     private val _pesananSampahDetail = MutableLiveData<Result<List<CardDetailPesanan>>>()
     val pesananSampahDetail: LiveData<Result<List<CardDetailPesanan>>> get() = _pesananSampahDetail // ini untuk card di detail
+
+    private val _deleteResult = MutableLiveData<Result<Boolean>>()
+    val deleteResult: LiveData<Result<Boolean>> get() = _deleteResult
+
+    private val _updateCartStatus = MutableLiveData<Result<ChangeStatusPesananSampahResponse>>()
+    val updateCartStatus: LiveData<Result<ChangeStatusPesananSampahResponse>>
+        get() = _updateCartStatus
+
 
     fun fetchSchedule(id: String) {
         viewModelScope.launch {
@@ -182,6 +191,35 @@ class SchedulingDetailViewModel(private val repository: MainRepository) : ViewMo
         }
     }
 
+    fun deleteKeranjang(keranjangId: String) {
+        viewModelScope.launch {
+            _deleteResult.postValue(Result.Loading)
+            try {
+                when (val result = repository.deleteItemKeranjangById(keranjangId)) {
+                    is Result.Success -> {
+                        if (result.data) {
+                            _deleteResult.postValue(Result.Success(true))
+                        } else {
+                            _deleteResult.postValue(Result.Error("Gagal menghapus keranjang"))
+                        }
+                    }
+                    is Result.Error -> {
+                        _deleteResult.postValue(Result.Error(result.error ?: "Unknown error occurred"))
+                    }
+                    Result.Loading -> {
+                    }
+                }
+            } catch (e: Exception) {
+                _deleteResult.postValue(Result.Error(e.message ?: "Unknown error occurred"))
+            }
+        }
+    }
+
+    fun updateCartById(id: String, berat: Float) {
+        viewModelScope.launch {
+            _updateCartStatus.value = repository.updateCartById(id, berat)
+        }
+    }
 
     suspend fun syncDataTransaction(): Result<Unit> {
         return repository.syncTransaksi()

@@ -49,14 +49,6 @@ interface KeranjangTransaksiDao {
         """)
     suspend fun getDataDetailKeranjangTransaksi(idPesanan: String): CardTransaksi
 
-    // Get List data detail card pesanan
-    @Query("""
-    SELECT kategori as nama_kategori, berat as berat
-    FROM transaksi_sampah_table
-    WHERE id_keranjang_transaksi = :idPesanan
-    """)
-    suspend fun getTransaksiSampah(idPesanan: String): List<CardDetailPesanan>
-
     // Update a KeranjangTransaksi
     @Update
     suspend fun updateKeranjangTransaksi(keranjangTransaksi: KeranjangTransaksiEntity)

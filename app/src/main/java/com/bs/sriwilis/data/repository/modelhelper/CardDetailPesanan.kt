@@ -1,8 +1,11 @@
 package com.bs.sriwilispetugas.data.repository.modelhelper
 
 data class CardDetailPesanan(
+    val id: String,
+    val id_pesanan_sampah_keranjang: String,
     val nama_kategori: String,
-    val berat: Int,
+    var berat: Float,
     val gambar: String?,
-    val harga: Float?
+    var harga: Float,
+    val harga_kategori: Float
 )

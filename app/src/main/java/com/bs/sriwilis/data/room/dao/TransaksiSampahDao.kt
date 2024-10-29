@@ -20,13 +20,6 @@ interface TransaksiSampahDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllTransaksiSampah(pesananSampahList: List<TransaksiSampahEntity>)
 
-    @Query("""
-    SELECT id_keranjang_transaksi, kategori as nama_kategori, berat as berat, harga as harga
-    FROM transaksi_sampah_table
-    WHERE id_keranjang_transaksi = :idPesanan
-    """)
-    suspend fun getTransaksiSampahKeranjangDetailList(idPesanan: String): List<CardDetailPesanan>
-
     // Update a TransaksiSampah
     @Update
     suspend fun updateTransaksiSampah(pesananSampah: TransaksiSampahEntity)

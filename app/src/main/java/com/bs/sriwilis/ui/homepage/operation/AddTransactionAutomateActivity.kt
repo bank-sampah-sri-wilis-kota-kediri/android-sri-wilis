@@ -5,15 +5,12 @@ import android.text.Editable
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bs.sriwilis.R
-import com.bs.sriwilis.adapter.CartOrderAdapter
+import com.bs.sriwilis.adapter.CartTransactionAutomateAdapter
 import com.bs.sriwilis.databinding.ActivityAddTransactionAutomateBinding
 import com.bs.sriwilis.helper.Result
 import com.bs.sriwilis.model.CartTransaction
@@ -34,12 +31,12 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
         ViewModelFactory.getInstance(this)
     }
 
-    private lateinit var adapter: CartOrderAdapter
+    private lateinit var cartAdapter: CartTransactionAutomateAdapter
 
     private var selectedId: String? = null
     private var selectedDate: String? = null
 
-    private var totalWeight: Int = 0
+    private var totalWeight: Float = 0.0f
     private var totalPrice: Float = 0.0f
     private var cartItems = mutableListOf<CardDetailPesanan>()
     private var idKeranjang: String? = ""
@@ -49,7 +46,22 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
         binding = ActivityAddTransactionAutomateBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapter = CartOrderAdapter(emptyList(), this)
+        cartAdapter = CartTransactionAutomateAdapter(emptyList(), this) { id, berat, _ ->
+            val cartItem = cartItems.find { it.id == id }
+            if (cartItem != null) {
+                cartItem.berat = berat
+                Log.d("DebugTransaction", "Before calculation: Item: ${cartItem.nama_kategori}, Current Price: ${cartItem.harga}, Current Weight: ${cartItem.berat}")
+
+                val (totalEstimatedPrice, totalOriginalPrice) = calculatePriceBasedOnWeight(cartItem)
+                cartItem.harga = totalEstimatedPrice
+                Log.d("DebugTransaction", "Updated Item: ${cartItem.nama_kategori}, Estimated Price: $totalEstimatedPrice, Original Price: $totalOriginalPrice")
+
+                calculateTotal(cartItems.map { mapCardDetailToCartTransaction(it) })
+
+                cartAdapter.updateOrder(cartItems)
+                cartAdapter.notifyDataSetChanged()
+            }
+        }
 
         setupAdapter()
 
@@ -59,35 +71,29 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
 
         val orderId = intent.getStringExtra("id")
         val nasabahId = intent.getStringExtra("id_nasabah")
-        val keranjangId = intent.getStringExtra("id_keranjang_transaksi")
+        val keranjangId = intent.getStringExtra("id_pesanan_sampah_keranjang")
 
-        orderId.let {
+        orderId?.let {
             lifecycleScope.launch {
-                Log.d("jalan sampe sini ga diaaaaaa?", "$nasabahId")
                 viewModel.getPesananSampahKeranjang()
-                if (orderId != null) {
-                    viewModel.getDataDetailPesananSampahKeranjang(orderId)
-                    viewModelTransaction.getPesananSampahKeranjangScheduled()
-                    viewModel.getTransaksiListDetailById(orderId)
-                    observeTransaction()
-                    observeCartDetails()
-                }
+                viewModel.getDataDetailPesananSampahKeranjang(orderId)
+                viewModelTransaction.getPesananSampahKeranjangScheduled()
+                viewModel.getTransaksiListDetailById(orderId)
+                observeTransaction()
+                observeCartDetails()
             }
         }
-
-
 
         binding.btnSave.setOnClickListener {
             if (nasabahId != null) {
                 selectedDate?.let { date -> submitTransaction(nasabahId, date) }
             }
         }
-
     }
 
     private fun setupAdapter() {
         binding.rvTransactionCart.layoutManager = LinearLayoutManager(this)
-        binding.rvTransactionCart.adapter = adapter
+        binding.rvTransactionCart.adapter = cartAdapter
     }
 
     private fun observeTransaction() {
@@ -118,15 +124,16 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
             when (result) {
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
-
                     val cartDetails = result.data
                     cartItems.clear()
                     cartItems.addAll(cartDetails)
 
-                    adapter.updateOrder(cartItems)
+                    cartItems.forEach { item ->
+                        Log.d("InitialPriceCheck", "Item: ${item.nama_kategori}, Initial Price per Unit: ${item.harga}, Weight: ${item.berat}")
+                    }
 
+                    cartAdapter.updateOrder(cartItems)
                     calculateTotal(cartItems.map { mapCardDetailToCartTransaction(it) })
-                    Log.d("cart cart cart", "$cartItems")
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -140,13 +147,12 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
     }
 
     private fun submitTransaction(nasabahId: String, selectedDate: String) {
-        val idNasabah = nasabahId
         val tanggal = formatDate(selectedDate)
 
-        if (idNasabah != null && tanggal != null && cartItems.isNotEmpty()) {
+        if (nasabahId.isNotEmpty() && tanggal.isNotEmpty() && cartItems.isNotEmpty()) {
             val mappedCartItems = cartItems.map { mapCardDetailToCartTransaction(it) }
 
-            viewModelTransaction.addCartTransaction(idNasabah, tanggal, mappedCartItems)
+            viewModelTransaction.addCartTransaction(nasabahId, tanggal, mappedCartItems)
 
             viewModelTransaction.transactionResult.observe(this) { result ->
                 when (result) {
@@ -173,19 +179,17 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
         }
     }
 
-
     private fun mapCardDetailToCartTransaction(cardDetail: CardDetailPesanan): CartTransaction {
         return CartTransaction(
-            gambar =  cardDetail.gambar ?: "",
+            gambar = cardDetail.gambar ?: "",
             berat = cardDetail.berat,
             kategori = cardDetail.nama_kategori,
-            harga = cardDetail.harga ?: 0.0f
+            harga = cardDetail.harga ?: 0.0f // Use the estimated price here
         )
     }
 
     private fun formatDate(date: String): String {
         val parts = date.split("-")
-
         return if (parts.size == 3) {
             "${parts[2]}-${parts[1]}-${parts[0]}"
         } else {
@@ -194,14 +198,19 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
         }
     }
 
-    private fun calculateTotal(cartTransactions: List<CartTransaction>) {
-        totalWeight = cartTransactions.sumOf { it.berat }
-        totalPrice = cartTransactions.sumOf { it.harga?.toDouble() ?: 0.0 }.toFloat()
+    fun calculateTotal(cartTransactions: List<CartTransaction>) {
+        totalWeight = 0.0f
+        totalPrice = 0.0f
+
+        cartTransactions.forEach { transaction ->
+            totalWeight += transaction.berat
+            totalPrice += transaction.harga ?: 0.0f
+        }
 
         Log.d("TotalCalculation", "Total weight: $totalWeight kg, Total price: Rp $totalPrice")
 
-        binding.tvWeightEstimation.text = "$totalWeight kg"
-        binding.tvPriceEstimation.text = "Rp $totalPrice"
+        binding.tvWeightEstimation.text = String.format("%.2f kg", totalWeight)
+        binding.tvPriceEstimation.text = String.format("Rp%.0f", totalPrice)
     }
 
     fun String?.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
@@ -210,5 +219,18 @@ class AddTransactionAutomateActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
+    fun recalculateTotalPrice() {
+        val updatedTransactions = cartItems.map { mapCardDetailToCartTransaction(it) }
+        calculateTotal(updatedTransactions)
+    }
+
+    private fun calculatePriceBasedOnWeight(cartItem: CardDetailPesanan?): Pair<Float, Float> {
+        val weight = cartItem?.berat ?: 0.0f
+        val basePrice = cartItem?.harga_kategori ?: 0.0f
+
+        val totalEstimatedPrice = basePrice * weight
+
+        return Pair(totalEstimatedPrice, basePrice)
+    }
 
 }

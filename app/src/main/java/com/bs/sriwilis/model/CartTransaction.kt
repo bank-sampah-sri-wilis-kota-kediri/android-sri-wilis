@@ -6,7 +6,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class CartTransaction(
     val kategori: String,
-    val berat: Int,
+    val berat: Float,
     val harga: Float?,
     val gambar: String?,
 ) : Parcelable
